@@ -54,8 +54,36 @@ src/
 - Memoize heavy calculations with `useMemo` only when necessary.
 - Ensure all images/assets use modern formats (WebP) and are lazy-loaded.
 
+## 7. Dual Theme (Light / Dark) & Aesthetic Standards
+
+### Theme Architecture
+- **Single source of truth**: Theme state lives in Zustand (`@/store/theme-store`). Values: `light` | `dark` | `system`.
+- **Application**: One place applies theme to the DOM—e.g. `useThemeEffect`—by toggling the `dark` class on `document.documentElement`. Do not set theme in multiple places.
+- **CSS variables**: All theme-dependent colors are defined in `src/index.css` under `:root` (light) and `.dark`. Use semantic tokens only (e.g. `--background`, `--foreground`, `--card`, `--muted`, `--primary`, `--border`). Never hardcode hex/rgb in components.
+
+### Component Rules for Dual Theme
+- **Always use semantic classes**: In components, use only Tailwind classes that map to CSS variables: `bg-background`, `text-foreground`, `bg-card`, `text-card-foreground`, `bg-muted`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-primary-foreground`, `bg-accent`, `text-accent-foreground`, `ring-ring`, etc. This guarantees correct appearance in both themes without conditional logic.
+- **Never hardcode theme-specific colors in components**: Do not use `bg-zinc-900`, `text-white`, `bg-gray-100`, or raw hex. Reserve those only inside `index.css` when defining `:root` / `.dark` variables.
+- **Contrast**: Use `text-foreground` for primary text and `text-muted-foreground` for secondary. For highlighted or info boxes, use `bg-muted` + `text-foreground` (or `border-border`) so they remain readable in light and dark.
+- **Borders**: Use `border-border` only. Avoid theme-specific border colors in component classNames.
+
+### Surface & Elevation
+- **Light**: Define in `:root`—e.g. light neutrals for background/card, subtle borders. Cards can use `bg-card` (e.g. white) with `border-border`.
+- **Dark**: Define in `.dark`—elevated surfaces (cards, sidebars) slightly lighter than page background (e.g. `--card` darker than `--background` or vice versa per design) so hierarchy is clear. Avoid pure black (`#000`) for large areas; use dark grays for comfort.
+
+### Accent & Interaction
+- **Primary**: Use a single accent (e.g. primary blue) via `--primary` / `--primary-foreground`. Use for: active nav item (`bg-primary text-primary-foreground`), primary buttons, focus rings (`ring-ring`).
+- **Hover/focus**: Use semantic classes: `hover:bg-accent hover:text-accent-foreground`, `focus-visible:ring-ring`. Every clickable element must have a visible hover/focus state.
+
+### Typography & Neutrals
+- Prefer `zinc` or `slate` for neutral variable values in CSS (not raw `gray`) for a more polished look. Font: e.g. `Inter` or `JetBrains Mono`; set in CSS or Tailwind `font-sans` / `font-mono`.
+
 
 - **Skeleton Standards**: Every data-driven component (Tables, Cards, Forms) must have a corresponding Skeleton state.
 - **Table Loading**: Use a skeleton rows pattern (default 5 rows) that matches the `columns.tsx` layout.
 - **Streaming & Suspense**: If using Next.js, prioritize `loading.tsx` for page-level streaming. For Vite, use `Suspense` with a fallback skeleton.
 - **Button Loading**: Buttons for form submission must show a `Loader2` icon from `lucide-react` and be `disabled` while `isPending` or `isLoading` is true.
+
+- **Soft Shadows**: Use `shadow-sm` for cards in Light mode, but ensure shadows are almost invisible or replaced by subtle borders in Dark mode (`dark:shadow-none border-border`).
+- **Subtle Glassmorphism**: For sidebars or headers, use `bg-background/80 backdrop-blur-md` to add depth without being distracting.
+- **Empty States & Skeletons**: Use `bg-muted/50` for skeletons to ensure they blend perfectly in both themes.

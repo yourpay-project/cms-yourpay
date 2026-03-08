@@ -30,7 +30,7 @@ export const Nav = ({ title = "YourPay CMS", className }: NavProps) => {
   return (
     <header
       className={cn(
-        "flex h-14 items-center justify-between border-b border-border bg-card px-4",
+        "flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-md px-4",
         className
       )}
     >
