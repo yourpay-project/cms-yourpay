@@ -1,0 +1,61 @@
+# React Professional CMS Rules: Clean Code, SRP, & DRY
+
+You are an expert Senior Frontend Engineer. Your goal is to build a maintainable, high-performance CMS using React, Tailwind CSS, shadcn/ui, and TanStack (Table/Query).
+
+## 1. Core Engineering Principles
+- **SRP (Single Responsibility)**: One component/hook per file. Logic (hooks) must be separated from UI (components).
+- **DRY (Don't Repeat Yourself)**: Create reusable utility functions for formatting, validation, and common UI patterns.
+- **Composition over Inheritance**: Use React composition to build complex UIs from smaller shadcn atoms.
+- **Clean Code**: Use descriptive names (e.g., `isUserUpdatePending` instead of `loading`). Avoid deeply nested conditionals.
+
+## 2. Technical Stack & Patterns
+- **Styling**: Tailwind CSS only. No inline styles. Use the `cn()` utility for all conditional classes.
+- **UI Components**: Use shadcn/ui. Check `@/components/ui` before creating any new UI element.
+- **Data Tables**: Use `@tanstack/react-table`. 
+  - Mandatory File Split: `columns.tsx` (schema), `data-table.tsx` (UI logic), and `page.tsx` (data fetching).
+- **State Management**:
+  - Server State: TanStack Query (useQuery/useMutation).
+  - Client State: Zustand for global state, `useState` for local UI state.
+- **Forms**: React Hook Form + Zod for schema validation.
+
+## 3. Mandatory Folder Structure (SRP & Feature-Based)
+Follow this layout for every new feature:
+src/
+├── components/
+│   ├── ui/             # Atomic shadcn components
+│   └── shared/         # Reusable layouts (Sidebar, Nav)
+├── features/           # Feature-based isolation
+│   └── [feature-name]/
+│       ├── components/ # Sub-components (columns.tsx, data-table.tsx)
+│       ├── hooks/      # Feature hooks (useFetchData)
+│       ├── services/   # API logic using apiClient
+│       └── types/      # Feature types
+├── lib/                # Configs (api-client.ts, utils.ts)
+└── store/              # Zustand stores
+
+## 4. Implementation Rules
+- **TypeScript**: Strict mode. No `any`. Use `interface` for props and `type` for API responses.
+- **Functional Components**: Use arrow functions: `const Component = ({ props }: Props) => { ... }`.
+- **Naming Conventions**:
+  - Components/Files: PascalCase (e.g., `UserTable.tsx`).
+  - Hooks: camelCase starting with 'use' (e.g., `useUserActions.ts`).
+  - Utils/Types: kebab-case for filenames, camelCase for functions.
+- **Icons**: Use `lucide-react`. Import individually: `import { Trash } from "lucide-react"`.
+- **Error Handling**: Use `try-catch` in mutations and display feedback via `sonner` (toast).
+
+## 5. CMS Specific Workflow
+- **Loading States**: Always implement Skeleton screens or loading spinners using shadcn `Skeleton`.
+- **Empty States**: Handle empty data scenarios gracefully in all tables and lists.
+- **Modals**: Use shadcn `Dialog` for CRUD operations (Create/Edit/Delete) to maintain a fast, single-page feel.
+- **Early Returns**: Use early returns in components to handle loading and error states before rendering the main UI.
+
+## 6. Performance
+- Minimize `useEffect`. Prefer event-driven updates or TanStack Query's state.
+- Memoize heavy calculations with `useMemo` only when necessary.
+- Ensure all images/assets use modern formats (WebP) and are lazy-loaded.
+
+
+- **Skeleton Standards**: Every data-driven component (Tables, Cards, Forms) must have a corresponding Skeleton state.
+- **Table Loading**: Use a skeleton rows pattern (default 5 rows) that matches the `columns.tsx` layout.
+- **Streaming & Suspense**: If using Next.js, prioritize `loading.tsx` for page-level streaming. For Vite, use `Suspense` with a fallback skeleton.
+- **Button Loading**: Buttons for form submission must show a `Loader2` icon from `lucide-react` and be `disabled` while `isPending` or `isLoading` is true.
