@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { useCan } from "@/features/auth";
 import { cn } from "@/shared/lib";
 import { navGroups } from "../model/nav-config";
@@ -55,25 +55,24 @@ export const Sidebar = ({ className }: SidebarProps) => {
                 <div className="mx-2 my-1 border-t border-border" />
               )}
               {visibleItems.map((item) => (
-                <NavLink
+                <Link
                   key={item.to}
                   to={item.to}
                   title={item.label}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center rounded-md py-2.5 text-sm font-medium transition-colors [&_svg]:h-5 [&_svg]:w-5 [&_svg]:shrink-0",
-                      collapsed ? "justify-center px-0" : "gap-3 px-3",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )
-                  }
+                  className={cn(
+                    "flex items-center rounded-md py-2.5 text-sm font-medium transition-colors [&_svg]:h-5 [&_svg]:w-5 [&_svg]:shrink-0",
+                    collapsed ? "justify-center px-0" : "gap-3 px-3",
+                    "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                  activeProps={{
+                    className: "bg-primary text-primary-foreground",
+                  }}
                 >
                   {item.icon ?? null}
                   {!collapsed && (
                     <span className="min-w-0 truncate">{item.label}</span>
                   )}
-                </NavLink>
+                </Link>
               ))}
             </div>
           );

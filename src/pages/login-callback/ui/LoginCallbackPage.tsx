@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { getMe, setTokenFromCallback } from "@/features/auth";
@@ -7,13 +7,13 @@ import { useAuthStore } from "@/entities/session";
 import { ApiClientError } from "@/shared/api";
 
 const LoginCallbackPage = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
   const [status, setStatus] = useState<"loading" | "error">("loading");
 
   useEffect(() => {
-    const token = searchParams.get("token");
+    const search = new URLSearchParams(window.location.search);
+    const token = search.get("token");
     if (token) {
       setTokenFromCallback(token);
     }
@@ -22,16 +22,16 @@ const LoginCallbackPage = () => {
       .then((user) => {
         setUser(user);
         toast.success("Signed in successfully");
-        navigate("/", { replace: true });
+        navigate({ to: "/", replace: true });
       })
       .catch((err) => {
         setStatus("error");
         const message =
           err instanceof ApiClientError ? err.message : "Failed to complete sign in.";
         toast.error(message);
-        navigate("/login", { replace: true });
+        navigate({ to: "/login", replace: true });
       });
-  }, [searchParams, setUser, navigate]);
+  }, [setUser, navigate]);
 
   if (status === "error") return null;
 

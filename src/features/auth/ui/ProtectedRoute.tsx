@@ -1,18 +1,34 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../model/use-auth";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
+/**
+ * Guard component that only renders its children when the user is authenticated.
+ *
+ * If there is no active session, it imperatively navigates to `/login` using
+ * TanStack Router and renders nothing.
+ */
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      void navigate({
+        to: "/login",
+        replace: true,
+      });
+    }
+  }, [isAuthenticated, location, navigate]);
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return null;
   }
 
   return <>{children}</>;
 };
-

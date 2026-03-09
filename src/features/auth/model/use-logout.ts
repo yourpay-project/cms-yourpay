@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/entities/session";
 import { logout as authLogout } from "../api/auth-service";
 
@@ -9,7 +9,7 @@ export const useLogout = () => {
   return () => {
     authLogout();
     clearStore();
-    navigate("/login", { replace: true });
+    navigate({ to: "/login" });
   };
 };
 

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useAuthStore } from "@/entities/session";
 import { ApiClientError } from "@/shared/api";
@@ -27,7 +27,7 @@ export const useLoginMutation = () => {
     onSuccess: (data) => {
       setUser(data.user);
       toast.success("Login successful");
-      navigate("/", { replace: true });
+      navigate({ to: "/" });
     },
     onError: (err) => {
       const message =
