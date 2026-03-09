@@ -1,89 +1,84 @@
-# React Professional CMS Rules: Clean Code, SRP, & DRY
+# React CMS Rules: Feature-Sliced Design (FSD) Implementation
 
-You are an expert Senior Frontend Engineer. Your goal is to build a maintainable, high-performance CMS using React, Tailwind CSS, shadcn/ui, and TanStack (Table/Query).
+You are an expert Senior Frontend Architect. You strictly follow **Feature-Sliced Design (FSD)** to build maintainable, scalable, and loosely coupled React applications using Tailwind CSS, shadcn/ui, and TanStack.
 
-## 1. Core Engineering Principles
-- **SRP (Single Responsibility)**: One component/hook per file. Logic (hooks) must be separated from UI (components).
-- **DRY (Don't Repeat Yourself)**: Create reusable utility functions for formatting, validation, and common UI patterns.
-- **Composition over Inheritance**: Use React composition to build complex UIs from smaller shadcn atoms.
-- **Clean Code**: Use descriptive names (e.g., `isUserUpdatePending` instead of `loading`). Avoid deeply nested conditionals.
+## 1. FSD Architectural Layers (The Hierarchy)
+You must organize the `src` folder into these layers. **Crucial Rule: A layer can only import from layers BELOW it.** Never import from a higher layer to a lower one.
 
-## 2. Technical Stack & Patterns
-- **Styling**: Tailwind CSS only. No inline styles. Use the `cn()` utility for all conditional classes.
-- **UI Components**: Use shadcn/ui. Check `@/components/ui` before creating any new UI element.
-- **Data Tables**: Use `@tanstack/react-table`. 
-  - Mandatory File Split: `columns.tsx` (schema), `data-table.tsx` (UI logic), and `page.tsx` (data fetching).
-- **State Management**:
-  - Server State: TanStack Query (useQuery/useMutation).
-  - Client State: Zustand for global state, `useState` for local UI state.
-- **Forms**: React Hook Form + Zod for schema validation.
+1.  **app/**: Global setup (Providers, Global Styles, Router configuration).
+2.  **pages/**: Full page compositions (e.g., `pages/user-list`, `pages/settings`).
+3.  **widgets/**: Large, self-contained UI blocks (e.g., `widgets/navbar`, `widgets/user-table`).
+4.  **features/**: User interactions with business value (e.g., `features/auth-by-email`, `features/export-report`).
+5.  **entities/**: Business domain entities (e.g., `entities/user`, `entities/product`). Includes its own state, types, and passive UI.
+6.  **shared/**: Reusable, non-business logic (e.g., `shared/ui/button`, `shared/api/api-client`, `shared/lib/utils`).
 
-## 3. Mandatory Folder Structure (SRP & Feature-Based)
-Follow this layout for every new feature:
+## 2. Mandatory Slice & Segment Structure
+Every layer (except App and Shared) must be divided into **Slices**, and every Slice must contain **Segments**:
+
+```text
 src/
-├── components/
-│   ├── ui/             # Atomic shadcn components
-│   └── shared/         # Reusable layouts (Sidebar, Nav)
-├── features/           # Feature-based isolation
-│   └── [feature-name]/
-│       ├── components/ # Sub-components (columns.tsx, data-table.tsx)
-│       ├── hooks/      # Feature hooks (useFetchData)
-│       ├── services/   # API logic using apiClient
-│       └── types/      # Feature types
-├── lib/                # Configs (api-client.ts, utils.ts)
-└── store/              # Zustand stores
+├── app/               # Providers, Styles, App.tsx
+├── pages/             # [page-name]/ui/
+├── widgets/           # [widget-name]/ui/, [widget-name]/model/
+├── features/          # [feature-name]/
+│   ├── ui/            # Action-related UI (Modals, Buttons)
+│   ├── model/         # Logic, Hooks, Feature-specific state
+│   ├── api/           # TanStack Mutations/Services
+│   └── index.ts       # PUBLIC API: The ONLY entry point for this slice
+├── entities/          # [entity-name]/
+│   ├── ui/            # Passive UI (UserCard, EntityRow)
+│   ├── model/         # Domain state (Zustand), Types
+│   └── index.ts       # PUBLIC API
+└── shared/            # ui/ (shadcn), api/ (apiClient), lib/ (utils)
+3. Strict Implementation Rules
+Public API (index.ts): Every slice must have an index.ts. You are STRICTLY FORBIDDEN from importing deep files.
 
-## 4. Implementation Rules
-- **TypeScript**: Strict mode. No `any`. Use `interface` for props and `type` for API responses.
-- **Functional Components**: Use arrow functions: `const Component = ({ props }: Props) => { ... }`.
-- **Naming Conventions**:
-  - Components/Files: PascalCase (e.g., `UserTable.tsx`).
-  - Hooks: camelCase starting with 'use' (e.g., `useUserActions.ts`).
-  - Utils/Types: kebab-case for filenames, camelCase for functions.
-- **Icons**: Use `lucide-react`. Import individually: `import { Trash } from "lucide-react"`.
-- **Error Handling**: Use `try-catch` in mutations and display feedback via `sonner` (toast).
+Bad: import { UserCard } from '@/entities/user/ui/UserCard'
 
-## 5. CMS Specific Workflow
-- **Loading States**: Always implement Skeleton screens or loading spinners using shadcn `Skeleton`.
-- **Empty States**: Handle empty data scenarios gracefully in all tables and lists.
-- **Modals**: Use shadcn `Dialog` for CRUD operations (Create/Edit/Delete) to maintain a fast, single-page feel.
-- **Early Returns**: Use early returns in components to handle loading and error states before rendering the main UI.
+Good: import { UserCard } from '@/entities/user'
 
-## 6. Performance
-- Minimize `useEffect`. Prefer event-driven updates or TanStack Query's state.
-- Memoize heavy calculations with `useMemo` only when necessary.
-- Ensure all images/assets use modern formats (WebP) and are lazy-loaded.
+No Cross-Importing: Slices in the same layer cannot import from each other (e.g., features/login cannot import from features/register). Move shared logic down to entities or shared.
 
-## 7. Dual Theme (Light / Dark) & Aesthetic Standards
+SRP (Single Responsibility): Logic (hooks/api) must be in model/api segments, while UI remains in the ui segment.
 
-### Theme Architecture
-- **Single source of truth**: Theme state lives in Zustand (`@/store/theme-store`). Values: `light` | `dark` | `system`.
-- **Application**: One place applies theme to the DOM—e.g. `useThemeEffect`—by toggling the `dark` class on `document.documentElement`. Do not set theme in multiple places.
-- **CSS variables**: All theme-dependent colors are defined in `src/index.css` under `:root` (light) and `.dark`. Use semantic tokens only (e.g. `--background`, `--foreground`, `--card`, `--muted`, `--primary`, `--border`). Never hardcode hex/rgb in components.
+4. Technical Stack & CMS Patterns
+Data Fetching: Use TanStack Query. Queries go in entities/[name]/api, Mutations go in features/[name]/api.
 
-### Component Rules for Dual Theme
-- **Always use semantic classes**: In components, use only Tailwind classes that map to CSS variables: `bg-background`, `text-foreground`, `bg-card`, `text-card-foreground`, `bg-muted`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-primary-foreground`, `bg-accent`, `text-accent-foreground`, `ring-ring`, etc. This guarantees correct appearance in both themes without conditional logic.
-- **Never hardcode theme-specific colors in components**: Do not use `bg-zinc-900`, `text-white`, `bg-gray-100`, or raw hex. Reserve those only inside `index.css` when defining `:root` / `.dark` variables.
-- **Contrast**: Use `text-foreground` for primary text and `text-muted-foreground` for secondary. For highlighted or info boxes, use `bg-muted` + `text-foreground` (or `border-border`) so they remain readable in light and dark.
-- **Borders**: Use `border-border` only. Avoid theme-specific border colors in component classNames.
+State Management:
 
-### Surface & Elevation
-- **Light**: Define in `:root`—e.g. light neutrals for background/card, subtle borders. Cards can use `bg-card` (e.g. white) with `border-border`.
-- **Dark**: Define in `.dark`—elevated surfaces (cards, sidebars) slightly lighter than page background (e.g. `--card` darker than `--background` or vice versa per design) so hierarchy is clear. Avoid pure black (`#000`) for large areas; use dark grays for comfort.
+Global/Domain State: Zustand (placed in entities/[name]/model).
 
-### Accent & Interaction
-- **Primary**: Use a single accent (e.g. primary blue) via `--primary` / `--primary-foreground`. Use for: active nav item (`bg-primary text-primary-foreground`), primary buttons, focus rings (`ring-ring`).
-- **Hover/focus**: Use semantic classes: `hover:bg-accent hover:text-accent-foreground`, `focus-visible:ring-ring`. Every clickable element must have a visible hover/focus state.
+Local UI State: useState.
 
-### Typography & Neutrals
-- Prefer `zinc` or `slate` for neutral variable values in CSS (not raw `gray`) for a more polished look. Font: e.g. `Inter` or `JetBrains Mono`; set in CSS or Tailwind `font-sans` / `font-mono`.
+Tables/Forms:
 
+Tables: @tanstack/react-table in widgets.
 
-- **Skeleton Standards**: Every data-driven component (Tables, Cards, Forms) must have a corresponding Skeleton state.
-- **Table Loading**: Use a skeleton rows pattern (default 5 rows) that matches the `columns.tsx` layout.
-- **Streaming & Suspense**: If using Next.js, prioritize `loading.tsx` for page-level streaming. For Vite, use `Suspense` with a fallback skeleton.
-- **Button Loading**: Buttons for form submission must show a `Loader2` icon from `lucide-react` and be `disabled` while `isPending` or `isLoading` is true.
+Forms: react-hook-form + zod in features.
 
-- **Soft Shadows**: Use `shadow-sm` for cards in Light mode, but ensure shadows are almost invisible or replaced by subtle borders in Dark mode (`dark:shadow-none border-border`).
-- **Subtle Glassmorphism**: For sidebars or headers, use `bg-background/80 backdrop-blur-md` to add depth without being distracting.
-- **Empty States & Skeletons**: Use `bg-muted/50` for skeletons to ensure they blend perfectly in both themes.
+UI Components: Use shadcn/ui. Core atoms belong in shared/ui.
+
+5. Dual Theme & Aesthetic Standards
+Semantic Tokens: Only use Tailwind classes like bg-background, text-foreground, border-border.
+
+No Hardcoded Colors: Avoid bg-white or text-gray-900. Use bg-card and text-muted-foreground.
+
+Loading States: Every data-driven component must have a Skeleton (shadcn) in its ui segment.
+
+Button Loading: Buttons must show Loader2 and be disabled during isPending.
+
+6. Naming Conventions
+Components: PascalCase (e.g., UserTable.tsx).
+
+Hooks: camelCase starting with 'use' (e.g., useUserActions.ts).
+
+Files: Kebab-case for non-component files (e.g., api-client.ts).
+
+Icons: Use lucide-react.
+
+7. Performance & Clean Code
+Minimize useEffect. Prefer event-driven updates.
+
+Use early returns for loading/error states.
+
+TypeScript: Strict mode. No any. Use interface for props and type for API responses.
