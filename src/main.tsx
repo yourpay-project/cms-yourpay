@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import { initApiClient } from "@/lib/api-config";
+import { App } from "@/app";
+import { initApiClient } from "@/shared/api";
 import "./index.css";
 
 initApiClient();
