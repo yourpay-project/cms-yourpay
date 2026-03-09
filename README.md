@@ -1,23 +1,39 @@
 # YourPay CMS (React + Vite)
 
-YourPay CMS is an internal content and operations console built with **React 18**, **Vite**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **TanStack Query**, and **Zustand**.  
-The codebase is structured using **Feature‑Sliced Design (FSD)** as enforced by `.cursorrules`.
+YourPay CMS is an internal console for content, operations, and reporting, built with **React 18**, **Vite**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **TanStack Query/Router**, and **Zustand**.  
+The codebase follows **Feature‑Sliced Design (FSD)** as enforced by `.cursorrules`.
 
-## Tech Stack
+This document is written for **new engineers** joining the project. It explains how the repository is structured, how data and routing work, and how to safely add new features.
 
-- **App shell**: React 18, React Router v6, Vite
-- **Language**: TypeScript (strict)
-- **Styling**: Tailwind CSS with semantic tokens (`bg-background`, `text-foreground`, etc.)
-- **UI kit**: shadcn/ui, wrapped under `src/shared/ui`
-- **Data fetching**: TanStack Query (`@tanstack/react-query`)
-- **State management**: Zustand (`entities/*` for domain state, `shared/lib` for cross‑cutting state)
-- **Notifications**: `sonner`
-- **Icons**: `lucide-react`
+---
 
-## Project Structure (FSD)
+## 1. Tech Stack Overview
 
-All application code lives under `src/` and follows FSD.  
-Layer import order: **`app → pages → widgets → features → entities → shared`**.
+- **Runtime / Framework**
+  - React 18
+  - Vite (build + dev server)
+- **Language**
+  - TypeScript (strict, no `any`)
+- **Routing**
+  - TanStack Router (`@tanstack/react-router`)
+- **Data / HTTP**
+  - TanStack Query (`@tanstack/react-query`)
+  - Custom fetch wrapper: `shared/api/api-client.ts`
+- **State Management**
+  - Zustand (`entities/*` for domain state, `shared/lib` for cross‑cutting state)
+- **UI**
+  - Tailwind CSS with semantic tokens (`bg-background`, `text-foreground`, etc.)
+  - shadcn/ui components re‑exported from `shared/ui`
+  - Icons from `lucide-react`
+- **Feedback**
+  - `sonner` toasts
+
+---
+
+## 2. Project Structure (FSD)
+
+All application code lives under `src/` and follows the FSD layering rules.  
+Valid import direction: **`app → pages → widgets → features → entities → shared`** (never upwards).
 
 ```text
 src/
@@ -79,160 +95,290 @@ src/
 
 ### Import Rules
 
-- **No deep imports across slices**. Always import from a slice’s `index.ts`.
+- **Do not deep‑import** feature or entity internals.
   - ✅ `import { useAuth } from "@/features/auth";`
   - ❌ `import { useAuth } from "@/features/auth/model/use-auth";`
-- **Layer direction**:
-  - `app` may import from any other layer.
-  - `pages` may import from `widgets`, `features`, `entities`, `shared`.
-  - `widgets` may import from `features`, `entities`, `shared`.
-  - `features` may import from `entities`, `shared`.
-  - `entities` may import from `shared`.
-  - `shared` is leaf; it does not import from higher layers.
+- **Layer direction**
+  - `app` can import from any layer.
+  - `pages` can import from `widgets`, `features`, `entities`, `shared`.
+  - `widgets` can import from `features`, `entities`, `shared`.
+  - `features` can import from `entities`, `shared`.
+  - `entities` can import from `shared`.
+  - `shared` is leaf; it does not import from anything above it.
 
-## Running the App
+---
 
-Requirements:
+## 3. Running the App
+
+### Requirements
 
 - Node.js 20+
 - npm 10+
 
-Install dependencies:
+### Setup
 
 ```bash
 npm install
+cp .env.example .env        # Adjust values as needed
 ```
 
-Start the dev server:
+### Development
 
 ```bash
-# via npm
 npm run dev
-
-# or via Makefile shortcut
+# or
 make run
 ```
 
-Build for production:
+### Lint, Build, Preview
 
 ```bash
+# Lint
+npm run lint
+# or
+make lint
+
+# Build
 npm run build
 # or
 make build
-```
 
-Preview the production build:
-
-```bash
+# Preview production build
 npm run preview
 ```
 
-Run ESLint:
+---
 
-```bash
-npm run lint
-```
+## 4. Environment Variables
 
-## Environment Variables
+Configured via `.env` (see `.env.example`):
 
-Configure these in `.env` (or `.env.local`), based on `.env.example`:
+- `VITE_API_BASE_URL`  
+  Base URL for the backend API (e.g. `https://api.yourpay.co.id` or `/api`).
 
-- `VITE_API_BASE_URL` – Base URL for the backend API (e.g. `https://api.yourpay.co.id` or `/api`).
-- `VITE_GOOGLE_AUTH_URL` – Optional explicit URL for Google OAuth redirect; if omitted, the app derives it from `VITE_API_BASE_URL`.
-- `VITE_APP_VERSION` – Displayed on the login page footer.
+- `VITE_GOOGLE_AUTH_URL`  
+  Optional explicit URL for Google OAuth redirect. If not set, the app falls back to  
+  `\`${VITE_API_BASE_URL}/auth/google\``.
 
-## Architecture Notes
+- `VITE_APP_VERSION`  
+  Displayed in the login page footer.
 
-### Auth Flow
+---
 
-- Email/password login calls `features/auth/api/auth-service.login`, which:
-  - Sends `POST /auth/login` to the backend.
-  - Stores access + refresh tokens in cookies via `shared/api`.
-  - Returns the `AuthUser` payload.
-- Session state is kept in `entities/session`:
-  - `useAuthStore` (Zustand) stores `user`, `isAuthenticated`, and permission/role helpers.
-- The `auth` feature exposes:
-  - UI: `LoginForm`, `ProtectedRoute`, `LoginRedirect`, `Can`.
-  - Hooks: `useAuth`, `useCan`, `usePermissions`, `useLoginMutation`, `useLogout`.
-  - Service functions: `login`, `logout`, `getMe`, `getGoogleAuthUrl`, `setTokenFromCallback`.
+## 5. Architecture for New Engineers
 
-### Theming
+### 5.1 Routing (TanStack Router)
 
-- Theme state is managed in `shared/lib/theme-store.ts` (`light | dark | system`).
-- `useThemeEffect` syncs the resolved theme (`light`/`dark`) with `document.documentElement` and the OS preference.
-- Components use semantic Tailwind tokens (e.g. `bg-background`, `text-foreground`, `border-border`) so light/dark modes remain consistent.
+File: `app/App.tsx`
 
-### API Client
+- Defines the route tree using `createRootRoute` and `createRoute`.
+- Wraps everything in:
+  - `QueryClientProvider` (TanStack Query)
+  - `RouterProvider` (TanStack Router)
+  - `ThemeProvider` and `Toaster`
+- Key routes:
+  - `/` → `DashboardPage` inside `AppLayout`, wrapped with `ProtectedRoute`.
+  - `/login` → `LoginPage` wrapped with `LoginRedirect`.
+  - `/login/callback` → `LoginCallbackPage` (Google OAuth callback).
+  - Additional sidebar routes (e.g. `/identity-access`, `/customers`) are mapped to a shared `SectionPage` that just renders placeholder text for now.
 
-- `shared/api/api-client.ts` provides:
-  - `apiRequest` – core fetch wrapper with:
-    - automatic Authorization header from access token,
-    - 401 handling + optional refresh via `/auth/refresh`,
-    - normalized error via `ApiClientError`.
-  - `apiClient` – convenience methods (`get`, `post`, `put`, `patch`, `delete`).
-  - Cookie helpers (`setTokensInCookies`, `clearTokensInCookies`).
-- `shared/api/use-api-query.ts` wraps **TanStack Query** for simple REST patterns:
-  - Accepts a `queryKey` and `path`,
-  - Returns unwrapped `data` with loading/error states from TanStack.
+For navigation inside components, use **TanStack Router hooks**:
 
-## Coding Guidelines
+- `useNavigate()` – navigate by `to: "/path"`.
+- `Link` – for declarative navigation from the sidebar.
 
-- **Do not** import directly from deep feature/entity files; extend the slice’s `index.ts` instead.
-- Prefer **TanStack Query** for server state and **Zustand** for domain/global state.
-- Keep **UI components “dumb”**; move logic into `model` or `api` segments.
-- Use Tailwind’s **semantic** color tokens; avoid hard‑coded colors (e.g. `bg-white`).
-- When adding new slices:
-  - Create `ui/`, `model/`, `api/` as needed.
-  - Add `index.ts` as the single public entrypoint.
+### 5.2 Auth & Session
 
-## Makefile Shortcuts
+**Domain state (entities):**
 
-For convenience, you can use:
+- `entities/session/model/types.ts`
+  - `AuthUser`, `Role`, `Permission`, `JwtPayload`.
+- `entities/session/model/auth-store.ts`
+  - Zustand store `useAuthStore` with:
+    - `user`, `isAuthenticated`.
+    - Permission/role helpers: `hasPermission`, `hasAnyPermission`, `hasRole`, `hasAnyRole`.
+  - Persisted under `cms-auth` key in `localStorage`.
 
-```bash
-make run   # npm run dev
-make build # npm run build
-```
+**Feature API and hooks (features/auth):**
 
-# YourPay CMS
+- `features/auth/api/auth-service.ts`
+  - `login(payload)` → `POST /auth/login` (expects `{ access_token, refresh_token?, user }`).
+  - `getMe()` → `GET /auth/me`.
+  - `logout()` → clears cookies and calls `POST /auth/logout` (best‑effort).
+  - `getGoogleAuthUrl()` → builds OAuth URL.
+  - `setTokenFromCallback(token)` → store access token from callback.
+- `features/auth/model/use-auth.ts`
+  - `useAuth()` → `{ user, isAuthenticated, setUser, logout }` convenience hook wrapping `useAuthStore`.
+- `features/auth/model/use-can.ts`
+  - `useCan()` → `{ can, canAny, hasRole, hasAnyRole }` RBAC helper.
+- `features/auth/model/use-permissions.ts`
+  - `usePermissions()` → read‑only view of current user’s permissions.
+- `features/auth/model/use-login-mutation.ts`
+  - TanStack Query mutation that:
+    - Uses demo credentials if configured.
+    - Calls `login()`, stores user in `useAuthStore`, and redirects to `/`.
+- `features/auth/model/use-logout.ts`
+  - Clears session and navigates to `/login`.
 
-React CMS dengan TypeScript, Tailwind, shadcn/ui, TanStack Query/Table. RBAC + JWT dengan auto refresh token dari cookie.
+**Auth UI (features/auth/ui):**
 
-## Setup
+- `LoginForm` – email/password form with Google button.
+- `ProtectedRoute` – renders children only when authenticated; otherwise navigates to `/login`.
+- `LoginRedirect` – for `/login`; if already authenticated, redirects to `/`.
+- `Can` – conditional renderer based on permissions/roles (wrapping `useCan`).
 
-```bash
-npm install
-cp .env.example .env
-npm run dev
-```
+### 5.3 Layout & Sidebar (widgets/app-layout)
 
-## Struktur (sesuai .cursorrules)
+- `ui/AppLayout.tsx`
+  - Top nav (`Nav`), left sidebar (`Sidebar`), and main content area.
+  - Receives optional `navTitle` and `children`.
+- `ui/Nav.tsx`
+  - App title, global loading indicator, sidebar toggle, theme toggle, and user menu (email + logout).
+- `ui/Sidebar.tsx`
+  - Renders navigation groups from `model/nav-config.tsx`.
+  - Respects RBAC via `useCan`.
+  - Supports:
+    - **Pinned section** (max 5 items) that stays fixed at the top.
+    - **Search** input (with icon) for filtering non‑pinned items by label.
+    - Collapsed mode (icons only) while preserving pin state.
+- `model/nav-config.tsx`
+  - Declarative config of sidebar sections and items:
+    - `{ group?: string; items: { to, label, icon, permission? }[] }`.
+- `model/sidebar-store.ts`
+  - Zustand store `useSidebarStore`:
+    - `collapsed`, `setCollapsed`, `toggle`.
+    - `pinned: string[]`, `togglePinned(path)`; pinned entries are persisted.
 
-- `src/components/ui` — komponen shadcn
-- `src/components/shared` — layout (Sidebar, Nav, AppLayout), ThemeToggle, PageSkeleton
-- `src/features/[feature]/` — hooks, services, types per fitur
-- `src/lib` — api-client (JWT + refresh token), utils, use-api-query
-- `src/store` — Zustand (theme, auth, loading)
-- `src/types` — tipe global (auth/RBAC)
+### 5.4 Shared Layer
 
-## Fitur
+- `shared/api/api-client.ts`
+  - `apiRequest` wrapper around `fetch` with:
+    - Base URL handling (from `VITE_API_BASE_URL`).
+    - Access/refresh token support via cookies.
+    - 401 handling and optional token refresh via `/auth/refresh`.
+    - Typed `ApiClientError`.
+  - `apiClient` with typed `get/post/put/patch/delete`.
+- `shared/api/use-api-query.ts`
+  - `useApiQuery(queryKey, path, options)` – small helper around TanStack Query for REST‑style GETs.
+- `shared/lib/*`
+  - `utils.ts` – `cn` function combining `clsx` + `tailwind-merge`.
+  - `loading-store.ts` – `useLoadingStore` for global loading flags.
+  - `theme-store.ts` – `useThemeStore` for app theme.
+  - `use-theme-effect.ts` – applies theme to `document.documentElement` and listens to system changes.
+- `shared/ui/*`
+  - shadcn/ui components wired with Tailwind theme tokens (Button, Card, DropdownMenu, Input, Skeleton, PageSkeleton, ThemeToggle).
 
-- **Theme**: Dark / Light / System (toggle di Nav)
-- **RBAC**: `useAuth`, `usePermissions`, `useCan` — siap dipakai; BE menyusul untuk roles/permissions
-- **HTTP API**: `apiClient` & `useApiQuery` — reusable, auto refresh token dari cookie
-- **Loading**: `useLoadingStore` (global), Skeleton/PageSkeleton untuk UI
+---
 
-## Auth & Login
+## 6. How to Add a New Feature (Step‑by‑Step)
 
-- **Login**: Form email/password + tombol "Sign in with Google". Email/password → `POST /auth/login` (body: `{ email, password }`); response: `{ access_token, refresh_token?, user }`. User disimpan di Zustand; token di cookie.
-- **Google**: Tombol redirect ke `VITE_GOOGLE_AUTH_URL` atau `${VITE_API_BASE_URL}/auth/google`. Backend redirect ke Google lalu callback; callback redirect ke `/login/callback?token=...` (atau set cookie + redirect ke `/`). Halaman `/login/callback` baca token (jika ada), panggil `GET /auth/me`, set user, redirect ke `/`.
-- **Protected route**: Semua route di bawah `/` butuh auth; bila belum login → redirect ke `/login`. Bila sudah login dan buka `/login` → redirect ke `/`.
+Example: add a new **“Reports”** feature with a table page.
 
-## Sidebar & RBAC
+1. **Create the feature slice**
 
-- Menu sidebar diambil dari `src/config/nav-config.tsx` (group + item + permission). Item yang punya `permission` hanya tampil jika `useCan().can(permission)` true (super_admin atau permission `*` punya akses penuh). Tanpa BE, user kosong sehingga hanya "Dashboard" (tanpa permission) yang tampil.
+   ```text
+   src/features/reports/
+     ├── ui/
+     ├── model/
+     ├── api/
+     └── index.ts
+   ```
 
-## API Client
+2. **Add API calls in `features/reports/api`**
 
-- Token: baca dari cookie `access_token` / `refresh_token`; refresh lewat `POST /auth/refresh` (body: `{ refresh_token }`).
-- Set `VITE_API_BASE_URL` di `.env`. Panggil `initApiClient()` sekali di `main.tsx` (sudah dipasang).
+   ```ts
+   // src/features/reports/api/reports-service.ts
+   import { apiClient } from "@/shared/api";
+
+   export interface ReportRow { /* ... */ }
+
+   export const fetchReports = () =>
+     apiClient.get<ReportRow[]>("reports").then((res) => res.data);
+   ```
+
+3. **Add hooks in `features/reports/model`**
+
+   ```ts
+   // src/features/reports/model/use-reports.ts
+   import { useApiQuery } from "@/shared/api";
+
+   export const useReports = () =>
+     useApiQuery(["reports"], "reports");
+   ```
+
+4. **Add UI in `features/reports/ui`**
+
+   ```tsx
+   // src/features/reports/ui/ReportsTable.tsx
+   import { useReports } from "../model/use-reports";
+   import { PageSkeleton } from "@/shared/ui";
+
+   export const ReportsTable = () => {
+     const { data, isLoading } = useReports();
+     if (isLoading) return <PageSkeleton title rows={10} />;
+     // render table here
+   };
+   ```
+
+5. **Export from the feature’s `index.ts`**
+
+   ```ts
+   // src/features/reports/index.ts
+   export { ReportsTable } from "./ui/ReportsTable";
+   export { useReports } from "./model/use-reports";
+   ```
+
+6. **Create a page slice**
+
+   ```text
+   src/pages/reports/
+     ├── ui/ReportsPage.tsx
+     └── index.ts
+   ```
+
+   ```tsx
+   // src/pages/reports/ui/ReportsPage.tsx
+   import { ReportsTable } from "@/features/reports";
+
+   const ReportsPage = () => (
+     <div className="space-y-4">
+       <h2 className="text-xl font-semibold">Reports</h2>
+       <ReportsTable />
+     </div>
+   );
+
+   export default ReportsPage;
+   ```
+
+   ```ts
+   // src/pages/reports/index.ts
+   export { default as ReportsPage } from "./ui/ReportsPage";
+   ```
+
+7. **Wire routing and navigation**
+
+   - Add a nav item in `widgets/app-layout/model/nav-config.tsx` with `to: "/reports"`.
+   - Add a TanStack route in `app/App.tsx` similar to how `SectionPage` is wired today, or point `/reports` to the dedicated `ReportsPage`.
+
+---
+
+## 7. Coding Guidelines
+
+- **FSD discipline**
+  - Only import through slice `index.ts` public APIs.
+  - Push shared logic down to `entities` or `shared` when reused across features.
+- **State**
+  - Use TanStack Query for anything coming from the server.
+  - Use Zustand for domain/global UI state (session, theme, global loading, sidebar).
+- **UI**
+  - Keep components “dumb” where possible; move side effects and data fetching into `model`/`api`.
+  - Use Tailwind semantic tokens; avoid hard‑coded hex colors.
+- **Routing**
+  - Define new routes in `app/App.tsx` with TanStack Router.
+  - Prefer `<Link>` and `useNavigate()` from TanStack Router instead of manual `window.location`.
+- **Quality**
+  - Run `npm run lint` (or `make lint`) before pushing.
+  - Keep TSDoc up to date on exported hooks, components, and services that are reused across slices.
+
+If you are unsure where to put new code, start from the FSD diagram above and choose the lowest possible layer that still makes sense. When in doubt, ask: “Is this business logic (feature/entity) or generic UI/util (shared)?”.
+
