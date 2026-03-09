@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { logout as authLogout } from "@/features/auth/services/auth-service";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/entities/session";
+import { logout as authLogout } from "../api/auth-service";
 
 export const useLogout = () => {
   const navigate = useNavigate();
@@ -12,3 +12,4 @@ export const useLogout = () => {
     navigate("/login", { replace: true });
   };
 };
+

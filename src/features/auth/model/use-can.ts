@@ -1,8 +1,10 @@
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/entities/session";
 
 /**
- * Hook for RBAC: check if current user can do something (by permission or role).
- * Use in components to conditionally render or guard actions.
+ * RBAC helper hook that delegates to the underlying `useAuthStore`.
+ *
+ * Prefer this over pulling individual selectors from the store in UI code:
+ * it keeps all RBAC checks encapsulated and easier to evolve.
  */
 export const useCan = (): {
   can: (permission: string) => boolean;
@@ -21,3 +23,4 @@ export const useCan = (): {
     hasAnyRole,
   };
 };
+

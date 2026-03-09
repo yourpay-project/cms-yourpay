@@ -1,5 +1,5 @@
-import { LoginForm } from "@/features/auth/components/LoginForm";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LoginForm } from "@/features/auth";
+import { ThemeToggle } from "@/shared/ui";
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? "1.0.0";
 
@@ -13,11 +13,16 @@ const LoginPage = () => {
         <LoginForm isUsernamePasswordEnabled />
       </main>
       <footer className="shrink-0 space-y-1 border-t border-border bg-background/80 py-4 text-center backdrop-blur-sm">
-        <p className="text-xs text-muted-foreground">PT Rpay Finansial Digital Indonesia</p>
-        <p className="text-xs font-semibold text-muted-foreground">Version {APP_VERSION}</p>
+        <p className="text-xs text-muted-foreground">
+          PT Rpay Finansial Digital Indonesia
+        </p>
+        <p className="text-xs font-semibold text-muted-foreground">
+          Version {APP_VERSION}
+        </p>
       </footer>
     </div>
   );
 };
 
 export default LoginPage;
+

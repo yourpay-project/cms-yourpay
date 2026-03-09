@@ -1,4 +1,4 @@
-import type { AuthUser } from "@/types/auth";
+import type { AuthUser } from "@/entities/session";
 
 /** Demo login (no BE). Ganti/hapus setelah backend siap. */
 export const DEMO_CREDENTIALS = {

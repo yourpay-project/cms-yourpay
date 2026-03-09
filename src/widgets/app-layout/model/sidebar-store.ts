@@ -1,0 +1,20 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface SidebarState {
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+  toggle: () => void;
+}
+
+export const useSidebarStore = create<SidebarState>()(
+  persist(
+    (set) => ({
+      collapsed: false,
+      setCollapsed: (collapsed) => set({ collapsed }),
+      toggle: () => set((s) => ({ collapsed: !s.collapsed })),
+    }),
+    { name: "cms-sidebar" }
+  )
+);
+

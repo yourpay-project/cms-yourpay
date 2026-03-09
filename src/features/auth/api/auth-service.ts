@@ -1,5 +1,9 @@
-import { apiClient, setTokensInCookies, clearTokensInCookies } from "@/lib/api-client";
-import type { AuthUser } from "@/types/auth";
+import {
+  apiClient,
+  clearTokensInCookies,
+  setTokensInCookies,
+} from "@/shared/api";
+import type { AuthUser } from "@/entities/session";
 
 export interface LoginPayload {
   email: string;
@@ -15,11 +19,18 @@ export interface LoginResponse {
 const AUTH_BASE = "auth";
 
 /**
- * Login with email/password. Expects BE: POST /auth/login → { access_token, refresh_token?, user }.
- * Stores tokens in cookies; caller should setUser(response.user).
+ * Perform an email/password login against the backend.
+ *
+ * On success:
+ * - stores access/refresh tokens in cookies (via `shared/api` helpers),
+ * - returns the raw `LoginResponse` including the resolved `AuthUser`.
  */
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const res = await apiClient.post<LoginResponse>(`${AUTH_BASE}/login`, payload as unknown as Record<string, unknown>, { skipAuth: true });
+  const res = await apiClient.post<LoginResponse>(
+    `${AUTH_BASE}/login`,
+    payload as unknown as Record<string, unknown>,
+    { skipAuth: true }
+  );
   const data = res.data;
   if (data.access_token) {
     setTokensInCookies(data.access_token, data.refresh_token, 60 * 15);
@@ -28,7 +39,8 @@ export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
 };
 
 /**
- * Fetch current user. Expects BE: GET /auth/me → AuthUser.
+ * Fetch the current authenticated operator from `/auth/me`.
+ * This is typically used after tokens are present (e.g. after OAuth callback).
  */
 export const getMe = async (): Promise<AuthUser> => {
   const res = await apiClient.get<AuthUser>(`${AUTH_BASE}/me`);
@@ -36,7 +48,8 @@ export const getMe = async (): Promise<AuthUser> => {
 };
 
 /**
- * Logout: clear tokens and optionally call BE logout.
+ * Clear tokens client‑side and attempt to call backend logout.
+ * Network failures are swallowed because client tokens are already removed.
  */
 export const logout = async (): Promise<void> => {
   clearTokensInCookies();
@@ -48,8 +61,8 @@ export const logout = async (): Promise<void> => {
 };
 
 /**
- * URL for Google OAuth redirect. Laravel: route('auth.google.redirect').
- * BE should redirect to Google then callback; callback redirects back to app with token or sets cookies.
+ * Build the Google OAuth redirect URL. If `VITE_GOOGLE_AUTH_URL` is present it
+ * is used as‑is, otherwise it falls back to `${VITE_API_BASE_URL}/auth/google`.
  */
 export const getGoogleAuthUrl = (): string => {
   const base = import.meta.env.VITE_API_BASE_URL ?? "/api";
@@ -59,9 +72,9 @@ export const getGoogleAuthUrl = (): string => {
 };
 
 /**
- * After Google callback: BE may redirect to /login/callback?token=... or set cookies and redirect to /.
- * If token in query, store it and return true so callback page can fetch /me.
+ * Helper for storing the access token returned via `/login/callback?token=…`.
  */
 export const setTokenFromCallback = (token: string): void => {
   setTokensInCookies(token, undefined, 60 * 15);
 };
+

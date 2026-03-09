@@ -1,11 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { login, type LoginPayload } from "@/features/auth/services/auth-service";
-import { useAuthStore } from "@/store/auth-store";
-import { ApiClientError } from "@/lib/api-client";
-import { isDemoCredentials, DEMO_ADMIN_USER } from "@/features/auth/constants/demo-auth";
+import { useAuthStore } from "@/entities/session";
+import { ApiClientError } from "@/shared/api";
+import { isDemoCredentials, DEMO_ADMIN_USER } from "../constants/demo-auth";
+import { login, type LoginPayload } from "../api/auth-service";
 
+/**
+ * Mutation hook for handling the login flow (email/password + demo mode).
+ *
+ * - Sends credentials to the backend via `auth-service.login`.
+ * - Falls back to a local demo admin user when demo credentials are used.
+ * - Stores the resulting user into the session store and redirects to `/`.
+ */
 export const useLoginMutation = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
@@ -23,8 +30,12 @@ export const useLoginMutation = () => {
       navigate("/", { replace: true });
     },
     onError: (err) => {
-      const message = err instanceof ApiClientError ? err.message : "Login failed. Please try again.";
+      const message =
+        err instanceof ApiClientError
+          ? err.message
+          : "Login failed. Please try again.";
       toast.error(message);
     },
   });
 };
+
