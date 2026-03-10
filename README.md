@@ -380,5 +380,26 @@ Example: add a new **“Reports”** feature with a table page.
   - Run `npm run lint` (or `make lint`) before pushing.
   - Keep TSDoc up to date on exported hooks, components, and services that are reused across slices.
 
+---
+
+## 8. Backend API client generation
+
+This project includes a generator that produces a fully typed backend API client from the Swagger/OpenAPI spec used by the CMS.
+
+- **Entry point**
+  - `make generate-api`
+- **Configuration**
+  - `API_DOC_URL` – set in `.env` (Swagger doc URL).
+  - `API_TAGS` – default tag list lives in `Makefile`, can be overridden per-run:
+    - `make generate-api API_TAGS="Operators / Auth,Files"`
+  - `API_GROUPS` (optional) – group multiple Swagger tags into single modules.
+- **Output (gitignored)**
+  - `src/shared/api/generated/types/shared.ts` – shared models (`BaseResponse<T>`, `PaginationResponse<TItem>`, enums, common DTOs).
+  - `src/shared/api/generated/types/*.ts` – per-tag/per-group models and pagination aliases (`XPagination`, `XPaginationResponseDTO`).
+  - `src/shared/api/generated/clients/*.ts` – per-tag/per-group API functions.
+  - `src/shared/api/generated/index.ts` – public barrel exports.
+
+See `scripts/generate-api/README.md` for full details and advanced usage.
+
 If you are unsure where to put new code, start from the FSD diagram above and choose the lowest possible layer that still makes sense. When in doubt, ask: “Is this business logic (feature/entity) or generic UI/util (shared)?”.
 
