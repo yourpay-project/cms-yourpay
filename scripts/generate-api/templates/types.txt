@@ -1,0 +1,5 @@
+/**
+ * Generated API types.
+ * Do not edit by hand. Run: make generate-api
+ */
+{{MODELS}}

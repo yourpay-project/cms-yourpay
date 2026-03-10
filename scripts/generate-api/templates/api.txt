@@ -1,0 +1,10 @@
+/**
+ * Generated API client (tag: {{TAG}}).
+ * Do not edit by hand. Run: make generate-api
+ */
+import { apiClient } from '@/shared/api';
+import type { ApiResponse } from '@/shared/api';
+
+{{IMPORTS}}
+
+{{FUNCTIONS}}
