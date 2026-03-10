@@ -2,7 +2,7 @@
  * HTTP API client with JWT in Authorization header and auto refresh token from cookies.
  * Reusable across the app; use getApiClient() or useApiClient() for consistent behavior.
  */
-
+import { captureException } from "@/shared/lib";
 const COOKIE_ACCESS = "access_token";
 const COOKIE_REFRESH = "refresh_token";
 
@@ -173,13 +173,24 @@ async function requestWithRefresh<T>(
       typeof data === "object" && data !== null && "message" in data
         ? String((data as { message?: string }).message)
         : res.statusText;
-    throw new ApiClientError(
+
+    const error = new ApiClientError(
       message,
       res.status,
       typeof data === "object" && data !== null && "code" in data
         ? String((data as { code?: string }).code)
         : undefined
     );
+
+    // Capture HTTP errors in Sentry when enabled, without breaking existing behavior.
+    captureException(error, {
+      url,
+      status: res.status,
+      path,
+      method: options.method ?? "GET",
+    });
+
+    throw error;
   }
 
   return { data: data as T, status: res.status, ok: res.ok };

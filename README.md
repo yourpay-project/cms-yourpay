@@ -163,6 +163,14 @@ Configured via `.env` (see `.env.example`):
 - `VITE_APP_VERSION`  
   Displayed in the login page footer.
 
+- `VITE_SENTRY_DSN` / `VITE_SENTRY_ENABLED`  
+  Optional Sentry integration for frontend and HTTP API errors.  
+  Set `VITE_SENTRY_DSN` to your project DSN and `VITE_SENTRY_ENABLED=true` to enable.
+
+- `VITE_APP_ENV`  
+  Logical app environment: `"development"`, `"staging"`, or `"production"`.  
+  Used as Sentry `environment` together with the app `version` from `package.json` for Sentry `release`.
+
 ---
 
 ## 5. Architecture for New Engineers
