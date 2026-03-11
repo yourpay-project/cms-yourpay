@@ -165,11 +165,27 @@ Configured via `.env` (see `.env.example`):
 
 - `VITE_SENTRY_DSN` / `VITE_SENTRY_ENABLED`  
   Optional Sentry integration for frontend and HTTP API errors.  
-  Set `VITE_SENTRY_DSN` to your project DSN and `VITE_SENTRY_ENABLED=true` to enable.
+  - Set `VITE_SENTRY_DSN` to your project DSN and `VITE_SENTRY_ENABLED=true` to enable.
+  - Sentry is initialized in `src/app/sentry.ts` and imported first in `src/main.tsx` following the official React SPA guide (`@sentry/react`).
+  - The app is wrapped with `Sentry.ErrorBoundary` in `src/main.tsx` so uncaught render errors surface in Sentry.
 
 - `VITE_APP_ENV`  
   Logical app environment: `"development"`, `"staging"`, or `"production"`.  
   Used as Sentry `environment` together with the app `version` from `package.json` for Sentry `release`.
+
+Optional Sentry sampling (all default to `0`, meaning disabled):
+
+- `VITE_SENTRY_TRACES_SAMPLE_RATE`  
+  Fraction of transactions to capture for performance tracing (0–1). When `> 0`, `browserTracingIntegration` is enabled.
+
+- `VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE` / `VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE`  
+  Session Replay sampling. When either is `> 0`, `replayIntegration` is enabled.
+
+Build‑time Sentry configuration (used only by the Vite plugin for sourcemaps):
+
+- `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`  
+  Optional CI/build‑time env vars used by `@sentry/vite-plugin` to upload source maps when building for production.  
+  If any of these are missing, the plugin is not enabled and the build behaves like a normal Vite build.
 
 ---
 
