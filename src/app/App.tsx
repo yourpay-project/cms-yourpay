@@ -9,12 +9,11 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { useThemeEffect } from "@/shared/lib";
-import { AppLayout } from "@/widgets/app-layout";
+import { AppLayout, getNavTitle, navGroups } from "@/widgets/app-layout";
 import { LoginRedirect, ProtectedRoute } from "@/features/auth";
 import { DashboardPage } from "@/pages/dashboard";
 import { LoginPage } from "@/pages/login";
 import { LoginCallbackPage } from "@/pages/login-callback";
-import { navGroups } from "@/widgets/app-layout/model/nav-config";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -88,11 +87,7 @@ const loginCallbackRoute = createRoute({
 const SectionPage = () => {
   const location = useLocation();
   const pathname = location.pathname;
-  const section = navGroups
-    .flatMap((group) => group.items)
-    .find((item) => item.to === pathname);
-
-  const title = section?.label ?? "YourPay CMS";
+  const title = getNavTitle(pathname);
 
   return (
     <ProtectedRoute>
