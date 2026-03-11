@@ -4,17 +4,10 @@ import {
   setTokensInCookies,
 } from "@/shared/api";
 import type { AuthUser } from "@/entities/session";
+import { postAuthLogin, type PostAuthLoginPayload, type PostAuthLoginResponse } from "@/shared/api/generated";
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  access_token: string;
-  refresh_token?: string;
-  user: AuthUser;
-}
+export type LoginPayload = PostAuthLoginPayload;
+export type LoginResponse = PostAuthLoginResponse<AuthUser>;
 
 const AUTH_BASE = "auth";
 
@@ -26,12 +19,7 @@ const AUTH_BASE = "auth";
  * - returns the raw `LoginResponse` including the resolved `AuthUser`.
  */
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const res = await apiClient.post<LoginResponse>(
-    `${AUTH_BASE}/login`,
-    payload as unknown as Record<string, unknown>,
-    { skipAuth: true }
-  );
-  const data = res.data;
+  const data = await postAuthLogin<AuthUser>(payload);
   if (data.access_token) {
     setTokensInCookies(data.access_token, data.refresh_token, 60 * 15);
   }
