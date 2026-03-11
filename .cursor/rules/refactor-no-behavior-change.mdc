@@ -1,0 +1,45 @@
+---
+description: Refactor patterns: split files, keep public API stable, no behavior change
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+## Refactor rules (no behavior change)
+
+- Keep behavior identical. Refactors must be structural only (file moves/splits, renames, deduplication) and should not change runtime results or UI output.
+- Preserve existing public APIs (especially `index.ts` barrels). When splitting, keep imports for callers stable.
+- Follow FSD import rules: only import through slice `index.ts` public API (no deep imports).
+
+## Preferred patterns used in this repo
+
+### 1) Facade + internal modules (shared/api)
+
+- When a file grows large, split into focused modules (types/errors/utils/request) but keep a small facade that re-exports the prior surface.
+- Example structure:
+  - `shared/api/api-client.ts` (facade exports)
+  - `shared/api/{cookies,types,errors,request}.ts` (implementation details)
+
+### 2) Widget UI decomposition (widgets/app-layout)
+
+- Keep container components responsible for state + derived data.
+- Extract pure presentational parts into colocated subcomponents under the widget.
+- Example:
+  - `widgets/app-layout/ui/Sidebar.tsx` (state + filtering)
+  - `widgets/app-layout/ui/sidebar/*` (item/search/sections)
+
+### 3) Derived lookup helpers at module scope (navigation)
+
+- Avoid repeating `flatMap/find` in render paths.
+- Prefer a module-scope `Map` lookup in the same slice:
+  - `widgets/app-layout/model/nav-lookup.ts` exports `getNavTitle(pathname)`
+
+### 4) Split config/types/icons for readability
+
+- Keep types in a dedicated file (e.g. `nav-types.ts`).
+- Keep ReactNode icon constants separated (e.g. `nav-icons.tsx`).
+- Keep config data (`navGroups`) readable.
+
+## Verification
+
+- After refactors, run `npm run lint` and `npm run build`.
+
