@@ -2,7 +2,7 @@ import { flexRender } from '@tanstack/react-table';
 
 import { TableBody, TableCell, TableRow } from '@/shared/ui';
 
-import type { DataTableInstance } from '../model/data-table-types';
+import type { DataTableInstance } from '../model';
 
 /** Props for rendering the table body; `columnCount` is used for the empty-state colspan. */
 export interface DataTableBodyProps<TData> {

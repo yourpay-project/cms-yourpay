@@ -1,13 +1,12 @@
 import { Table, ErrorBoundary } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 
-import type { DataTableProps } from '../model/data-table-types';
-import { useDataTableInstance } from '../model/use-data-table-instance';
+import { type DataTableProps, useDataTableInstance } from '../model';
 import { DataTableHead } from './DataTableHead';
 import { DataTableBody } from './DataTableBody';
 import { DataTablePagination } from './DataTablePagination';
 
-export type { DataTableProps } from '../model/data-table-types';
+export type { DataTableProps } from '../model';
 
 const DEFAULT_PAGE_SIZE = 10;
 
