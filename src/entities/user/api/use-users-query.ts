@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { apiClient, type ApiResponse } from '@/shared/api';
+import { apiClient, parseApiData, type ApiResponse } from '@/shared/api';
 import { usersResponseSchema, type UsersResponse } from '../model/types';
 
 /** Parameters for the users list query (pagination). */
@@ -20,7 +20,7 @@ export function useUsersQuery({ pageIndex, pageSize }: UseUsersQueryParams) {
     queryKey: ['users', pageIndex, pageSize],
     queryFn: async ({ signal }): Promise<ApiResponse<unknown>> =>
       apiClient.get<unknown>(path, { signal }),
-    select: (res): UsersResponse => usersResponseSchema.parse(res.data),
+    select: (res): UsersResponse => parseApiData(usersResponseSchema, res),
   });
 }
 
