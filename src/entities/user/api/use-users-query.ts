@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { apiClient, parseApiData, type ApiResponse } from '@/shared/api';
-import { usersResponseSchema, type UsersResponse } from '../model/types';
+import { usersResponseSchema, type UsersResponse } from '../model';
 
 /** Parameters for the users list query (pagination). */
 interface UseUsersQueryParams {
