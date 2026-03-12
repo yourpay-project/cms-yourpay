@@ -14,6 +14,7 @@ import { LoginRedirect, ProtectedRoute } from "@/features/auth";
 import { DashboardPage } from "@/pages/dashboard";
 import { LoginPage } from "@/pages/login";
 import { LoginCallbackPage } from "@/pages/login-callback";
+import { UserListPage } from "@/pages/user-list";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -111,9 +112,17 @@ const sectionRoutes = navGroups
     createRoute({
       getParentRoute: () => rootRoute,
       path: item.to,
-      component: SectionPage,
+      component: item.to === "/customers" ? CustomersPage : SectionPage,
     })
   );
+
+const CustomersPage = () => (
+  <ProtectedRoute>
+    <AppLayout navTitle={getNavTitle("/customers")}>
+      <UserListPage />
+    </AppLayout>
+  </ProtectedRoute>
+);
 
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
