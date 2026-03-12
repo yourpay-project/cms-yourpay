@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import { PageSkeleton } from '@/shared/ui';
-import { useUsersQuery } from '@/entities/user';
 import { UserTable } from '@/widgets/user-table';
+import { useUserListQuery } from '../model/use-user-list-query';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -11,7 +11,7 @@ const UserListPage = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 
-  const { data, isLoading, isError } = useUsersQuery({
+  const { data, isLoading, isError } = useUserListQuery({
     pageIndex,
     pageSize,
   });
