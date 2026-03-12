@@ -1,45 +1,51 @@
 ---
-description: Refactor patterns: split files, keep public API stable, no behavior change
+description: Refactor patterns: split files, strictly enforce FSD layers, and stabilize Public APIs (18-Point Standard)
 globs: src/**/*.{ts,tsx}
 alwaysApply: false
 ---
 
-## Refactor rules (no behavior change)
+# Global Refactor & Architecture Rules (18-Point Standard)
 
-- Keep behavior identical. Refactors must be structural only (file moves/splits, renames, deduplication) and should not change runtime results or UI output.
-- Preserve existing public APIs (especially `index.ts` barrels). When splitting, keep imports for callers stable.
-- Follow FSD import rules: only import through slice `index.ts` public API (no deep imports).
+## 1. Refactor Integrity (No Behavior Change)
+- **Zero Runtime Impact**: Refactors must be 100% structural (file moves, splits, renames). Runtime logic, API results, and UI output must remain identical.
+- **Stable Public API**: Always preserve the `index.ts` barrel. When splitting a slice, existing callers must not break.
+- **Automated Verification**: Immediately recommend running `npm run lint` and `npm run build` after structural changes.
 
-## Preferred patterns used in this repo
+## 2. FSD Layer & Boundary Enforcement
+- **Downward Discovery**: Ensure imports ONLY flow downwards (App > Pages > Widgets > Features > Entities > Shared).
+- **Slice Isolation**: Strictly forbid cross-importing between slices in the same layer. Move shared logic to a lower layer (Shared/Entities).
+- **Deep Import Ban**: NEVER import from sub-folders (e.g., `../ui/Component`). ALL cross-slice and cross-segment communication must pass through the `index.ts` Public API.
 
-### 1) Facade + internal modules (shared/api)
+## 3. Preferred Refactoring Patterns
 
-- When a file grows large, split into focused modules (types/errors/utils/request) but keep a small facade that re-exports the prior surface.
-- Example structure:
-  - `shared/api/api-client.ts` (facade exports)
-  - `shared/api/{cookies,types,errors,request}.ts` (implementation details)
+### A) The "Internal Firewall" Segment Split (Ultra-Strict)
+- When a slice segment (model/ui/api) grows > 150 lines, split into focused modules.
+- **Strict Wiring**: Even internal segments (e.g., `ui` calling `model`) MUST use the slice's `index.ts`.
+- **Structure**:
+  - `src/features/my-feature/index.ts` (The re-exporting Facade)
+  - `src/features/my-feature/ui/main-component.tsx` (Imports from `../index.ts`)
+  - `src/features/my-feature/model/use-logic.ts` (Exported via `index.ts`)
 
-### 2) Widget UI decomposition (widgets/app-layout)
+### B) Widget & UI Decomposition
+- **Container vs Presentational**: Extract pure UI fragments into colocated sub-files in the same `ui/` segment.
+- **Logic Extraction**: Move all complex data mapping (flatMap/find/filter) into Custom Hooks within the `model/` segment.
+- **Example**:
+  - `widgets/nav/ui/Sidebar.tsx` (Thin entry point)
+  - `widgets/nav/ui/sidebar-item.tsx` (UI fragment)
+  - `widgets/nav/model/use-sidebar-logic.ts` (Extracted hook)
 
-- Keep container components responsible for state + derived data.
-- Extract pure presentational parts into colocated subcomponents under the widget.
-- Example:
-  - `widgets/app-layout/ui/Sidebar.tsx` (state + filtering)
-  - `widgets/app-layout/ui/sidebar/*` (item/search/sections)
+### C) Logic & Data Optimization
+- **Module Scope Lookups**: Avoid heavy calculations in render paths. Use module-scope `Map` or `Record` lookups in the `lib/` or `model/` segment.
+- **Memoization**: Mandatory `useMemo` for derived data (e.g., navigation breadcrumbs) and `useCallback` for stable prop functions.
+- **Abort Controller**: Always implement request cancellation in `api/` segments to prevent stale state updates during rapid refactors/navigation.
 
-### 3) Derived lookup helpers at module scope (navigation)
+### D) Static Asset & Config Separation
+- **Config**: Move static data (e.g., `navGroups`) to `shared/config` or a dedicated `lib/` segment.
+- **Types**: Always use a dedicated `types.ts` within the `model/` segment.
+- **Icons**: Separate `ReactNode` constants into `ui/icons.tsx` within the relevant slice.
 
-- Avoid repeating `flatMap/find` in render paths.
-- Prefer a module-scope `Map` lookup in the same slice:
-  - `widgets/app-layout/model/nav-lookup.ts` exports `getNavTitle(pathname)`
-
-### 4) Split config/types/icons for readability
-
-- Keep types in a dedicated file (e.g. `nav-types.ts`).
-- Keep ReactNode icon constants separated (e.g. `nav-icons.tsx`).
-- Keep config data (`navGroups`) readable.
-
-## Verification
-
-- After refactors, run `npm run lint` and `npm run build`.
+## 4. Technical Constraints
+- **Zod Validation**: When refactoring API services, ensure response data is validated against a Zod schema before being returned.
+- **Type Safety**: Strictly no `any`. Use `z.infer` for derived types during refactoring.
+- **Documentation**: Every new file or split function MUST include TSDoc comments explaining its responsibility within the FSD context.
 
