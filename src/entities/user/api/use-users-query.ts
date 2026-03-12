@@ -1,11 +1,7 @@
-import { useApiQuery } from '@/shared/api';
-import type { User } from '../model/types';
+import { useQuery } from '@tanstack/react-query';
 
-/** API response shape for paginated users list. */
-interface UsersResponse {
-  data: User[];
-  total: number;
-}
+import { apiClient, type ApiResponse } from '@/shared/api';
+import { usersResponseSchema, type UsersResponse } from '../model/types';
 
 /** Parameters for the users list query (pagination). */
 interface UseUsersQueryParams {
@@ -18,9 +14,13 @@ interface UseUsersQueryParams {
  * Uses `GET /users?page=&per_page=` via the shared API client.
  */
 export function useUsersQuery({ pageIndex, pageSize }: UseUsersQueryParams) {
-  return useApiQuery<UsersResponse>(
-    ['users', pageIndex, pageSize],
-    `/users?page=${pageIndex + 1}&per_page=${pageSize}`,
-  );
+  const path = `/users?page=${pageIndex + 1}&per_page=${pageSize}`;
+
+  return useQuery({
+    queryKey: ['users', pageIndex, pageSize],
+    queryFn: async ({ signal }): Promise<ApiResponse<unknown>> =>
+      apiClient.get<unknown>(path, { signal }),
+    select: (res): UsersResponse => usersResponseSchema.parse(res.data),
+  });
 }
 

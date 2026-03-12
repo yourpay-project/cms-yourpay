@@ -3,7 +3,7 @@ import {
   clearTokensInCookies,
   setTokensInCookies,
 } from "@/shared/api";
-import type { AuthUser } from "@/entities/session";
+import { authUserSchema, type AuthUser } from "@/entities/session";
 import { postAuthLogin, type PostAuthLoginPayload, type PostAuthLoginResponse } from "@/shared/api/generated";
 
 export type LoginPayload = PostAuthLoginPayload;
@@ -30,9 +30,9 @@ export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
  * Fetch the current authenticated operator from `/auth/me`.
  * This is typically used after tokens are present (e.g. after OAuth callback).
  */
-export const getMe = async (): Promise<AuthUser> => {
-  const res = await apiClient.get<AuthUser>(`${AUTH_BASE}/me`);
-  return res.data;
+export const getMe = async (signal?: AbortSignal): Promise<AuthUser> => {
+  const res = await apiClient.get<unknown>(`${AUTH_BASE}/me`, { signal });
+  return authUserSchema.parse(res.data);
 };
 
 /**

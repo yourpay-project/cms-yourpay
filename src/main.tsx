@@ -7,8 +7,10 @@ import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import { App } from "@/app";
 import { initApiClient } from "@/shared/api";
+import { validateEnv } from "@/shared/lib";
 import "./index.css";
 
+validateEnv();
 initApiClient();
 
 createRoot(document.getElementById("root")!).render(

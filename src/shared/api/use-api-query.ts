@@ -8,6 +8,8 @@ type QueryKey = readonly unknown[];
  *
  * - Uses the provided `queryKey` for caching/invalidation.
  * - Calls `apiClient.get(path)` under the hood and unwraps the `data` field.
+ * - For GET requests, forwards TanStack Query's `AbortSignal` to `fetch` so in-flight
+ *   requests are aborted on unmount / query cancellation (e.g. when navigating away).
  * - Accepts any standard TanStack options except `queryKey`, `queryFn`, and `select`
  *   which are managed internally.
  */
@@ -21,7 +23,7 @@ export function useApiQuery<T>(
 ) {
   return useQuery({
     queryKey,
-    queryFn: async () => apiClient.get<T>(path),
+    queryFn: async ({ signal }) => apiClient.get<T>(path, { signal }),
     select: (res) => res.data,
     ...options,
   });

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useAuthStore } from "@/entities/session";
+import { authUserSchema, useAuthStore } from "@/entities/session";
 import { ApiClientError } from "@/shared/api";
 import { isDemoCredentials, DEMO_ADMIN_USER } from "../constants/demo-auth";
 import { login, type LoginPayload } from "../api/auth-service";
@@ -20,9 +20,14 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: async (payload: LoginPayload) => {
       if (isDemoCredentials(payload.email, payload.password)) {
-        return { user: DEMO_ADMIN_USER, access_token: "demo", refresh_token: undefined };
+        return {
+          user: authUserSchema.parse(DEMO_ADMIN_USER),
+          access_token: "demo",
+          refresh_token: undefined,
+        };
       }
-      return login(payload);
+      const data = await login(payload);
+      return { ...data, user: authUserSchema.parse(data.user) };
     },
     onSuccess: (data) => {
       setUser(data.user);
