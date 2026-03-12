@@ -1,4 +1,4 @@
-import { useCan } from "../model/use-can";
+import { useCan } from "../model";
 
 interface CanProps {
   permission?: string;

@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/entities/session";
-import { logout as authLogout } from "../api/auth-service";
+import { logout as authLogout } from "../api";
 
 export const useLogout = () => {
   const navigate = useNavigate();

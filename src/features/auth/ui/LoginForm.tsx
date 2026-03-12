@@ -11,10 +11,9 @@ import {
   Input,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib";
-import { loginSchema, type LoginFormValues } from "../model/login-schema";
-import { DEMO_CREDENTIALS } from "../constants/demo-auth";
-import { getGoogleAuthUrl } from "../api/auth-service";
-import { useLoginMutation } from "../model/use-login-mutation";
+import { DEMO_CREDENTIALS } from "../constants";
+import { getGoogleAuthUrl } from "../api";
+import { loginSchema, type LoginFormValues, useLoginMutation } from "../model";
 import { GoogleIcon } from "./GoogleIcon";
 
 interface LoginFormProps {

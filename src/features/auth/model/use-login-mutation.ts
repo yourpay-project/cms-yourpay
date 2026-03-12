@@ -3,8 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { authUserSchema, useAuthStore } from "@/entities/session";
 import { ApiClientError } from "@/shared/api";
-import { isDemoCredentials, DEMO_ADMIN_USER } from "../constants/demo-auth";
-import { login, type LoginPayload } from "../api/auth-service";
+import { DEMO_ADMIN_USER, isDemoCredentials } from "../constants";
+import { login, type LoginPayload } from "../api";
 
 /**
  * Mutation hook for handling the login flow (email/password + demo mode).

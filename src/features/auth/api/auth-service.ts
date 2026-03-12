@@ -5,7 +5,7 @@ import {
   setTokensInCookies,
 } from "@/shared/api";
 import { authUserSchema, type AuthUser } from "@/entities/session";
-import { loginResponseSchema, type LoginResponse } from "../model/login-response-schema";
+import { loginResponseSchema, type LoginResponse } from "../model";
 
 export type LoginPayload = {
   email: string;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "../model/use-auth";
+import { useAuth } from "../model";
 
 interface LoginRedirectProps {
   children: React.ReactNode;
