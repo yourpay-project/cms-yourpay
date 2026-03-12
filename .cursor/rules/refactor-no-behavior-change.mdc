@@ -9,12 +9,13 @@ alwaysApply: false
 ## 1. Refactor Integrity (No Behavior Change)
 - **Zero Runtime Impact**: Refactors must be 100% structural (file moves, splits, renames). Runtime logic, API results, and UI output must remain identical.
 - **Stable Public API**: Always preserve the `index.ts` barrel. When splitting a slice, existing callers must not break.
-- **Automated Verification**: Immediately recommend running `npm run lint` and `npm run build` after structural changes.
+- **Automated Verification**: After refactors, run `npm run lint`. Also run `npm run build` when the repo is in a buildable state (or fix build issues introduced by the refactor).
 
 ## 2. FSD Layer & Boundary Enforcement
 - **Downward Discovery**: Ensure imports ONLY flow downwards (App > Pages > Widgets > Features > Entities > Shared).
 - **Slice Isolation**: Strictly forbid cross-importing between slices in the same layer. Move shared logic to a lower layer (Shared/Entities).
-- **Deep Import Ban**: NEVER import from sub-folders (e.g., `../ui/Component`). ALL cross-slice and cross-segment communication must pass through the `index.ts` Public API.
+- **Deep Import Ban**: NEVER import from sub-folders (e.g., `../ui/Component`) across segments/slices. ALL cross-segment and cross-slice communication must pass through the slice `index.ts` Public API.
+- **Absolute Imports**: Prefer `@/` absolute imports for anything outside the current file’s folder to keep audits and refactors predictable.
 
 ## 3. Preferred Refactoring Patterns
 
@@ -29,15 +30,16 @@ alwaysApply: false
 ### B) Widget & UI Decomposition
 - **Container vs Presentational**: Extract pure UI fragments into colocated sub-files in the same `ui/` segment.
 - **Logic Extraction**: Move all complex data mapping (flatMap/find/filter) into Custom Hooks within the `model/` segment.
-- **Example**:
-  - `widgets/nav/ui/Sidebar.tsx` (Thin entry point)
-  - `widgets/nav/ui/sidebar-item.tsx` (UI fragment)
-  - `widgets/nav/model/use-sidebar-logic.ts` (Extracted hook)
+- **Examples in this repo**:
+  - `src/widgets/data-table/ui/DataTable.tsx` (thin facade)
+  - `src/widgets/data-table/ui/DataTableHead.tsx`, `DataTableBody.tsx`, `DataTablePagination.tsx` (presentational parts)
+  - `src/widgets/data-table/model/use-data-table-instance.ts` (table instance logic)
 
 ### C) Logic & Data Optimization
 - **Module Scope Lookups**: Avoid heavy calculations in render paths. Use module-scope `Map` or `Record` lookups in the `lib/` or `model/` segment.
 - **Memoization**: Mandatory `useMemo` for derived data (e.g., navigation breadcrumbs) and `useCallback` for stable prop functions.
 - **Abort Controller**: Always implement request cancellation in `api/` segments to prevent stale state updates during rapid refactors/navigation.
+- **TanStack Query**: For queries, forward `AbortSignal` (from `queryFn`) into `apiClient` requests.
 
 ### D) Static Asset & Config Separation
 - **Config**: Move static data (e.g., `navGroups`) to `shared/config` or a dedicated `lib/` segment.
@@ -48,4 +50,13 @@ alwaysApply: false
 - **Zod Validation**: When refactoring API services, ensure response data is validated against a Zod schema before being returned.
 - **Type Safety**: Strictly no `any`. Use `z.infer` for derived types during refactoring.
 - **Documentation**: Every new file or split function MUST include TSDoc comments explaining its responsibility within the FSD context.
+
+## 5. Public API Generation & Internal Wiring (Ultra-Strict)
+- **Every slice must have `index.ts`**: pages/widgets/features/entities must expose a stable public surface.
+- **Internal wiring uses the same public API**: if a slice is split into `ui/`, `model/`, `lib/`, re-export from `index.ts` and import via the slice entry.
+- **Example (app/router)**: `src/app/router/router-instance.tsx` imports `RootLayout` + `createSectionRoutes` from `@/app/router` (not `./ui/...` or `./lib/...`).
+
+## 6. Standardized API parsing helper (Zod)
+- Prefer the shared helper to keep validation consistent:
+  - `parseApiData(schema, res)` instead of `schema.parse(res.data)`
 
