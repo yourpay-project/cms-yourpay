@@ -47,16 +47,26 @@ src/
 │   ├── login/
 │   │   ├── ui/LoginPage.tsx
 │   │   └── index.ts
-│   └── login-callback/
-│       ├── ui/LoginCallbackPage.tsx
+│   ├── login-callback/
+│   │   ├── ui/LoginCallbackPage.tsx
+│   │   └── index.ts
+│   └── user-list/
+│       ├── ui/UserListPage.tsx
 │       └── index.ts
 ├── widgets/                 # Large, reusable page sections
-│   └── app-layout/
-│       ├── ui/AppLayout.tsx
-│       ├── ui/Nav.tsx
-│       ├── ui/Sidebar.tsx
-│       ├── model/nav-config.tsx
-│       ├── model/sidebar-store.ts
+│   ├── app-layout/
+│   │   ├── ui/AppLayout.tsx
+│   │   ├── ui/Nav.tsx
+│   │   ├── ui/Sidebar.tsx
+│   │   ├── model/nav-config.tsx
+│   │   ├── model/sidebar-store.ts
+│   │   └── index.ts
+│   ├── data-table/         # Generic table (TanStack Table + shadcn)
+│   │   ├── ui/DataTable.tsx, DataTableHead, DataTableBody, DataTablePagination
+│   │   ├── model/data-table-types.ts, use-data-table-instance.ts
+│   │   └── index.ts
+│   └── user-table/         # User list table (uses data-table)
+│       ├── ui/UserTable.tsx
 │       └── index.ts
 ├── features/                # User interactions with business value
 │   └── auth/
@@ -66,9 +76,13 @@ src/
 │       ├── constants/demo-auth.ts
 │       └── index.ts         # Public API for the auth feature
 ├── entities/                # Business entities and domain state
-│   └── session/
-│       ├── model/types.ts   # AuthUser, Role, Permission, JwtPayload
-│       ├── model/auth-store.ts
+│   ├── session/
+│   │   ├── model/types.ts   # AuthUser, Role, Permission, JwtPayload
+│   │   ├── model/auth-store.ts
+│   │   └── index.ts
+│   └── user/
+│       ├── model/types.ts   # User
+│       ├── api/use-users-query.ts
 │       └── index.ts
 └── shared/                  # Purely reusable, non‑domain modules
     ├── api/                 # API client + TanStack helpers
@@ -90,6 +104,7 @@ src/
         ├── skeleton.tsx
         ├── page-skeleton.tsx
         ├── theme-toggle.tsx
+        ├── table.tsx        # Table, TableHeader, TableBody, TableRow, TableHead, TableCell, etc.
         └── index.ts
 ```
 
@@ -200,11 +215,12 @@ File: `app/App.tsx`
   - `QueryClientProvider` (TanStack Query)
   - `RouterProvider` (TanStack Router)
   - `ThemeProvider` and `Toaster`
-- Key routes:
+  - Key routes:
   - `/` → `DashboardPage` inside `AppLayout`, wrapped with `ProtectedRoute`.
   - `/login` → `LoginPage` wrapped with `LoginRedirect`.
   - `/login/callback` → `LoginCallbackPage` (Google OAuth callback).
-  - Additional sidebar routes (e.g. `/identity-access`, `/customers`) are mapped to a shared `SectionPage` that just renders placeholder text for now.
+  - `/customers` → `UserListPage` (paginated user table; see Data tables below).
+  - Other sidebar routes (e.g. `/identity-access`) use a shared `SectionPage` placeholder.
 
 For navigation inside components, use **TanStack Router hooks**:
 
@@ -290,7 +306,37 @@ For navigation inside components, use **TanStack Router hooks**:
   - `theme-store.ts` – `useThemeStore` for app theme.
   - `use-theme-effect.ts` – applies theme to `document.documentElement` and listens to system changes.
 - `shared/ui/*`
-  - shadcn/ui components wired with Tailwind theme tokens (Button, Card, DropdownMenu, Input, Skeleton, PageSkeleton, ThemeToggle).
+  - shadcn/ui components wired with Tailwind theme tokens (Button, Card, DropdownMenu, Input, Skeleton, PageSkeleton, ThemeToggle, **Table** primitives).
+
+### 5.5 Data tables (widgets/data-table, widgets/user-table)
+
+Tables use **@tanstack/react-table** in the widgets layer with shadcn-style UI from `shared/ui/table`.
+
+- **`widgets/data-table`** – generic, plug-and-play table:
+  - `DataTable` – full table with Head, Body, and Pagination. Supports client-side and server-side pagination via `pagination`, `onPaginationChange`, and `rowCount`.
+  - `DataTableHead`, `DataTableBody`, `DataTablePagination` – presentational subcomponents for custom layouts.
+  - `useDataTableInstance` – hook that builds TanStack Table state and instance; use with the subcomponents for custom UIs.
+  - Types: `DataTableProps`, `DataTableInstance`, and props for Head/Body/Pagination.
+- **`widgets/user-table`** – `UserTable` composes `DataTable` with user columns and server-side pagination; used by the user-list page.
+- **`entities/user`** – `User` type and `useUsersQuery({ pageIndex, pageSize })` for the users list API.
+- **`pages/user-list`** – `UserListPage` at `/customers`: loads users with `useUsersQuery`, shows loading/error states, and renders `UserTable`.
+
+Example – use the full table:
+
+```tsx
+import { DataTable, type DataTableProps } from "@/widgets/data-table";
+
+<DataTable columns={columns} data={data} initialPageSize={10} />
+```
+
+Example – custom layout with hook + subcomponents:
+
+```tsx
+import { useDataTableInstance, DataTableHead, DataTableBody, DataTablePagination } from "@/widgets/data-table";
+
+const { table, canPreviousPage, canNextPage, currentPage, totalPages } = useDataTableInstance({ columns, data, initialPageSize: 10 });
+// Render <Table><DataTableHead table={table} /><DataTableBody table={table} columnCount={columns.length} /></Table> and DataTablePagination.
+```
 
 ---
 

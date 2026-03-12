@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
+/** Semantic table primitives (shadcn-style) for data tables. Use with DataTable or raw markup. */
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
