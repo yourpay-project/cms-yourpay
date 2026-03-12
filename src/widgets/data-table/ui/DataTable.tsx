@@ -1,4 +1,4 @@
-import { Table } from '@/shared/ui';
+import { Table, ErrorBoundary } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 
 import type { DataTableProps } from '../model/data-table-types';
@@ -50,25 +50,27 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className={cn('space-y-4', className)}>
-      <div className="rounded-md border border-border bg-card">
-        <Table>
-          <DataTableHead table={table} />
-          <DataTableBody table={table} columnCount={columns.length} />
-        </Table>
-      </div>
+    <ErrorBoundary>
+      <div className={cn('space-y-4', className)}>
+        <div className="rounded-md border border-border bg-card">
+          <Table>
+            <DataTableHead table={table} />
+            <DataTableBody table={table} columnCount={columns.length} />
+          </Table>
+        </div>
 
-      <DataTablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        rowCount={rowCount}
-        canPreviousPage={canPreviousPage}
-        canNextPage={canNextPage}
-        onFirstPage={() => table.firstPage()}
-        onPreviousPage={() => table.previousPage()}
-        onNextPage={() => table.nextPage()}
-        onLastPage={() => table.lastPage()}
-      />
-    </div>
+        <DataTablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          rowCount={rowCount}
+          canPreviousPage={canPreviousPage}
+          canNextPage={canNextPage}
+          onFirstPage={() => table.firstPage()}
+          onPreviousPage={() => table.previousPage()}
+          onNextPage={() => table.nextPage()}
+          onLastPage={() => table.lastPage()}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }

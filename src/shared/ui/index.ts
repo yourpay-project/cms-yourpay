@@ -26,6 +26,8 @@ export {
 export { Input, type InputProps } from "./input";
 export { Skeleton } from "./skeleton";
 export { PageSkeleton } from "./page-skeleton";
+export { RouteFallback } from "./route-fallback";
+export { ErrorBoundary } from "./error-boundary";
 export { ThemeToggle } from "./theme-toggle";
 export {
   Table,
