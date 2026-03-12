@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 
-import { useLoginCallback } from '../model/use-login-callback';
+import { useLoginCallback } from '../model';
 
 /**
  * UI for `/login/callback`.

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { PageSkeleton } from '@/shared/ui';
 import { UserTable } from '@/widgets/user-table';
-import { useUserListQuery } from '../model/use-user-list-query';
+import { useUserListQuery } from '../model';
 
 const DEFAULT_PAGE_SIZE = 10;
 
