@@ -3,7 +3,7 @@
  * Do not edit by hand. Run: make generate-api
  */
 import { apiClient } from '@/shared/api';
-import type { ApiResponse } from '@/shared/api';
+import type { ApiResponse, RequestOptions } from '@/shared/api';
 
 {{IMPORTS}}
 

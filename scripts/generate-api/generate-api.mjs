@@ -491,19 +491,19 @@ function generateApiFunctions(spec, operations) {
     const reqType = reqSchema ? schemaToTs(spec, reqSchema, dummyRefs) : "undefined";
     const pathArg = pathKey.replace(/^\/+/, "");
     const isLogin = /login/i.test(pathKey);
-    const opts = isLogin ? ", { skipAuth: true }" : "";
     const hasBody = reqType !== "undefined";
+    const initArg = isLogin ? "{ ...(init ?? {}), skipAuth: true }" : "init";
     if (method === "get" || method === "delete") {
       lines.push(
-        `export async function ${fnName}(): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`${opts ? opts : ""});\n}`
+        `export async function ${fnName}(init?: RequestOptions): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, ${initArg});\n}`
       );
     } else if (hasBody) {
       lines.push(
-        `export async function ${fnName}(body: ${reqType}): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, body as unknown as Record<string, unknown>${opts});\n}`
+        `export async function ${fnName}(body: ${reqType}, init?: RequestOptions): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, body as unknown as Record<string, unknown>, ${initArg});\n}`
       );
     } else {
       lines.push(
-        `export async function ${fnName}(): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, undefined${opts});\n}`
+        `export async function ${fnName}(init?: RequestOptions): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, undefined, ${initArg});\n}`
       );
     }
   }

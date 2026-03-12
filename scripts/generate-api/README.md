@@ -75,3 +75,20 @@ import type {
   - Only affects where types are emitted; the source of truth remains the Swagger schema.
 
 Templates: `scripts/generate-api/templates/*.txt`.
+
+## AbortSignal support (recommended)
+
+Generated client functions accept an optional `init?: RequestOptions` which supports `signal?: AbortSignal`.
+Use this to cancel in-flight requests on unmount or when search params change rapidly:
+
+```ts
+const controller = new AbortController();
+await getSomething({ signal: controller.signal });
+controller.abort();
+```
+
+## Runtime validation (required by project rules)
+
+Generated clients/types are **type-safe**, but **not runtime-validated**.
+Per project rules, validate every API response with Zod schemas in the consuming slice (`entities/*/model`),
+e.g. `schema.parse(res.data)` in query `select` or service wrappers.
