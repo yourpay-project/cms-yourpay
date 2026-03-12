@@ -1,13 +1,16 @@
 import {
   apiClient,
   clearTokensInCookies,
+  parseApiData,
   setTokensInCookies,
 } from "@/shared/api";
 import { authUserSchema, type AuthUser } from "@/entities/session";
-import { postAuthLogin, type PostAuthLoginPayload, type PostAuthLoginResponse } from "@/shared/api/generated";
+import { loginResponseSchema, type LoginResponse } from "../model/login-response-schema";
 
-export type LoginPayload = PostAuthLoginPayload;
-export type LoginResponse = PostAuthLoginResponse<AuthUser>;
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
 
 const AUTH_BASE = "auth";
 
@@ -19,10 +22,13 @@ const AUTH_BASE = "auth";
  * - returns the raw `LoginResponse` including the resolved `AuthUser`.
  */
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const data = await postAuthLogin<AuthUser>(payload);
-  if (data.access_token) {
-    setTokensInCookies(data.access_token, data.refresh_token, 60 * 15);
-  }
+  const res = await apiClient.post<unknown>(
+    `${AUTH_BASE}/login`,
+    payload,
+    { skipAuth: true }
+  );
+  const data = parseApiData(loginResponseSchema, res);
+  setTokensInCookies(data.access_token, data.refresh_token, 60 * 15);
   return data;
 };
 
@@ -32,7 +38,7 @@ export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
  */
 export const getMe = async (signal?: AbortSignal): Promise<AuthUser> => {
   const res = await apiClient.get<unknown>(`${AUTH_BASE}/me`, { signal });
-  return authUserSchema.parse(res.data);
+  return parseApiData(authUserSchema, res);
 };
 
 /**
