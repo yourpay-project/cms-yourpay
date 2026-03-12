@@ -27,4 +27,14 @@ export { Input, type InputProps } from "./input";
 export { Skeleton } from "./skeleton";
 export { PageSkeleton } from "./page-skeleton";
 export { ThemeToggle } from "./theme-toggle";
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";
 
