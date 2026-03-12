@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/ui";
-import { useSidebarStore } from "../model/sidebar-store";
+import { useSidebarStore } from "../model";
 
 interface NavProps {
   title?: string;

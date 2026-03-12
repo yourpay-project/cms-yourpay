@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useCan } from "@/features/auth";
 import { cn } from "@/shared/lib";
-import { navGroups } from "../model/nav-config";
-import { useSidebarStore } from "../model/sidebar-store";
+import { navGroups, useSidebarStore } from "../model";
 import { SidebarItem } from "./sidebar/SidebarItem";
 import { SidebarPinnedSection } from "./sidebar/SidebarPinnedSection";
 import { SidebarSearch } from "./sidebar/SidebarSearch";
