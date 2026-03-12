@@ -17,3 +17,5 @@ export { initApiClient } from "./api-config";
 
 export { useApiQuery } from "./use-api-query";
 
+export { parseApiData } from "./parse-api-data";
+
