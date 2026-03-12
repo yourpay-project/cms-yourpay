@@ -1,4 +1,4 @@
-# React CMS Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard
+# React CMS Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard v3.0
 
 ## 1. The FSD Philosophy & Core Rules
 - Downward Discovery: Imports MUST only flow downwards (App -> Pages -> Widgets -> Features -> Entities -> Shared). Higher layers cannot be imported by lower layers.
@@ -69,28 +69,38 @@ src/[layer]/[slice-name]/
 - Semantic Tokens: Use Tailwind classes (bg-background, text-foreground, border-border). No hardcoded colors.
 - UX Feedback: Every data-driven component MUST have a Skeleton. Buttons MUST show a loader during isPending.
 
-## 13. Documentation & README Maintenance
+## 13. Bundle Governance & Code Splitting
+- Dynamic Imports: ALL page-level components MUST use dynamic imports. Large widgets (>50kb) should be lazily loaded.
+- Tree Shaking: Strictly import sub-modules (e.g., `import { format } from 'date-fns'`) instead of entire libraries.
+- Icon Strategy: Use tree-shakable icon sets (lucide-react). Do not bundle raw, large SVG files into TSX.
+
+## 14. Documentation & README Maintenance
 - TSDocs: Mandatory for all exported components, functions, and interfaces (@param, @returns, description).
 - README Update: Update README.md every time a slice or significant component is modified.
 
-## 14. Technical Stack Standards
+## 15. Technical Stack Standards
 - Data Fetching: TanStack Query (Queries in entities, Mutations in features).
 - Forms: react-hook-form + Zod.
-- Icons: Use lucide-react.
+- UI: shadcn/ui components only.
 
-## 15. Implementation & Safety
+## 16. Implementation & Safety
 - No Cross-Importing: Slices in the same layer are strictly isolated.
 - SRP: Logic stays in model/api, UI stays in ui segment.
 - Error Boundaries: Wrap major widgets or pages.
 - Env Validation: Validate environment variables using Zod at app startup.
 
-## 16. Accessibility (a11y)
+## 17. Accessibility (a11y)
 - Semantic HTML: Use <main>, <nav>, <section>, <article> appropriately.
-- ARIA: Use proper aria-labels and roles for complex shadcn components.
+- ARIA: Use proper aria-labels and roles for complex components.
 
-## 17. Testing Strategy
+## 18. Testing Strategy
 - Unit Testing: Logic in 'model/lib' and 'shared/lib' should be covered by unit tests.
 - Component Testing: Test critical UI components for expected rendering and interactions.
 
-## 18. Public API Generation
+## 19. Public API Generation
 - index.ts Requirement: MUST create/update index.ts for every new slice. Absolute imports (@/) only.
+- Barrel Cleanliness: index.ts should only re-export. No logic/definitions allowed in index.ts.
+
+## 20. Code Cleanliness & Maintenance
+- No Magic Numbers: Use constants defined in 'lib' or 'model' segments.
+- Comments: Avoid comments that explain "what" (code should be self-documenting). Use comments to explain "why".
