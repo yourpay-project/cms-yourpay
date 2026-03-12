@@ -7,8 +7,7 @@ import {
 
 import { navGroups } from '@/shared/config';
 
-import { RootLayout } from './ui/RootLayout';
-import { createSectionRoutes } from './lib/create-section-routes';
+import { RootLayout, createSectionRoutes } from '@/app/router';
 
 /**
  * Router instance for the application.
@@ -18,46 +17,68 @@ import { createSectionRoutes } from './lib/create-section-routes';
  * - Router depends only on `shared/config` for navigation paths (no widget imports).
  * - Sidebar-driven routes are generated from shared navigation config via a helper in `app/router/lib`.
  */
+/**
+ * Root route definition for the application.
+ */
 const rootRoute = createRootRoute({
   component: RootLayout,
 });
 
+/**
+ * Lazy-loaded page components via page slice public APIs.
+ */
 const DashboardRoutePage = lazyRouteComponent(
   () => import('@/pages/dashboard'),
   'DashboardRoutePage',
 );
+/** Lazy-loaded route for the login page. */
 const LoginRoutePage = lazyRouteComponent(() => import('@/pages/login'), 'LoginRoutePage');
+/** Lazy-loaded route for the login callback page. */
 const LoginCallbackRoutePage = lazyRouteComponent(
   () => import('@/pages/login-callback'),
   'LoginCallbackRoutePage',
 );
+/** Lazy-loaded route for the user list page. */
 const UserListRoutePage = lazyRouteComponent(
   () => import('@/pages/user-list'),
   'UserListRoutePage',
 );
+/** Lazy-loaded route for generic sections. */
 const SectionRoutePage = lazyRouteComponent(
   () => import('@/pages/section'),
   'SectionRoutePage',
 );
 
+/**
+ * Static route for the main dashboard.
+ */
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: DashboardRoutePage,
 });
 
+/**
+ * Route for user authentication.
+ */
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: LoginRoutePage,
 });
 
+/**
+ * Route for OAuth or auth callback processing.
+ */
 const loginCallbackRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login/callback',
   component: LoginCallbackRoutePage,
 });
 
+/**
+ * Dynamic routes generated from shared navigation configuration.
+ */
 const sectionRoutes = createSectionRoutes({
   rootRoute,
   navGroups,
@@ -65,6 +86,9 @@ const sectionRoutes = createSectionRoutes({
   sectionComponent: SectionRoutePage,
 });
 
+/**
+ * Combined route tree for the router instance.
+ */
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
   loginRoute,
