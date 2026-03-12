@@ -85,6 +85,9 @@ src/
 │       ├── api/use-users-query.ts
 │       └── index.ts
 └── shared/                  # Purely reusable, non‑domain modules
+    ├── config/              # UI-agnostic app configuration
+    │   ├── navigation.ts    # navGroups + getNavTitle (no React deps)
+    │   └── index.ts
     ├── api/                 # API client + TanStack helpers
     │   ├── api-client.ts
     │   ├── api-config.ts
@@ -210,17 +213,18 @@ Build‑time Sentry configuration (used only by the Vite plugin for sourcemaps):
 
 File: `app/App.tsx`
 
-- Defines the route tree using `createRootRoute` and `createRoute`.
+- Defines the route tree using `createRootRoute` and `createRoute` (wired via `app/router/router-instance.tsx`).
+- Uses TanStack Router `lazyRouteComponent` to code-split route-level pages from `pages/*` via their public APIs (`index.ts`).
 - Wraps everything in:
   - `QueryClientProvider` (TanStack Query)
   - `RouterProvider` (TanStack Router)
   - `ThemeProvider` and `Toaster`
   - Key routes:
-  - `/` → `DashboardPage` inside `AppLayout`, wrapped with `ProtectedRoute`.
-  - `/login` → `LoginPage` wrapped with `LoginRedirect`.
-  - `/login/callback` → `LoginCallbackPage` (Google OAuth callback).
-  - `/customers` → `UserListPage` (paginated user table; see Data tables below).
-  - Other sidebar routes (e.g. `/identity-access`) use a shared `SectionPage` placeholder.
+  - `/` → `DashboardRoutePage` (page-level wrapper that applies `AppLayout` + auth gating).
+  - `/login` → `LoginRoutePage`.
+  - `/login/callback` → `LoginCallbackRoutePage` (Google OAuth callback).
+  - `/customers` → `UserListRoutePage`.
+  - Other sidebar routes (e.g. `/identity-access`) use `SectionRoutePage` placeholder.
 
 For navigation inside components, use **TanStack Router hooks**:
 
@@ -275,15 +279,15 @@ For navigation inside components, use **TanStack Router hooks**:
 - `ui/Nav.tsx`
   - App title, global loading indicator, sidebar toggle, theme toggle, and user menu (email + logout).
 - `ui/Sidebar.tsx`
-  - Renders navigation groups from `model/nav-config.tsx`.
+  - Renders navigation groups from `model/nav-config.tsx` (which maps icons onto `shared/config` navigation data).
   - Respects RBAC via `useCan`.
   - Supports:
     - **Pinned section** (max 5 items) that stays fixed at the top.
     - **Search** input (with icon) for filtering non‑pinned items by label.
     - Collapsed mode (icons only) while preserving pin state.
 - `model/nav-config.tsx`
-  - Declarative config of sidebar sections and items:
-    - `{ group?: string; items: { to, label, icon, permission? }[] }`.
+  - UI-ready config for sidebar sections and items (adds icons).
+  - Underlying routes/labels/permissions live in `shared/config/navigation.ts` to avoid layer leakage.
 - `model/sidebar-store.ts`
   - Zustand store `useSidebarStore`:
     - `collapsed`, `setCollapsed`, `toggle`.
@@ -302,11 +306,15 @@ For navigation inside components, use **TanStack Router hooks**:
   - `useApiQuery(queryKey, path, options)` – small helper around TanStack Query for REST‑style GETs.
 - `shared/lib/*`
   - `utils.ts` – `cn` function combining `clsx` + `tailwind-merge`.
-  - `loading-store.ts` – `useLoadingStore` for global loading flags.
+  - `loading-store.ts` – `useLoadingStore` for global loading flags (read in `Nav`).
+  - `use-sync-global-loading.ts` – `useSyncGlobalLoading(loading)` syncs a page’s main query `isLoading` to the global store so the nav shows the spinner during initial data load.
+  - `env.ts` – `validateEnv()` validates Vite env vars with Zod at startup (called in `main.tsx`).
   - `theme-store.ts` – `useThemeStore` for app theme.
   - `use-theme-effect.ts` – applies theme to `document.documentElement` and listens to system changes.
 - `shared/ui/*`
   - shadcn/ui components wired with Tailwind theme tokens (Button, Card, DropdownMenu, Input, Skeleton, PageSkeleton, ThemeToggle, **Table** primitives).
+  - **RouteFallback** – full-page loading fallback for `Suspense` when lazy-loading route components.
+  - **ErrorBoundary** – isolates widget/page crashes to prevent total app failure.
 
 ### 5.5 Data tables (widgets/data-table, widgets/user-table)
 
@@ -319,6 +327,7 @@ Tables use **@tanstack/react-table** in the widgets layer with shadcn-style UI f
   - Types: `DataTableProps`, `DataTableInstance`, and props for Head/Body/Pagination.
 - **`widgets/user-table`** – `UserTable` composes `DataTable` with user columns and server-side pagination; used by the user-list page.
 - **`entities/user`** – `User` type and `useUsersQuery({ pageIndex, pageSize })` for the users list API.
+- **Runtime validation** – entities expose Zod schemas in `model` (e.g. `userSchema`, `usersResponseSchema`) and queries parse responses with `schema.parse(...)`.
 - **`pages/user-list`** – `UserListPage` at `/customers`: loads users with `useUsersQuery`, shows loading/error states, and renders `UserTable`.
 
 Example – use the full table:
@@ -337,6 +346,22 @@ import { useDataTableInstance, DataTableHead, DataTableBody, DataTablePagination
 const { table, canPreviousPage, canNextPage, currentPage, totalPages } = useDataTableInstance({ columns, data, initialPageSize: 10 });
 // Render <Table><DataTableHead table={table} /><DataTableBody table={table} columnCount={columns.length} /></Table> and DataTablePagination.
 ```
+
+### 5.6 Loading: global, local, and lazy loading
+
+- **Lazy loading (route/code-split)**  
+  Page components (Dashboard, Login, UserList, etc.) are loaded with `React.lazy` and wrapped in `<Suspense fallback={<RouteFallback />}>`. The initial bundle stays smaller; the nav and layout load first, then the page chunk loads and the fallback is shown until the component is ready.
+
+- **Global loading**  
+  For the **first load of a page’s main data** (e.g. the initial query that fills the screen), call `useSyncGlobalLoading(isLoading)` from TanStack Query’s `isLoading`. The Nav shows the global spinner (Loader2) while that query has no data yet. When the page unmounts, global loading is cleared.
+
+- **Local loading**  
+  For **pagination refetch** or **in-place mutations**, keep loading local to the component:
+  - **Tables:** Prefer content-level indicators (e.g. a small spinner near the page title) during pagination refetch. Avoid stacking multiple loading UIs when the page already renders a skeleton for the initial load.
+  - **Mutations (PUT/PATCH, etc.):** Use the mutation’s `isPending` and show `Loader2` on the submit button and disable it (per coding guidelines).
+
+- **Page skeleton**  
+  When the main query has no data yet (`isLoading`), the page can render `PageSkeleton` (or similar) so the layout is visible and the content area shows a skeleton instead of a blank space. Global loading in the Nav still gives a single place to see that something is loading.
 
 ---
 
@@ -359,21 +384,26 @@ Example: add a new **“Reports”** feature with a table page.
    ```ts
    // src/features/reports/api/reports-service.ts
    import { apiClient } from "@/shared/api";
+   import { reportRowSchema, type ReportRow } from "@/entities/report";
 
-   export interface ReportRow { /* ... */ }
-
-   export const fetchReports = () =>
-     apiClient.get<ReportRow[]>("reports").then((res) => res.data);
+   export const fetchReports = async (signal?: AbortSignal): Promise<ReportRow[]> => {
+     const res = await apiClient.get<unknown>("reports", { signal });
+     return reportRowSchema.array().parse(res.data);
+   };
    ```
 
 3. **Add hooks in `features/reports/model`**
 
    ```ts
    // src/features/reports/model/use-reports.ts
-   import { useApiQuery } from "@/shared/api";
+   import { useQuery } from "@tanstack/react-query";
+   import { fetchReports } from "../api/reports-service";
 
    export const useReports = () =>
-     useApiQuery(["reports"], "reports");
+     useQuery({
+       queryKey: ["reports"],
+       queryFn: ({ signal }) => fetchReports(signal),
+     });
    ```
 
 4. **Add UI in `features/reports/ui`**
@@ -427,7 +457,8 @@ Example: add a new **“Reports”** feature with a table page.
 
 7. **Wire routing and navigation**
 
-   - Add a nav item in `widgets/app-layout/model/nav-config.tsx` with `to: "/reports"`.
+   - Add/modify a nav item in `shared/config/navigation.ts` (UI-agnostic) with `to: "/reports"`.
+   - If the sidebar needs an icon, map its `iconKey` in `widgets/app-layout/model/nav-config.tsx`.
    - Add a TanStack route in `app/App.tsx` similar to how `SectionPage` is wired today, or point `/reports` to the dedicated `ReportsPage`.
 
 ---

@@ -1,84 +1,96 @@
-# React CMS Rules: Feature-Sliced Design (FSD) Implementation
+# React CMS Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard
 
-You are an expert Senior Frontend Architect. You strictly follow **Feature-Sliced Design (FSD)** to build maintainable, scalable, and loosely coupled React applications using Tailwind CSS, shadcn/ui, and TanStack.
+## 1. The FSD Philosophy & Core Rules
+- Downward Discovery: Imports MUST only flow downwards (App -> Pages -> Widgets -> Features -> Entities -> Shared). Higher layers cannot be imported by lower layers.
+- Slice Isolation: Slices in the same layer MUST NOT import from each other. Move shared logic to a lower layer.
+- Public API (Encapsulation): Every slice must have an index.ts. This is the ONLY entry point. Deep importing internal files (e.g., '@/features/auth/ui/Form') is strictly forbidden.
+- Circular Dependency Ban: Strictly avoid circular imports at all costs.
 
-## 1. FSD Architectural Layers (The Hierarchy)
-You must organize the `src` folder into these layers. **Crucial Rule: A layer can only import from layers BELOW it.** Never import from a higher layer to a lower one.
+## 2. FSD Architectural Layers (The Hierarchy)
+1. app/: Global setup (Providers, Global Styles, Router instance, Entry point).
+2. pages/: Full page compositions. MUST use React.lazy() or TanStack lazyRouteComponent.
+3. widgets/: Large, self-contained UI blocks (e.g., Navbar, Sidebar, UserTable). MUST use Error Boundaries.
+4. features/: User interactions with business value (e.g., auth-by-email, search-filter).
+5. entities/: Business domain entities (e.g., user, product). Includes state (Zustand), types, and passive UI.
+6. shared/: Reusable, non-business logic (e.g., ui-kit, api-client, use-debounce, utils, configs).
 
-1.  **app/**: Global setup (Providers, Global Styles, Router configuration).
-2.  **pages/**: Full page compositions (e.g., `pages/user-list`, `pages/settings`).
-3.  **widgets/**: Large, self-contained UI blocks (e.g., `widgets/navbar`, `widgets/user-table`).
-4.  **features/**: User interactions with business value (e.g., `features/auth-by-email`, `features/export-report`).
-5.  **entities/**: Business domain entities (e.g., `entities/user`, `entities/product`). Includes its own state, types, and passive UI.
-6.  **shared/**: Reusable, non-business logic (e.g., `shared/ui/button`, `shared/api/api-client`, `shared/lib/utils`).
+## 3. Mandatory Slice & Segment Structure
+Every layer (except App and Shared) must be divided into Slices (kebab-case), and every Slice must contain Segments:
+Structure:
+src/[layer]/[slice-name]/
+├── ui/                # UI Components (PascalCase files)
+├── model/             # Logic, Hooks, Zustand Store, Zod Schemas (kebab-case files)
+├── api/               # TanStack Query/Mutations (kebab-case files)
+├── lib/               # Utilities/Helpers (kebab-case files)
+└── index.ts           # Public API (The ONLY entry point)
 
-## 2. Mandatory Slice & Segment Structure
-Every layer (except App and Shared) must be divided into **Slices**, and every Slice must contain **Segments**:
+## 4. Ultra-Strict Internal Wiring (Hardened)
+- Cross-Segment Imports: Within a slice, if 'ui' needs 'model', it MUST import via the slice's index.ts (e.g., import { useUser } from '../index').
+- Intrasegment Imports: Direct imports ONLY allowed for files in the same folder (e.g., UserTable.tsx to UserTableRow.tsx).
+- Boundary Enforcement: Prevents internal spaghetti. If folder 'model' is refactored, 'ui' remains unaffected as long as index.ts is stable.
 
-```text
-src/
-├── app/               # Providers, Styles, App.tsx
-├── pages/             # [page-name]/ui/
-├── widgets/           # [widget-name]/ui/, [widget-name]/model/
-├── features/          # [feature-name]/
-│   ├── ui/            # Action-related UI (Modals, Buttons)
-│   ├── model/         # Logic, Hooks, Feature-specific state
-│   ├── api/           # TanStack Mutations/Services
-│   └── index.ts       # PUBLIC API: The ONLY entry point for this slice
-├── entities/          # [entity-name]/
-│   ├── ui/            # Passive UI (UserCard, EntityRow)
-│   ├── model/         # Domain state (Zustand), Types
-│   └── index.ts       # PUBLIC API
-└── shared/            # ui/ (shadcn), api/ (apiClient), lib/ (utils)
-3. Strict Implementation Rules
-Public API (index.ts): Every slice must have an index.ts. You are STRICTLY FORBIDDEN from importing deep files.
+## 5. Hook Pattern & Logic Separation
+- Hook Pattern: NEVER put complex logic (filtering, sorting, formatting) directly inside a component's body.
+- Custom Hooks: Extract all UI logic into specialized hooks in 'model' (e.g., use-user-table-logic.ts).
+- Pure UI: Components should ideally only render data provided by hooks or props.
 
-Bad: import { UserCard } from '@/entities/user/ui/UserCard'
+## 6. Component Splitting & Scope Strategy
+- Monolithic Component Ban: DO NOT create components exceeding 100-150 lines.
+- Sub-component Splitting: Split large components into specialized sub-files in the same ui/ segment.
+- Scope Logic: Only keep main entry logic in the primary file; move UI fragments to sub-files.
 
-Good: import { UserCard } from '@/entities/user'
+## 7. Performance & Network Optimization
+- useMemo & useCallback: Mandatory for expensive calculations, table columns, and props passed to memoized children.
+- Zustand Selectors: Always use selective state picking to prevent unnecessary re-renders.
+- Abort Controller: Implement AbortController in API services to cancel stale requests on unmount or rapid input.
+- Debouncing: Implement debouncing for all search/filter inputs triggering network requests.
+- Lazy Loading: Implement route-level code splitting for ALL pages.
 
-No Cross-Importing: Slices in the same layer cannot import from each other (e.g., features/login cannot import from features/register). Move shared logic down to entities or shared.
+## 8. Advanced Data Handling (Instant-UI)
+- Optimistic Updates: Use TanStack Query 'onMutate' for critical actions (toggles, edits).
+- Prefetching: Implement prefetching on hover/mount for predictable navigation.
+- Runtime Validation: Every API response MUST be validated with Zod schemas in 'model'.
 
-SRP (Single Responsibility): Logic (hooks/api) must be in model/api segments, while UI remains in the ui segment.
+## 9. Data Validation & State Management
+- Centralized Schemas: Define Zod schemas in 'model'. Reuse for API, Type generation, and Form handling.
+- Zustand Persist: Use 'persist' middleware for preferences (filters, sidebar state) to survive refreshes.
+- Type Safety: Use 'z.infer<typeof schema>'. Strict mode: No 'any'.
 
-4. Technical Stack & CMS Patterns
-Data Fetching: Use TanStack Query. Queries go in entities/[name]/api, Mutations go in features/[name]/api.
+## 10. Type-Safe Routing (TanStack Router)
+- Route Definition: Use 'createRoute' with lazy-loading for components.
+- Path Safety: Avoid string-based navigation. Use the 'to' prop with type-safe route paths.
+- Search Params: Define search param schemas using Zod for full type safety in URLs.
 
-State Management:
+## 11. API Client Standards
+- Zod Integration: The API client should ideally accept a Zod schema to parse the response before returning data.
+- Global Error Handling: Handle 401, 403, and 500 errors centrally in the shared api-client.
 
-Global/Domain State: Zustand (placed in entities/[name]/model).
+## 12. Dual Theme & Aesthetic Standards
+- Semantic Tokens: Use Tailwind classes (bg-background, text-foreground, border-border). No hardcoded colors.
+- UX Feedback: Every data-driven component MUST have a Skeleton. Buttons MUST show a loader during isPending.
 
-Local UI State: useState.
+## 13. Documentation & README Maintenance
+- TSDocs: Mandatory for all exported components, functions, and interfaces (@param, @returns, description).
+- README Update: Update README.md every time a slice or significant component is modified.
 
-Tables/Forms:
+## 14. Technical Stack Standards
+- Data Fetching: TanStack Query (Queries in entities, Mutations in features).
+- Forms: react-hook-form + Zod.
+- Icons: Use lucide-react.
 
-Tables: @tanstack/react-table in widgets.
+## 15. Implementation & Safety
+- No Cross-Importing: Slices in the same layer are strictly isolated.
+- SRP: Logic stays in model/api, UI stays in ui segment.
+- Error Boundaries: Wrap major widgets or pages.
+- Env Validation: Validate environment variables using Zod at app startup.
 
-Forms: react-hook-form + zod in features.
+## 16. Accessibility (a11y)
+- Semantic HTML: Use <main>, <nav>, <section>, <article> appropriately.
+- ARIA: Use proper aria-labels and roles for complex shadcn components.
 
-UI Components: Use shadcn/ui. Core atoms belong in shared/ui.
+## 17. Testing Strategy
+- Unit Testing: Logic in 'model/lib' and 'shared/lib' should be covered by unit tests.
+- Component Testing: Test critical UI components for expected rendering and interactions.
 
-5. Dual Theme & Aesthetic Standards
-Semantic Tokens: Only use Tailwind classes like bg-background, text-foreground, border-border.
-
-No Hardcoded Colors: Avoid bg-white or text-gray-900. Use bg-card and text-muted-foreground.
-
-Loading States: Every data-driven component must have a Skeleton (shadcn) in its ui segment.
-
-Button Loading: Buttons must show Loader2 and be disabled during isPending.
-
-6. Naming Conventions
-Components: PascalCase (e.g., UserTable.tsx).
-
-Hooks: camelCase starting with 'use' (e.g., useUserActions.ts).
-
-Files: Kebab-case for non-component files (e.g., api-client.ts).
-
-Icons: Use lucide-react.
-
-7. Performance & Clean Code
-Minimize useEffect. Prefer event-driven updates.
-
-Use early returns for loading/error states.
-
-TypeScript: Strict mode. No any. Use interface for props and type for API responses.
+## 18. Public API Generation
+- index.ts Requirement: MUST create/update index.ts for every new slice. Absolute imports (@/) only.
