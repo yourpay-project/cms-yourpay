@@ -77,3 +77,39 @@
     background: hsl(var(--muted-foreground) / 0.5);
   }
 }
+
+/* DataTable scrollbar (horizontal + vertical) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: var(--radius);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* DataTable: theme-aware shadows for pinned columns (scroll indicator) */
+.data-table-shadow-left {
+  box-shadow: 4px 0 12px -4px hsl(var(--foreground) / 0.08);
+}
+
+.data-table-shadow-right {
+  box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.08);
+}
+
+.dark .data-table-shadow-left {
+  box-shadow: 4px 0 12px -4px hsl(var(--foreground) / 0.15);
+}
+
+.dark .data-table-shadow-right {
+  box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.15);
+}
