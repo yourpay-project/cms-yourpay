@@ -1,0 +1,157 @@
+import * as React from "react";
+import type { Row, Table } from "@tanstack/react-table";
+import { Table as TablePrimitive, TableCell, TableRow } from "@/shared/ui/table";
+import { DataTableHeader } from "./data-table-header";
+import { DataTableBody } from "./data-table-body";
+import { DataTableSummary } from "./data-table-summary";
+import type { ScrollShadowState } from "../lib/table-utils";
+import type {
+  DataTableSummaryConfig,
+  TableCellProps,
+  TableRowProps,
+} from "../lib/data-table-types";
+import { cn } from "@/shared/lib/utils";
+
+/**
+ * Props for {@link DataTableScrollArea}.
+ */
+export interface DataTableScrollAreaProps<TData> {
+  table: Table<TData>;
+  scrollRef: React.RefObject<HTMLDivElement | null> | React.LegacyRef<HTMLDivElement>;
+  scrollStyle: React.CSSProperties;
+  bordered: boolean;
+  tableLayout?: "auto" | "fixed";
+  showHeader: boolean;
+  sizeHeaderClass: string;
+  sizeCellClass: string;
+  shadow: ScrollShadowState;
+  enableVerticalShadow?: boolean;
+  visibleColumns: number;
+  footerNode: React.ReactNode;
+  summary?: DataTableSummaryConfig | null;
+  onCell?: (row: Row<TData>, columnId: string) => TableCellProps | undefined;
+  onRow?: (row: Row<TData>) => TableRowProps | undefined;
+  expandedRowRender?: (row: Row<TData>) => React.ReactNode;
+  isLoading?: boolean;
+  emptyMsg: string;
+  emptyComponent?: React.ReactNode;
+  rowClassName?: (row: Row<TData>) => string;
+  rowHoverable: boolean;
+  LoadingComponent: React.ComponentType<{ colSpan: number }>;
+  EmptyComponent: React.ComponentType<{
+    colSpan: number;
+    emptyComponent?: React.ReactNode;
+    emptyMessage?: string;
+  }>;
+}
+
+/**
+ * Scrollable table container: scroll wrapper, table with header/body/footers,
+ * and fixed bottom shadow overlay. The bottom shadow is rendered outside the scroll
+ * div so it does not move when content scrolls.
+ *
+ * @param props - {@link DataTableScrollAreaProps}
+ * @returns Wrapper div containing scroll div (table) and optional bottom shadow overlay
+ */
+export function DataTableScrollArea<TData>({
+  table,
+  scrollRef,
+  scrollStyle,
+  bordered,
+  tableLayout,
+  showHeader,
+  sizeHeaderClass,
+  sizeCellClass,
+  shadow,
+  enableVerticalShadow,
+  visibleColumns,
+  footerNode,
+  summary,
+  onCell,
+  onRow,
+  expandedRowRender,
+  isLoading,
+  emptyMsg,
+  emptyComponent,
+  rowClassName,
+  rowHoverable,
+  LoadingComponent,
+  EmptyComponent,
+}: DataTableScrollAreaProps<TData>): React.ReactElement {
+  return (
+    <div className="relative w-full">
+      <div
+        ref={scrollRef as React.LegacyRef<HTMLDivElement>}
+        className={cn(
+          "custom-scrollbar w-full overflow-auto rounded-lg border border-border bg-card",
+          bordered && "border"
+        )}
+        style={scrollStyle}
+      >
+        <TablePrimitive
+          className={cn(
+            "min-w-max border-separate border-spacing-0 text-foreground",
+            tableLayout === "fixed" && "table-fixed"
+          )}
+          style={tableLayout === "fixed" ? { tableLayout: "fixed" } : undefined}
+          role="grid"
+        >
+          <DataTableHeader<TData>
+            table={table}
+            showHeader={showHeader}
+            sizeHeaderClass={sizeHeaderClass}
+            shadow={shadow}
+            enableVerticalShadow={enableVerticalShadow}
+          />
+          <DataTableBody<TData>
+            table={table}
+            onCell={onCell}
+            onRow={onRow}
+            expandedRowRender={expandedRowRender}
+            isLoading={isLoading}
+            colSpan={visibleColumns}
+            scrollShadow={shadow}
+            emptyComponent={emptyComponent}
+            emptyMessage={emptyMsg}
+            rowClassName={rowClassName}
+            rowHoverable={rowHoverable}
+            sizeCellClass={sizeCellClass}
+            LoadingComponent={LoadingComponent}
+            EmptyComponent={EmptyComponent}
+          />
+          {footerNode != null && (
+            <tfoot className="border-t border-border bg-muted">
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  colSpan={visibleColumns}
+                  className="px-4 py-2 text-sm text-muted-foreground"
+                >
+                  {footerNode}
+                </TableCell>
+              </TableRow>
+            </tfoot>
+          )}
+          {summary && summary.summaryRows.length > 0 && (
+            <tfoot className="sticky bottom-0 z-10 border-t-2 border-border bg-muted">
+              <DataTableSummary
+                table={table}
+                summaryRows={summary.summaryRows}
+                renderSummaryCell={summary.renderSummaryCell}
+              />
+            </tfoot>
+          )}
+        </TablePrimitive>
+      </div>
+      {enableVerticalShadow && shadow.showBottom && (
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-4 rounded-b-lg"
+          style={{
+            background:
+              "linear-gradient(to top, hsl(var(--foreground) / 0.08), transparent)",
+          }}
+          aria-hidden
+        />
+      )}
+    </div>
+  );
+}
