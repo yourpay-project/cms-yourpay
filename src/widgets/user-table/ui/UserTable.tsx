@@ -1,14 +1,7 @@
 import type { FC } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
-
-import {
-  DataTableHead,
-  DataTableBody,
-  DataTablePagination,
-  useDataTableInstance,
-} from "@/widgets/data-table";
-import { Button, ErrorBoundary, Table } from "@/shared/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import { DataTable, Button, ErrorBoundary } from "@/shared/ui";
 import type { User } from "@/entities/user";
 
 /** Props for the customers list table; wires server-side pagination to DataTable. */
@@ -21,7 +14,7 @@ export interface UserTableProps {
   onPageChange: (pageIndex: number, pageSize: number) => void;
 }
 
-/** Table widget for the customers page; uses DataTable with server-side pagination. */
+/** Table widget for the customers page; uses shared DataTable with name frozen left, actions frozen right. */
 export const UserTable: FC<UserTableProps> = ({
   data,
   total,
@@ -35,6 +28,7 @@ export const UserTable: FC<UserTableProps> = ({
       {
         id: "name",
         header: "Name",
+        meta: { align: "left" },
         cell: ({ row }) => {
           const firstName = row.original.firstName ?? "";
           const lastName = row.original.lastName ?? "";
@@ -45,24 +39,28 @@ export const UserTable: FC<UserTableProps> = ({
       {
         accessorKey: "id",
         header: "Customer ID",
+        meta: { align: "center" },
       },
       {
         accessorKey: "userId",
         header: "User ID",
+        meta: { align: "center" },
       },
       {
         accessorKey: "phoneNumber",
         header: "Phone Number",
+        meta: { align: "center" },
       },
       {
         accessorKey: "isPhoneActive",
         header: "Phone Number Status",
+        meta: { align: "center" },
         cell: ({ getValue }) => {
           const value = getValue<boolean | undefined>();
           const label = value ? "Active" : "Inactive";
           const badgeClassName = value
             ? "bg-primary/10 text-primary"
-            : "bg-destructive/10 text-destructive";
+            : "bg-muted text-muted-foreground";
 
           return (
             <span
@@ -76,6 +74,7 @@ export const UserTable: FC<UserTableProps> = ({
       {
         accessorKey: "countryOfRegistration",
         header: "Country of registration",
+        meta: { align: "center" },
         cell: ({ getValue }) => {
           const value = getValue<string | undefined>() ?? "";
           return value ? value.toUpperCase() : "-";
@@ -84,10 +83,16 @@ export const UserTable: FC<UserTableProps> = ({
       {
         accessorKey: "nationality",
         header: "Nationality",
+        meta: { align: "center" },
+        cell: ({ getValue }) => {
+          const value = getValue<string | undefined>() ?? "";
+          return value ? String(value).toUpperCase() : "-";
+        },
       },
       {
         accessorKey: "status",
         header: "User Status",
+        meta: { align: "center" },
         cell: ({ getValue }) => {
           const raw = getValue<string | undefined>() ?? "";
           const value = raw.toLowerCase();
@@ -102,7 +107,7 @@ export const UserTable: FC<UserTableProps> = ({
             badgeClassName = "bg-destructive/10 text-destructive";
           } else if (value === "inactive") {
             label = "Inactive";
-            badgeClassName = "bg-secondary/10 text-secondary-foreground";
+            badgeClassName = "bg-muted text-muted-foreground";
           }
 
           return (
@@ -117,83 +122,47 @@ export const UserTable: FC<UserTableProps> = ({
       {
         accessorKey: "createdAt",
         header: "Created At",
+        meta: { align: "center" },
       },
       {
         id: "actions",
         header: "",
+        meta: { align: "center" },
         cell: () => (
-          <div className="flex justify-end">
-            <Button variant="outline" size="sm" type="button">
+          <div className="flex justify-center">
+            <Button variant="default" size="sm" type="button">
               View
             </Button>
           </div>
         ),
       },
     ],
-    [],
+    []
   );
 
-  const {
-    table,
-    canPreviousPage,
-    canNextPage,
-    currentPage,
-    totalPages,
-  } = useDataTableInstance<User, unknown>({
-    columns,
-    data,
-    initialPageSize: pageSize,
-    pagination: { pageIndex, pageSize },
-    onPaginationChange: (next) => onPageChange(next.pageIndex, next.pageSize),
-    rowCount: total,
-  });
+  const pageCount = total === 0 ? 1 : Math.ceil(total / pageSize);
 
   return (
     <ErrorBoundary>
       <div className="relative flex h-full flex-col">
-        <div className="flex-1 min-h-0 rounded-lg border border-border bg-card shadow-sm">
-          <div className="flex h-full flex-col">
-            <div className="flex-0 border-b border-border/60 bg-card">
-              <div className="overflow-x-auto">
-                <Table className="min-w-full text-sm">
-                  <DataTableHead table={table} />
-                </Table>
-              </div>
-            </div>
-
-            <div className="flex-1 min-h-0 overflow-auto">
-              <div className="min-h-full overflow-x-auto">
-                <Table className="min-w-full text-sm">
-                  <DataTableBody table={table} columnCount={columns.length} />
-                </Table>
-              </div>
-            </div>
-
-            <div className="flex-0 border-t border-border/60 bg-card px-4 py-2">
-              <DataTablePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                rowCount={total}
-                canPreviousPage={canPreviousPage}
-                canNextPage={canNextPage}
-                onFirstPage={() => table.firstPage()}
-                onPreviousPage={() => table.previousPage()}
-                onNextPage={() => table.nextPage()}
-                onLastPage={() => table.lastPage()}
-              />
-            </div>
-          </div>
-        </div>
-
-        {isRefetching && data.length > 0 && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/40">
-            <span className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
-              Loading latest customers...
-            </span>
-          </div>
-        )}
+        <DataTable<User>
+          columns={columns}
+          data={data}
+          getRowId={(row) => row.id}
+          scrollHeight="calc(100vh - 320px)"
+          isLoading={isRefetching}
+          loading={{ loadingVariant: "spinner" }}
+          initialColumnPinning={{ left: ["name"], right: ["actions"] }}
+          pagination={{ pageIndex, pageSize }}
+          pageCount={pageCount}
+          onPaginationChange={(pagination) =>
+            onPageChange(pagination.pageIndex, pagination.pageSize)
+          }
+          empty={{ emptyMessage: "No customers found." }}
+          showPagination
+          bordered
+        />
       </div>
     </ErrorBoundary>
   );
 };
-
