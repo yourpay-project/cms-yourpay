@@ -17,7 +17,7 @@ export {
   setTokenFromCallback,
   type LoginPayload,
   type LoginResponse,
-} from "./api/auth-service";
+} from "./api";
 
 export { loginSchema, type LoginFormValues } from "./model/login-schema";
 

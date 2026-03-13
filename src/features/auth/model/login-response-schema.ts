@@ -1,17 +1,21 @@
 import { z } from "zod";
 
-/**
- * Zod schema for the operator login response payload.
- *
- * The `user` field is kept as `unknown` here and should be validated by the
- * consumer (e.g. `authUserSchema`) to keep domain schemas centralized.
- */
-export const loginResponseSchema = z.object({
-  access_token: z.string().min(1),
-  refresh_token: z.string().optional(),
-  user: z.unknown(),
+const loginResponseBodySchema = z.object({
+  operator_id: z.string().min(1),
+  username: z.string().min(1),
+  role: z.string().min(1),
+  token: z.string().min(1),
 });
 
-/** Login response payload returned by the backend. */
-export type LoginResponse = z.infer<typeof loginResponseSchema>;
+/**
+ * Full login response envelope as returned by the API client
+ * (i.e. `{ data: LoginResponse, request_id?: string }`).
+ */
+export const loginResponseSchema = z.object({
+  data: loginResponseBodySchema,
+  request_id: z.string().optional(),
+});
+
+/** Unwrapped login response payload (`data` field). */
+export type LoginResponse = z.infer<typeof loginResponseBodySchema>;
 

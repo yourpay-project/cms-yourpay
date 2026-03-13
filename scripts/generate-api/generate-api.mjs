@@ -492,14 +492,17 @@ function generateApiFunctions(spec, operations) {
     const pathArg = pathKey.replace(/^\/+/, "");
     const isLogin = /login/i.test(pathKey);
     const hasBody = reqType !== "undefined";
+    const shouldForceBody =
+      isLogin && (method === "post" || method === "put" || method === "patch") && !hasBody;
+    const effectiveReqType = shouldForceBody ? "Record<string, unknown>" : reqType;
     const initArg = isLogin ? "{ ...(init ?? {}), skipAuth: true }" : "init";
     if (method === "get" || method === "delete") {
       lines.push(
         `export async function ${fnName}(init?: RequestOptions): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, ${initArg});\n}`
       );
-    } else if (hasBody) {
+    } else if (hasBody || shouldForceBody) {
       lines.push(
-        `export async function ${fnName}(body: ${reqType}, init?: RequestOptions): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, body as unknown as Record<string, unknown>, ${initArg});\n}`
+        `export async function ${fnName}(body: ${effectiveReqType}, init?: RequestOptions): Promise<ApiResponse<${resType}>> {\n  return apiClient.${method}<${resType}>(\`${pathArg}\`, body as unknown as Record<string, unknown>, ${initArg});\n}`
       );
     } else {
       lines.push(

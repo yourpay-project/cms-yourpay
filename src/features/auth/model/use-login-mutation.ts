@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { authUserSchema, useAuthStore } from "@/entities/session";
 import { ApiClientError } from "@/shared/api";
 import { DEMO_ADMIN_USER, isDemoCredentials } from "../constants";
-import { login, type LoginPayload } from "../api";
+import { login } from "../api";
+import type { LoginFormValues } from "./login-schema";
 
 /**
  * Mutation hook for handling the login flow (email/password + demo mode).
@@ -18,16 +19,23 @@ export const useLoginMutation = () => {
   const setUser = useAuthStore((s) => s.setUser);
 
   return useMutation({
-    mutationFn: async (payload: LoginPayload) => {
-      if (isDemoCredentials(payload.email, payload.password)) {
+    mutationFn: async (values: LoginFormValues) => {
+      if (isDemoCredentials(values.email, values.password)) {
         return {
           user: authUserSchema.parse(DEMO_ADMIN_USER),
-          access_token: "demo",
-          refresh_token: undefined,
+          token: "demo",
         };
       }
-      const data = await login(payload);
-      return { ...data, user: authUserSchema.parse(data.user) };
+      const data = await login({ username: values.email, password: values.password });
+      const user = authUserSchema.parse({
+        id: data.operator_id,
+        email: data.username,
+        name: data.username,
+        roles: [data.role],
+        permissions: [],
+        avatar: undefined,
+      });
+      return { ...data, user };
     },
     onSuccess: (data) => {
       setUser(data.user);

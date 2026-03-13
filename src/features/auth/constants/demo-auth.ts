@@ -1,14 +1,17 @@
 import type { AuthUser } from "@/entities/session";
 
-/** Demo login (no BE). Ganti/hapus setelah backend siap. */
+/**
+ * Static demo credentials for local development when the backend is not available.
+ * Remove or replace this when the real authentication flow is fully wired.
+ */
 export const DEMO_CREDENTIALS = {
-  email: "admin@yourpay.co.id",
+  email: "demo@yourpay.co.id",
   password: "password",
 } as const;
 
 /**
- * Dummy admin dengan semua role agar semua menu sidebar tampil.
- * Hanya dipakai saat login dengan DEMO_CREDENTIALS.
+ * In‑memory admin user with full roles and permissions so all CMS menus are visible.
+ * Only used when logging in with {@link DEMO_CREDENTIALS}.
  */
 export const DEMO_ADMIN_USER: AuthUser = {
   id: "demo-admin-1",

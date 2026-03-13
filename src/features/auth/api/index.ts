@@ -1,10 +1,5 @@
-export {
-  login,
-  logout,
-  getMe,
-  getGoogleAuthUrl,
-  setTokenFromCallback,
-  type LoginPayload,
-  type LoginResponse,
-} from "./auth-service";
+export { login } from "./auth/login";
+export { logout, getMe } from "./auth/session";
+export { getGoogleAuthUrl, setTokenFromCallback } from "./auth/google-auth";
+export { loginResponseSchema, type LoginResponse } from "../model";
 

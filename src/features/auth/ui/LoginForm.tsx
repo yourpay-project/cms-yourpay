@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   Button,
   Card,
@@ -25,6 +26,7 @@ export const LoginForm = ({
   isUsernamePasswordEnabled = true,
   className,
 }: LoginFormProps) => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { mutate, isPending } = useLoginMutation();
   const {
     register,
@@ -71,13 +73,27 @@ export const LoginForm = ({
               <label htmlFor="password" className="text-sm font-medium">
                 Password
               </label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                {...register("password")}
-                className={errors.password ? "border-destructive" : ""}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={isPasswordVisible ? "text" : "password"}
+                  autoComplete="current-password"
+                  {...register("password")}
+                  className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordVisible((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                  aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+                >
+                  {isPasswordVisible ? (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-xs text-destructive">{errors.password.message}</p>
               )}
