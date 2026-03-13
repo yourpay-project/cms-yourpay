@@ -61,11 +61,11 @@ src/
 │   │   ├── model/nav-config.tsx
 │   │   ├── model/sidebar-store.ts
 │   │   └── index.ts
-│   ├── data-table/         # Generic table (TanStack Table + shadcn)
+│   ├── data-table/         # Legacy table (TanStack + subcomponents; for custom layouts)
 │   │   ├── ui/DataTable.tsx, DataTableHead, DataTableBody, DataTablePagination
 │   │   ├── model/data-table-types.ts, use-data-table-instance.ts
 │   │   └── index.ts
-│   └── user-table/         # User list table (uses data-table)
+│   └── user-table/         # Customer list table (uses shared DataTable)
 │       ├── ui/UserTable.tsx
 │       └── index.ts
 ├── features/                # User interactions with business value
@@ -99,15 +99,19 @@ src/
     │   ├── theme-store.ts   # Light/dark/system theme state
     │   ├── use-theme-effect.ts
     │   └── index.ts
-    └── ui/                  # shadcn/ui facade
+    └── ui/                  # shadcn/ui facade + enterprise DataTable
         ├── button.tsx
         ├── card.tsx
+        ├── data-table/      # Generic DataTable (AntD-style): pinning, selection, scroll shadow
+        │   ├── ui/          # DataTable, DataTablePagination, DataTableToolbar, etc.
+        │   ├── lib/         # table-utils (getPinningStyles, useScrollShadow), data-table-types
+        │   └── index.ts
         ├── dropdown-menu.tsx
         ├── input.tsx
         ├── skeleton.tsx
         ├── page-skeleton.tsx
         ├── theme-toggle.tsx
-        ├── table.tsx        # Table, TableHeader, TableBody, TableRow, TableHead, TableCell, etc.
+        ├── table.tsx        # Table primitives (TableHeader, TableRow, TableHead, TableCell)
         └── index.ts
 ```
 
@@ -316,35 +320,51 @@ For navigation inside components, use **TanStack Router hooks**:
   - **RouteFallback** – full-page loading fallback for `Suspense` when lazy-loading route components.
   - **ErrorBoundary** – isolates widget/page crashes to prevent total app failure.
 
-### 5.5 Data tables (widgets/data-table, widgets/user-table)
+### 5.5 Data tables (shared/ui/data-table, widgets/user-table)
 
-Tables use **@tanstack/react-table** in the widgets layer with shadcn-style UI from `shared/ui/table`.
+The primary table for the app is the **shared DataTable** (`shared/ui/data-table`). It uses **@tanstack/react-table** with **semantic Tailwind tokens** (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-card`) so it respects light/dark theme and stays consistent with the rest of the UI.
 
-- **`widgets/data-table`** – generic, plug-and-play table:
-  - `DataTable` – full table with Head, Body, and Pagination. Supports client-side and server-side pagination via `pagination`, `onPaginationChange`, and `rowCount`.
-  - `DataTableHead`, `DataTableBody`, `DataTablePagination` – presentational subcomponents for custom layouts.
-  - `useDataTableInstance` – hook that builds TanStack Table state and instance; use with the subcomponents for custom UIs.
-  - Types: `DataTableProps`, `DataTableInstance`, and props for Head/Body/Pagination.
-- **`widgets/user-table`** – `UserTable` composes `DataTable` with user columns and server-side pagination; used by the user-list page.
-- **`entities/user`** – `User` type and `useUsersQuery({ pageIndex, pageSize })` for the users list API.
-- **Runtime validation** – entities expose Zod schemas in `model` (e.g. `userSchema`, `usersResponseSchema`) and queries parse responses with `schema.parse(...)`.
-- **`pages/user-list`** – `UserListPage` at `/customers`: loads users with `useUsersQuery`, shows loading/error states, and renders `UserTable`.
+- **`shared/ui/data-table`** – generic, enterprise-style DataTable (AntD-like):
+  - **DataTable** – main component: sticky header, column pinning (freeze left/right), scroll shadow (theme-aware), row selection (cross-page, invert, conditional), expandable rows, summary footer, empty/loading states, `onCell`/`onRow` for colSpan/rowSpan and a11y.
+  - **Styling:** Header uses `bg-muted/80`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`) so they adapt to theme.
+  - **Pagination:** Client-side by default; for server-side pass `pagination`, `pageCount`, and `onPaginationChange`.
+  - **Exports:** `DataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
+- **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, and server-side pagination; used by the user-list page at `/customers`.
+- **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
+- **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
+- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListQuery`, filters, and `UserTable`.
 
-Example – use the full table:
+Example – use the shared DataTable (recommended):
 
 ```tsx
-import { DataTable, type DataTableProps } from "@/widgets/data-table";
+import { DataTable, createSelectionColumn } from "@/shared/ui";
 
-<DataTable columns={columns} data={data} initialPageSize={10} />
+const columns = [
+  { id: "name", header: "Name", cell: ({ row }) => row.original.name },
+  createSelectionColumn(),
+  { id: "actions", header: "", cell: () => <Button size="sm">View</Button> },
+];
+
+<DataTable
+  columns={columns}
+  data={rows}
+  getRowId={(row) => row.id}
+  initialColumnPinning={{ left: ["name"], right: ["actions"] }}
+  scrollHeight="calc(100vh - 280px)"
+  empty={{ emptyMessage: "No data." }}
+/>
 ```
 
-Example – custom layout with hook + subcomponents:
+Example – server-side pagination:
 
 ```tsx
-import { useDataTableInstance, DataTableHead, DataTableBody, DataTablePagination } from "@/widgets/data-table";
-
-const { table, canPreviousPage, canNextPage, currentPage, totalPages } = useDataTableInstance({ columns, data, initialPageSize: 10 });
-// Render <Table><DataTableHead table={table} /><DataTableBody table={table} columnCount={columns.length} /></Table> and DataTablePagination.
+<DataTable
+  columns={columns}
+  data={currentPageRows}
+  pagination={{ pageIndex, pageSize }}
+  pageCount={Math.ceil(total / pageSize)}
+  onPaginationChange={({ pageIndex, pageSize }) => { setPageIndex(pageIndex); setPageSize(pageSize); }}
+/>
 ```
 
 ### 5.6 Loading: global, local, and lazy loading
@@ -473,7 +493,7 @@ Example: add a new **“Reports”** feature with a table page.
   - Use Zustand for domain/global UI state (session, theme, global loading, sidebar).
 - **UI**
   - Keep components “dumb” where possible; move side effects and data fetching into `model`/`api`.
-  - Use Tailwind semantic tokens; avoid hard‑coded hex colors.
+  - Use Tailwind **semantic tokens** only: `bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`, `bg-card`, etc. Avoid hard‑coded hex so components respect light/dark theme. DataTable and shared UI follow this.
 - **Routing**
   - Define new routes in `app/App.tsx` with TanStack Router.
   - Prefer `<Link>` and `useNavigate()` from TanStack Router instead of manual `window.location`.
