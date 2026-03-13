@@ -1,17 +1,18 @@
+import type { FC } from "react";
 import { Skeleton } from "./skeleton";
 import { cn } from "@/shared/lib/utils";
 
-interface PageSkeletonProps {
+export interface PageSkeletonProps {
   className?: string;
   title?: boolean;
   rows?: number;
 }
 
-export const PageSkeleton = ({
+export const PageSkeleton: FC<PageSkeletonProps> = ({
   className,
   title = true,
   rows = 5,
-}: PageSkeletonProps) => {
+}) => {
   return (
     <div className={cn("space-y-4", className)}>
       {title && <Skeleton className="h-8 w-48" />}

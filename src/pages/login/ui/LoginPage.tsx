@@ -1,9 +1,12 @@
+import type { FC } from "react";
 import { LoginForm } from "@/features/auth";
 import { ThemeToggle } from "@/shared/ui";
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? "1.0.0";
 
-const LoginPage = () => {
+type LoginPageProps = Record<string, never>;
+
+const LoginPage: FC<LoginPageProps> = () => {
   return (
     <div className="flex min-h-screen flex-col overflow-y-auto bg-background">
       <header className="flex shrink-0 justify-end border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">

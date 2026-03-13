@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -22,10 +22,10 @@ interface LoginFormProps {
   className?: string;
 }
 
-export const LoginForm = ({
+export const LoginForm: FC<LoginFormProps> = ({
   isUsernamePasswordEnabled = true,
   className,
-}: LoginFormProps) => {
+}) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { mutate, isPending } = useLoginMutation();
   const {

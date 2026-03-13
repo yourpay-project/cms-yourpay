@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import { Loader2, LogOut, PanelLeft, PanelLeftClose, User } from "lucide-react";
 import { useAuth, useLogout } from "@/features/auth";
 import { cn, useLoadingStore } from "@/shared/lib";
@@ -13,7 +14,7 @@ import {
 } from "@/shared/ui";
 import { useSidebarStore } from "../model";
 
-interface NavProps {
+export interface NavProps {
   title?: string;
   className?: string;
 }
@@ -26,7 +27,7 @@ interface NavProps {
  * - `useLoadingStore` to show a subtle loading spinner,
  * - and auth hooks for showing the current operator and a logout action.
  */
-export const Nav = ({ title = "YourPay CMS", className }: NavProps) => {
+export const Nav: FC<NavProps> = ({ title = "YourPay CMS", className }) => {
   const { user } = useAuth();
   const logout = useLogout();
   const globalLoading = useLoadingStore((s) => s.globalLoading);

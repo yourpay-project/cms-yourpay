@@ -1,9 +1,10 @@
+import type { FC } from "react";
 import { Link } from "@tanstack/react-router";
 import { Pin, PinOff } from "lucide-react";
 import { cn } from "@/shared/lib";
 import type { SidebarNavItem } from "./sidebar-types";
 
-interface SidebarItemProps {
+export interface SidebarItemProps {
   item: SidebarNavItem;
   collapsed: boolean;
   pinnedItem: boolean;
@@ -11,13 +12,13 @@ interface SidebarItemProps {
   onTogglePinned: (path: string) => void;
 }
 
-export const SidebarItem = ({
+export const SidebarItem: FC<SidebarItemProps> = ({
   item,
   collapsed,
   pinnedItem,
   canShowPin,
   onTogglePinned,
-}: SidebarItemProps) => {
+}) => {
   const baseItemClass = cn(
     "group flex items-center rounded-md py-2.5 text-sm font-medium transition-colors [&_svg]:shrink-0",
     collapsed ? "justify-center px-0" : "gap-3 px-3"

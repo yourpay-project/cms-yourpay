@@ -1,17 +1,18 @@
+import type { FC } from "react";
 import { Search } from "lucide-react";
 import { cn } from "@/shared/lib";
 
-interface SidebarSearchProps {
+export interface SidebarSearchProps {
   value: string;
   onChange: (value: string) => void;
   dividerClassName: string;
 }
 
-export const SidebarSearch = ({
+export const SidebarSearch: FC<SidebarSearchProps> = ({
   value,
   onChange,
   dividerClassName,
-}: SidebarSearchProps) => {
+}) => {
   return (
     <>
       <div className="px-3">

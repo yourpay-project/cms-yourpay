@@ -1,9 +1,10 @@
-import type { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import type { FC } from "react";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
+import { useMemo } from "react";
 
-import { DataTable } from '@/widgets/data-table';
-import { ErrorBoundary } from '@/shared/ui';
-import type { User } from '@/entities/user';
+import { DataTable } from "@/widgets/data-table";
+import { ErrorBoundary } from "@/shared/ui";
+import type { User } from "@/entities/user";
 
 /** Props for the user list table; wires server-side pagination to DataTable. */
 export interface UserTableProps {
@@ -15,13 +16,13 @@ export interface UserTableProps {
 }
 
 /** Table widget for the user list page; uses DataTable with server-side pagination. */
-export const UserTable = ({
+export const UserTable: FC<UserTableProps> = ({
   data,
   total,
   pageIndex,
   pageSize,
   onPageChange,
-}: UserTableProps) => {
+}) => {
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {

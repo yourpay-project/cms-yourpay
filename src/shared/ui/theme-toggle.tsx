@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import { Moon, Sun } from "lucide-react";
 import { cn, useThemeEffect, useThemeStore } from "@/shared/lib";
 import {
@@ -8,7 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui";
 
-export const ThemeToggle = ({ className }: { className?: string }) => {
+export interface ThemeToggleProps {
+  className?: string;
+}
+
+export const ThemeToggle: FC<ThemeToggleProps> = ({ className }) => {
   const setTheme = useThemeStore((s) => s.setTheme);
   useThemeEffect();
 

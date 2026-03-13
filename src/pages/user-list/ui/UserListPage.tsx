@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import type { FC } from "react";
+import { useState } from "react";
 
-import { PageSkeleton } from '@/shared/ui';
-import { UserTable } from '@/widgets/user-table';
-import { useUserListQuery } from '../model';
+import { PageSkeleton } from "@/shared/ui";
+import { UserTable } from "@/widgets/user-table";
+import { useUserListQuery } from "../model";
 
 const DEFAULT_PAGE_SIZE = 10;
 
+type UserListPageProps = Record<string, never>;
+
 /** Page at `/customers`: lists users with paginated DataTable and TanStack Query. */
-const UserListPage = () => {
+const UserListPage: FC<UserListPageProps> = () => {
   const [pageIndex, setPageIndex] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 

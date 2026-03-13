@@ -1,11 +1,12 @@
+import type { FC, ReactNode } from "react";
 import { cn } from "@/shared/lib";
 import { Nav } from "./Nav";
 import { Sidebar } from "./Sidebar";
 
-interface AppLayoutProps {
+export interface AppLayoutProps {
   navTitle?: string;
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 /**
@@ -16,7 +17,7 @@ interface AppLayoutProps {
  * - the permission‑aware sidebar,
  * - and an `Outlet` region where page content is displayed.
  */
-export const AppLayout = ({ navTitle, className, children }: AppLayoutProps) => {
+export const AppLayout: FC<AppLayoutProps> = ({ navTitle, className, children }) => {
   return (
     <div className={cn("flex h-screen flex-col", className)}>
       <Nav title={navTitle} />

@@ -1,4 +1,8 @@
-const DashboardPage = () => {
+import type { FC } from "react";
+
+type DashboardPageProps = Record<string, never>;
+
+const DashboardPage: FC<DashboardPageProps> = () => {
   return (
     <div>
       <h2 className="text-xl font-semibold">Dashboard</h2>

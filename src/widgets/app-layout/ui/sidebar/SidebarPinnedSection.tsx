@@ -1,8 +1,9 @@
+import type { FC } from "react";
 import { cn } from "@/shared/lib";
 import type { SidebarNavItem } from "./sidebar-types";
 import { SidebarItem } from "./SidebarItem";
 
-interface SidebarPinnedSectionProps {
+export interface SidebarPinnedSectionProps {
   collapsed: boolean;
   items: SidebarNavItem[];
   dividerClassName: string;
@@ -11,14 +12,14 @@ interface SidebarPinnedSectionProps {
   onTogglePinned: (path: string) => void;
 }
 
-export const SidebarPinnedSection = ({
+export const SidebarPinnedSection: FC<SidebarPinnedSectionProps> = ({
   collapsed,
   items,
   dividerClassName,
   canShowPinForItem,
   isPinned,
   onTogglePinned,
-}: SidebarPinnedSectionProps) => {
+}) => {
   if (items.length === 0) return null;
 
   return (

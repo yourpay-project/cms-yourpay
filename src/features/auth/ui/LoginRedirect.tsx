@@ -1,9 +1,10 @@
+import type { FC, ReactNode } from "react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../model";
 
-interface LoginRedirectProps {
-  children: React.ReactNode;
+export interface LoginRedirectProps {
+  children: ReactNode;
 }
 
 /**
@@ -12,7 +13,7 @@ interface LoginRedirectProps {
  * - If the user is already authenticated, immediately navigates to `/`.
  * - Otherwise, renders its children (the actual login UI).
  */
-export const LoginRedirect = ({ children }: LoginRedirectProps) => {
+export const LoginRedirect: FC<LoginRedirectProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();

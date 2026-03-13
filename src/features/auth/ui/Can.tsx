@@ -1,22 +1,23 @@
+import type { FC, ReactNode } from "react";
 import { useCan } from "../model";
 
-interface CanProps {
+export interface CanProps {
   permission?: string;
   permissions?: string[];
   role?: string;
   roles?: string[];
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
-export const Can = ({
+export const Can: FC<CanProps> = ({
   permission,
   permissions,
   role,
   roles,
   children,
   fallback = null,
-}: CanProps) => {
+}) => {
   const { can, canAny, hasRole, hasAnyRole } = useCan();
 
   const hasCheck =
