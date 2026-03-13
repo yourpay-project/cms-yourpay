@@ -2,10 +2,16 @@ import * as React from "react";
 import type { Column } from "@tanstack/react-table";
 import type { CSSProperties } from "react";
 
-/** Default page size options for pagination (AntD-style). */
+/**
+ * Default page size options for pagination (AntD-style).
+ * Used by DataTablePagination when pageSizeOptions prop is not provided.
+ */
 export const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
 
-/** Default number of skeleton rows shown when loading. */
+/**
+ * Default number of skeleton rows shown when loading.
+ * Used by DataTableLoadingOverlay when rowCount is not provided.
+ */
 export const DEFAULT_SKELETON_ROW_COUNT = 5;
 
 /**

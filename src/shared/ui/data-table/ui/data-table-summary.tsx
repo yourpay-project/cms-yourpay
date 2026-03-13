@@ -4,25 +4,30 @@ import { TableCell, TableRow } from "@/shared/ui/table";
 import { getPinningStyles } from "../lib/table-utils";
 import { cn } from "@/shared/lib/utils";
 
+/**
+ * Props for {@link DataTableSummary}.
+ */
 export interface DataTableSummaryProps<TData> {
+  /** TanStack Table instance (visible leaf columns for layout). */
   table: Table<TData>;
-  /** Summary rows (objects keyed by column id or index). */
+  /** Summary rows: array of objects keyed by column id. */
   summaryRows: Record<string, unknown>[];
-  /** Render cell (columnId, summaryRow, columnIndex) => ReactNode. */
+  /** Optional renderer: (columnId, summaryRow, columnIndex) => ReactNode. */
   renderSummaryCell?: (
     columnId: string,
     summaryRow: Record<string, unknown>,
     columnIndex: number
   ) => React.ReactNode;
+  /** Optional class for summary rows. */
   className?: string;
 }
 
 /**
  * Sticky footer row(s) for totals or aggregates. Uses bg-muted/70 and border-border.
+ * Applies getPinningStyles to summary cells for alignment with pinned columns.
  *
- * @param props.table - TanStack Table instance (visible columns)
- * @param props.summaryRows - Array of row objects keyed by column id
- * @param props.renderSummaryCell - Optional (columnId, summaryRow, columnIndex) => ReactNode
+ * @param props - {@link DataTableSummaryProps}
+ * @returns Fragment of TableRow elements (one per summary row)
  */
 export function DataTableSummary<TData>({
   table,

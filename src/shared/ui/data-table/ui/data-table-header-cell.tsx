@@ -4,12 +4,17 @@ import { flexRender } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
+/**
+ * Props for {@link DataTableHeaderCell}.
+ */
 export interface DataTableHeaderCellProps<TData, TValue> {
+  /** TanStack header context (column, header). */
   context: HeaderContext<TData, TValue>;
-  /** Optional: show sort indicator. */
+  /** When true (default), shows sort icon and toggle handler. */
   enableSort?: boolean;
-  /** Optional: custom filter slot (dropdown, etc.). */
+  /** Optional filter UI (e.g. dropdown) rendered below the header label. */
   filterSlot?: React.ReactNode;
+  /** Optional class for the wrapper div. */
   className?: string;
 }
 
@@ -17,9 +22,8 @@ export interface DataTableHeaderCellProps<TData, TValue> {
  * Header cell with optional sort indicator (aria-sort) and filter slot.
  * Use inside columnDef.header for sortable columns. Uses text-foreground and focus-visible:ring-ring.
  *
- * @param props.context - TanStack header context
- * @param props.enableSort - Whether to show sort icon and handle (default true)
- * @param props.filterSlot - Optional filter UI (e.g. dropdown) below the header label
+ * @param props - {@link DataTableHeaderCellProps}
+ * @returns Wrapper div with header content, sort button, and optional filterSlot
  */
 export function DataTableHeaderCell<TData, TValue>({
   context,

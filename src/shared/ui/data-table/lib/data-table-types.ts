@@ -1,3 +1,8 @@
+/**
+ * Types and interfaces for the shared DataTable component.
+ * Includes ColumnMeta augmentation for TanStack Table, config types (selection, expandable,
+ * summary, empty, loading), and the main DataTableProps interface.
+ */
 import type {
   ColumnDef,
   ColumnPinningState,
@@ -25,7 +30,10 @@ declare module "@tanstack/react-table" {
   }
 }
 
-/** Cell attributes from onCell (colSpan, rowSpan, class, etc.). */
+/**
+ * Cell attributes returned from DataTableProps.onCell.
+ * Used for colSpan, rowSpan, className, style, and aria-hidden.
+ */
 export interface TableCellProps {
   colSpan?: number;
   rowSpan?: number;
@@ -34,7 +42,10 @@ export interface TableCellProps {
   "aria-hidden"?: boolean;
 }
 
-/** Row attributes from onRow (class, onClick, etc.). */
+/**
+ * Row attributes returned from DataTableProps.onRow.
+ * Used for className, style, onClick, and ARIA attributes.
+ */
 export interface TableRowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -95,16 +106,16 @@ export interface DataTableLoadingConfig {
   skeletonRowCount?: number;
 }
 
-/** Responsive: column visibility by breakpoint. Keys are column ids. */
+/** Column visibility by breakpoint. Keys are column ids, values are boolean. */
 export type ResponsiveColumnVisibility = Record<string, boolean>;
 
-/** Filter state: column id -> filter value. */
+/** Filter state: column id -> filter value. Used for controlled filtering. */
 export type DataTableFilterState = Record<string, unknown>;
 
 /** Table size (cell padding / density). AntD: small | medium | large. */
 export type DataTableSize = "small" | "medium" | "large";
 
-/** Scroll config (AntD-style scroll.x / scroll.y). */
+/** Scroll config (AntD-style). y = max height, x = min width. */
 export interface DataTableScrollConfig {
   /** Max height of scroll area (vertical). */
   y?: string | number;
@@ -114,7 +125,7 @@ export interface DataTableScrollConfig {
   scrollToFirstRowOnChange?: boolean;
 }
 
-/** Locale text for table (AntD-style locale). */
+/** Locale strings for table (emptyText, filter labels, sort labels, etc.). */
 export interface DataTableLocale {
   emptyText?: ReactNode;
   filterConfirm?: ReactNode;
@@ -198,5 +209,7 @@ export interface DataTableProps<TData, TValue = unknown> {
   }) => void;
 }
 
-/** Default empty message. */
+/**
+ * Default empty message when no data and empty.emptyMessage / locale.emptyText are not set.
+ */
 export const DEFAULT_EMPTY_MESSAGE = "No data found.";

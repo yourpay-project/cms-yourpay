@@ -7,6 +7,9 @@ import type { TableCellProps, TableRowProps } from "../lib/data-table-types";
 import type { ScrollShadowState } from "../lib/table-utils";
 import { cn } from "@/shared/lib/utils";
 
+/**
+ * Props for {@link DataTableBody}.
+ */
 export interface DataTableBodyProps<TData> {
   table: Table<TData>;
   onCell?: (row: Row<TData>, columnId: string) => TableCellProps | undefined;
@@ -16,7 +19,7 @@ export interface DataTableBodyProps<TData> {
   colSpan: number;
   emptyComponent?: React.ReactNode;
   emptyMessage?: string;
-  /** When set, shadow is shown only when content is scrolled behind (left/right). */
+  /** When set, left/right shadow on pinned columns when content is scrolled behind. */
   scrollShadow?: ScrollShadowState;
   /** Row class name from rowClassName(row). AntD rowClassName. */
   rowClassName?: (row: Row<TData>) => string;
@@ -33,12 +36,12 @@ export interface DataTableBodyProps<TData> {
 }
 
 /**
- * Renders table body with optional colSpan/rowSpan, expandable rows, and scroll shadow on pinned cells.
+ * Renders table body (tbody) with optional colSpan/rowSpan, expandable rows,
+ * and scroll shadow on pinned cells. Shows LoadingComponent when isLoading,
+ * EmptyComponent when there are no rows, otherwise maps rows and cells.
  *
- * @param props.table - TanStack Table instance
- * @param props.scrollShadow - When set, left/right shadow on pinned columns only when content is scrolled behind
- * @param props.LoadingComponent - Rendered when isLoading is true
- * @param props.EmptyComponent - Rendered when there are no rows
+ * @param props - {@link DataTableBodyProps}
+ * @returns tbody element
  */
 export function DataTableBody<TData>({
   table,

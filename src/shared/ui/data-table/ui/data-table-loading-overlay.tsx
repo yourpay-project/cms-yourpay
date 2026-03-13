@@ -2,16 +2,22 @@ import * as React from "react";
 import { TableCell, TableRow } from "@/shared/ui/table";
 import { DEFAULT_SKELETON_ROW_COUNT } from "../lib/table-utils";
 
+/**
+ * Props for {@link DataTableLoadingOverlay}.
+ */
 export interface DataTableLoadingOverlayProps {
+  /** Column span for each skeleton row. */
   colSpan: number;
+  /** Number of skeleton rows (default: DEFAULT_SKELETON_ROW_COUNT). */
   rowCount?: number;
 }
 
 /**
- * Skeleton rows shown while data is loading. Uses bg-muted for the animated bar.
+ * Skeleton rows shown while data is loading. Each row has one cell with an animated pulse bar (bg-muted).
+ * Used when DataTable loading.loadingVariant is "skeleton".
  *
- * @param props.colSpan - Column span for each skeleton row
- * @param props.rowCount - Number of skeleton rows (default from DEFAULT_SKELETON_ROW_COUNT)
+ * @param props - {@link DataTableLoadingOverlayProps}
+ * @returns Fragment of TableRow elements (skeleton rows)
  */
 export function DataTableLoadingOverlay({
   colSpan,

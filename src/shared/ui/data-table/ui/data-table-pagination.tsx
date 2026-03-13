@@ -9,19 +9,22 @@ import { Button } from "@/shared/ui/button";
 import { PAGE_SIZE_OPTIONS } from "../lib/table-utils";
 import { cn } from "@/shared/lib/utils";
 
+/**
+ * Props for {@link DataTablePagination}.
+ */
 export interface DataTablePaginationProps<TData> {
-  /** TanStack Table instance. */
+  /** TanStack Table instance (state.pagination, setPageIndex, setPageSize, getPageCount). */
   table: Table<TData>;
-  /** Override default page size options (e.g. [10, 20, 50, 100]). */
+  /** Override default page size options (default: PAGE_SIZE_OPTIONS [10, 20, 30, 40, 50]). */
   pageSizeOptions?: readonly number[];
 }
 
 /**
- * AntD-style pagination: rows per page selector, first/prev/next/last, page indicator.
+ * AntD-style pagination: rows per page selector, first/prev/next/last buttons, page indicator.
  * Uses semantic tokens (text-foreground, border-input, bg-background) for light/dark theme.
  *
- * @param props.table - TanStack Table instance (state.pagination and setPageIndex/setPageSize)
- * @param props.pageSizeOptions - Optional override for [10, 20, 30, 40, 50]
+ * @param props - {@link DataTablePaginationProps}
+ * @returns Pagination bar with selection count, rows-per-page select, and navigation buttons
  */
 const DEFAULT_PAGE_SIZE_OPTIONS = PAGE_SIZE_OPTIONS;
 

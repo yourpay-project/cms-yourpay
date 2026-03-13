@@ -3,23 +3,26 @@ import type { Table } from "@tanstack/react-table";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 
+/**
+ * Props for {@link DataTableToolbar}.
+ */
 export interface DataTableToolbarProps<TData> {
+  /** TanStack Table instance (selection state, invert/clear actions). */
   table: Table<TData>;
-  /** Show "Invert selection" button. */
+  /** When defined, shows "Invert" button and is called after invert. */
   onInvertSelection?: () => void;
-  /** Show "Clear selection" button. */
+  /** When defined, shows "Clear" button and is called after clear. */
   onClearSelection?: () => void;
-  /** Optional class for container. */
+  /** Optional class for the toolbar container. */
   className?: string;
 }
 
 /**
- * Toolbar shown when at least one row is selected: "Invert" and "Clear" actions.
+ * Toolbar shown when at least one row is selected: selection count, "Invert" and "Clear" actions.
  * Uses semantic tokens for buttons and text. Renders null when selectedCount is 0.
  *
- * @param props.table - TanStack Table instance (selection state)
- * @param props.onInvertSelection - Optional callback after invert
- * @param props.onClearSelection - Optional callback after clear
+ * @param props - {@link DataTableToolbarProps}
+ * @returns Toolbar div or null when no rows selected
  */
 export function DataTableToolbar<TData>({
   table,

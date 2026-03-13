@@ -2,12 +2,20 @@ import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { TableCell, TableRow } from "@/shared/ui/table";
 
+/**
+ * Props for {@link DataTableLoadingSpinner}.
+ */
 export interface DataTableLoadingSpinnerProps {
+  /** Column span for the single loading cell. */
   colSpan: number;
 }
 
 /**
- * Single row with centered spinner; use when loading state should appear inside the table body.
+ * Single row with centered Loader2 spinner and "Loading..." text.
+ * Use when DataTable loading.loadingVariant is "spinner" so loading appears inside the table body.
+ *
+ * @param props - {@link DataTableLoadingSpinnerProps}
+ * @returns Single TableRow with one TableCell containing the spinner
  */
 export function DataTableLoadingSpinner({
   colSpan,

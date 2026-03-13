@@ -2,21 +2,24 @@ import * as React from "react";
 import { TableCell, TableRow } from "@/shared/ui/table";
 import { DEFAULT_EMPTY_MESSAGE } from "../lib/data-table-types";
 
+/**
+ * Props for {@link DataTableEmpty}.
+ */
 export interface DataTableEmptyProps {
+  /** Column span for the single empty cell. */
   colSpan: number;
-  /** Custom empty component (image + text). */
+  /** Optional custom content (e.g. illustration + text). When provided, emptyMessage is ignored. */
   emptyComponent?: React.ReactNode;
-  /** Message when emptyComponent not provided. */
+  /** Message shown when emptyComponent is not provided (default: DEFAULT_EMPTY_MESSAGE). */
   emptyMessage?: string;
 }
 
 /**
- * Single-row empty state: custom ReactNode or a short message.
- * Uses semantic tokens (text-muted-foreground, bg-background, border-border).
+ * Single-row empty state: one TableRow with one TableCell spanning all columns.
+ * Renders emptyComponent or emptyMessage. Uses semantic tokens (text-muted-foreground, bg-background, border-border).
  *
- * @param props.colSpan - Column span for the single cell
- * @param props.emptyComponent - Optional custom content (e.g. illustration + text)
- * @param props.emptyMessage - Fallback message when emptyComponent is not provided
+ * @param props - {@link DataTableEmptyProps}
+ * @returns Single TableRow containing the empty state cell
  */
 export function DataTableEmpty({
   colSpan,
