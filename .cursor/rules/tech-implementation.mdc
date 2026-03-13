@@ -1,0 +1,35 @@
+---
+description: Technical implementation for TanStack, Zustand, and Client-Side Auth (Bearer Token)
+globs: src/**/*.{ts,tsx}
+---
+# Technical Implementation Standards (YourPay CMS)
+
+## 1. Authentication & Security (Bearer Token Pattern)
+- **NO COOKIES**: This is a Client-Only React app. Strictly avoid any logic relying on HttpOnly cookies for authentication.
+- **Token Management**: Store access tokens in `useAuthStore` (Zustand) which is persisted to `localStorage`. 
+- **Authorization Header**: You MUST manually append `Authorization: Bearer <token>` to all outgoing requests.
+- **Implementation**: The token should be retrieved via `useAuthStore.getState().token` inside the `apiClient`.
+- **Session Logic**: On app boot, if a token exists, the app must call the profile/me endpoint to verify validity. If it returns 401, clear the token and redirect to `/login`.
+
+## 2. Data & State Management
+- **TanStack Query**: Use the shared `apiClient` from `@/shared/api`. Always forward the `AbortSignal` from the `queryFn`.
+- **Global Loading**: Mandatory use of `useSyncGlobalLoading(isLoading)` for the primary data query of any page to sync the Nav spinner.
+- **Zustand Usage**: 
+  - Domain state (User, Session) belongs in `entities/`.
+  - UI-cross-cutting state (Sidebar, Theme, Global Loading) belongs in `shared/lib/`.
+  - Always use selective state picking (selectors) to prevent unnecessary re-renders.
+- **Runtime Validation**: Every API response MUST be validated using Zod schemas located in the `model/` segment of the slice. Use `schema.parse(res.data)`.
+
+## 3. API Integration (Generated Client)
+- **Single Source of Truth**: Refer to `src/shared/api/generated/` for all API types and client functions. These are indexed via `.cursorignore`.
+- **No Hallucination**: Do not invent API endpoints. If a client function is missing, ask the user to run `make generate-api`.
+- **Response Structure**: Remember that `apiClient` returns a response where the actual data resides in the `.data` property.
+
+## 4. Navigation & Routing
+- **TanStack Router**: All routes must be defined in `app/App.tsx` (or the router-instance).
+- **Code Splitting**: Use `lazyRouteComponent` for all page-level components to keep the initial bundle small.
+- **Declarative Nav**: Use the `<Link>` component or `useNavigate()` hook. Strictly forbid `window.location`.
+
+## 5. RBAC & UI Gating
+- **Auth Store**: Use `useAuthStore` from `@/entities/session`.
+- **Permission Checks**: Use the `useCan()` hook or the `<Can>` component for conditional rendering based on user roles/permissions.

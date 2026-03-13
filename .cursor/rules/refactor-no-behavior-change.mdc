@@ -60,3 +60,6 @@ alwaysApply: false
 - Prefer the shared helper to keep validation consistent:
   - `parseApiData(schema, res)` instead of `schema.parse(res.data)`
 
+## 7. YourPay CMS Contextual Rules
+- **Layer Specifics**: Follow the specific layout: `app` (shell), `pages` (routing targets), `widgets` (DataTable/UserTable), `features` (auth), `entities` (session/user), `shared` (ui/api).
+- **DataTable Pattern**: Always use the pattern in `widgets/data-table` for any new tables: `DataTable` facade + `useDataTableInstance` hook + `DataTableHead/Body/Pagination` segments.

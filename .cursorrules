@@ -124,9 +124,10 @@ src/[layer]/[slice-name]/
 - API Stability: Preserve existing `index.ts` exports.
 - Module-Scope Lookups: Move expensive `find/filter` out of render. Use `Map` lookups in `model/`.
 
-## 24. Backend-for-Frontend (BFF) & Security Protocol
-- Token Handling: Use secure HttpOnly cookies. NEVER store sensitive tokens in `localStorage`.
-- Biometric/Hardware Keys: Isolate cryptographic logic in `shared/lib/crypto` and expose via hooks in `features/auth`.
+## 24. Client-Side Authentication Protocol (No-BFF)
+- **Token Storage**: Store access tokens in `useAuthStore` (Zustand) with `persist` middleware (localStorage).
+- **Manual Injection**: You MUST manually inject `Authorization: Bearer <token>` in the `api-client.ts`. Do NOT rely on automatic cookie sending.
+- **Session Validation**: Call the `profile/me` endpoint on app initialization to verify token validity.
 
 ## 25. Server-Driven UI (SDUI) Readiness
 - Dynamic Rendering: Maintain a strict "Component Registry" in the `widgets/` layer.
@@ -137,48 +138,15 @@ src/[layer]/[slice-name]/
 - Bridge Isolation: All `window.*` injections, SDKs, or bridges MUST be isolated in `shared/api/bridges` or `shared/lib/integrations`.
 - Type-Safe Bridges: Define strict TypeScript interfaces for all data passing through webview bridges.
 
-## 27. Best Practice Code Examples
+## 27. API Integration (Generated Client)
+- **Generated Source**: All API calls MUST use the clients found in `src/shared/api/generated/`. 
+- **No Hallucination**: Never invent API paths. If a type is missing, strictly ask the user to run `make generate-api`.
+- **Response Handling**: Access actual data via `res.data` as per the shared `apiClient` wrapper.
 
-### Example: Strict Public API (index.ts)
-```typescript
-export { LoginForm } from './ui/LoginForm';
-export { useAuthStore } from './model/auth-store';
-export type { AuthSession } from './model/types';
+## 28. Git & Commit Standards
+- **Strict No-Trailers:** DO NOT add any trailers or metadata to commit messages (e.g., NEVER add "Made-with: Cursor" or similar).
+- **Clean Messages:** Commit messages must strictly follow Conventional Commits (e.g., `feat:`, `fix:`, `chore:`). No extra suffixes or AI branding allowed.
 
-### Example: SRP Hook with Zod & TanStack Query (model)
-import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod';
-
-export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-});
-export type LoginFormValues = z.infer<typeof loginSchema>;
-
-export const useLoginLogic = () => {
-  return useMutation({
-    mutationFn: async (data: LoginFormValues) => {
-      const validated = loginSchema.parse(data);
-      return await loginApi(validated);
-    },
-  });
-};
-
-### Example: Pure UI Component with SVGR (ui)
-import React from 'react';
-import LockIcon from '@/shared/assets/icons/lock.svg?react';
-import { Button } from '@/shared/ui';
-import { useLoginLogic } from '../model/use-login-logic';
-
-export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
-  const { mutate, isPending } = useLoginLogic();
-  return (
-    <form className="flex flex-col gap-4 border-border">
-      <div className="flex gap-2">
-         <LockIcon className="w-5 h-5 text-muted-foreground" />
-         <h2 className="text-foreground">Login</h2>
-      </div>
-      <Button disabled={isPending}>{isPending ? 'Wait...' : 'Sign In'}</Button>
-    </form>
-  );
-};
+## 29. Global Loading & UX Feedback
+- **Sync Loading**: Use `useSyncGlobalLoading(isLoading)` from `shared/lib` for the main page query to trigger the global Nav loader.
+- **Skeletons**: Always provide a `PageSkeleton` or widget-level skeleton while `isLoading` is true.

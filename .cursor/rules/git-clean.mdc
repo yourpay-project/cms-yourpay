@@ -1,0 +1,8 @@
+---
+description: Git commit message standards and AI branding removal
+globs: 
+---
+# Git Commit Standards
+- **Clean Messages**: Use Conventional Commits (`feat:`, `fix:`, `chore:`).
+- **No AI Branding**: STRICTLY FORBIDDEN to include "Made-with: Cursor" or any AI trailers in commit messages.
+- **Format**: Imperative mood, no period at the end.

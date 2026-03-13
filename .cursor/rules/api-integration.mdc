@@ -1,0 +1,30 @@
+---
+description: Integration with Gitignored Generated API Clients (YourPay CMS Standard)
+globs: src/**/*.{ts,tsx}
+---
+# API Integration & Generated Client Standards
+
+## 1. Local-Only Source of Truth
+- **Context Discovery**: All API types and clients live in `src/shared/api/generated/`. These files are gitignored but MUST be indexed via `.cursorignore`.
+- **Auto-Sync**: If a type or client function is missing, strictly ask the user to run `make generate-api`. Do NOT attempt to guess the API structure.
+
+## 2. Integration Workflow
+When creating/updating a feature service (`src/features/*/api/`):
+1. **Find**: Locate the function in `src/shared/api/generated/clients/`.
+2. **Wrap**: Wrap the generated call in your feature service.
+3. **Validate**: Use Zod schemas in `model/` to parse `res.data` for runtime safety.
+4. **Pagination**: Use `PaginationResponse<TItem>` from `src/shared/api/generated/types/shared.ts`.
+
+## 3. Implementation Rule
+- **No Manual Types**: NEVER manually define interfaces for backend DTOs. Use the generated ones.
+- **Res Data Access**: Remember that our `apiClient` returns a wrapped response; actual data is always in `res.data`.
+
+## 4. Example Pattern
+```typescript
+import { userClient } from "@/shared/api/generated/clients/user";
+import { userSchema } from "../model/schemas";
+
+export const getFeatureUsers = async (params: GetUsersParams) => {
+  const res = await userClient.getUsers(params); // Generated function
+  return userSchema.array().parse(res.data);     // Runtime validation
+};
