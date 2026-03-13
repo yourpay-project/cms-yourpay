@@ -8,6 +8,9 @@ import type {
 
 export type { ColumnDef, PaginationState, SortingState, VisibilityState };
 
+/** Updater for controlled state: value or function that receives previous and returns next. */
+export type Updater<T> = T | ((old: T) => T);
+
 /**
  * Table instance returned by `useReactTable`, passed to Head/Body subcomponents
  * for rendering headers and rows.
