@@ -11,7 +11,7 @@ make generate-api
 With a custom Swagger doc URL:
 
 ```bash
-API_DOC_URL=https://your-api.example.com/swagger/doc.json make generate-api
+VITE_API_DOC_URL=https://your-api.example.com/swagger/doc.json make generate-api
 ```
 
 Generate by tags:
@@ -60,7 +60,7 @@ import type {
 
 ## Configuration
 
-- **`API_DOC_URL`** (env)
+- **`VITE_API_DOC_URL`** (env)
   - Swagger doc URL (example: `https://krakend-dev.yourpay.co.id/api/swagger/doc.json`).
   - Set in `.env` at the repo root.
 - **`API_TAGS`** (make var / env)

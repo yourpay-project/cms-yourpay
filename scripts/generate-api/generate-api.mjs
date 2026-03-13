@@ -46,11 +46,11 @@ function readDotEnv(filePath) {
 }
 
 function getSwaggerUrl() {
-  if (process.env.API_DOC_URL) return process.env.API_DOC_URL;
+  if (process.env.VITE_API_DOC_URL) return process.env.VITE_API_DOC_URL;
   const envFromFile = readDotEnv(path.join(REPO_ROOT, ".env"));
-  if (envFromFile.API_DOC_URL) return envFromFile.API_DOC_URL;
+  if (envFromFile.VITE_API_DOC_URL) return envFromFile.VITE_API_DOC_URL;
   throw new Error(
-    "API_DOC_URL is not set. Please add API_DOC_URL=<swagger-doc-url> to .env (repo root) or export it in your shell."
+    "VITE_API_DOC_URL is not set. Please add VITE_API_DOC_URL=<swagger-doc-url> to .env (repo root) or export it in your shell."
   );
 }
 
@@ -448,7 +448,7 @@ function toMultiTagMarkdownReport({ apiDocUrl, tags, perTag, modelNames, outDir,
   const lines = [];
   lines.push(`# Generated API Report`);
   lines.push(``);
-  lines.push(`- **API_DOC_URL**: \`${apiDocUrl}\``);
+  lines.push(`- **VITE_API_DOC_URL**: \`${apiDocUrl}\``);
   lines.push(`- **Generated dir**: \`${outDir}\``);
   lines.push(`- **Tags**: \`${tags.length}\``);
   lines.push(`- **Total endpoints**: \`${Object.values(perTag).reduce((n, v) => n + v.length, 0)}\``);
@@ -530,14 +530,14 @@ function generateImports(spec, operations) {
 }
 
 async function main() {
-  const API_DOC_URL = getSwaggerUrl();
+  const VITE_API_DOC_URL = getSwaggerUrl();
   const tagsToGenerate = getTagList();
   const groups = getGroupMappings();
   const sharedWhitelist = getSharedModelWhitelist();
   let spec;
   try {
-    const res = await fetch(API_DOC_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${API_DOC_URL}`);
+    const res = await fetch(VITE_API_DOC_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${VITE_API_DOC_URL}`);
     spec = await res.json();
   } catch (e) {
     console.error("Failed to fetch Swagger:", e.message);
@@ -702,7 +702,7 @@ async function main() {
 
   const modelNames = refsToReadableModelNames(refsAll).filter((n) => n !== "unknown");
   const report = toMultiTagMarkdownReport({
-    apiDocUrl: API_DOC_URL,
+    apiDocUrl: VITE_API_DOC_URL,
     tags: resolvedBuckets,
     perTag: Object.fromEntries(perTagOutputs.map((o) => [o.tag, o.operations])),
     modelNames,
@@ -711,7 +711,7 @@ async function main() {
   });
   fs.writeFileSync(path.join(OUT_DIR, "REPORT.md"), report, "utf8");
 
-  console.log(`API_DOC_URL: ${API_DOC_URL}`);
+  console.log(`VITE_API_DOC_URL: ${VITE_API_DOC_URL}`);
   console.log(groups ? `Groups: ${resolvedBuckets.length}` : `Tags: ${resolvedBuckets.length}`);
   for (const t of resolvedBuckets) {
     const ops = operationsByBucket[t] || [];

@@ -7,7 +7,7 @@ help:
 	@echo "  make lint           Lint"
 	@echo "  make generate-api   Generate API client from Swagger using API_TAGS."
 	@echo ""
-	@echo "Configure API_DOC_URL in .env. Generation selection is in Makefile vars (API_TAGS, API_SHARED_MODELS)."
+	@echo "Configure VITE_API_DOC_URL in .env. Generation selection is in Makefile vars (API_TAGS, API_SHARED_MODELS)."
 	@echo "Override example: make generate-api API_TAGS=\"Operators / Auth,Files\""
 
 run:

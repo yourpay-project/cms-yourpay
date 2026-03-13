@@ -490,7 +490,7 @@ This project includes a generator that produces a fully typed backend API client
 - **Entry point**
   - `make generate-api`
 - **Configuration**
-  - `API_DOC_URL` – set in `.env` (Swagger doc URL).
+  - `VITE_API_DOC_URL` – set in `.env` (Swagger doc URL).
   - `API_TAGS` – default tag list lives in `Makefile`, can be overridden per-run:
     - `make generate-api API_TAGS="Operators / Auth,Files"`
   - `API_GROUPS` (optional) – group multiple Swagger tags into single modules.
