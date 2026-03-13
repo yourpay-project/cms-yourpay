@@ -18,6 +18,12 @@ export interface DataTableBodyProps<TData> {
   emptyMessage?: string;
   /** When set, shadow is shown only when content is scrolled behind (left/right). */
   scrollShadow?: ScrollShadowState;
+  /** Row class name from rowClassName(row). AntD rowClassName. */
+  rowClassName?: (row: Row<TData>) => string;
+  /** Whether rows have hover style. */
+  rowHoverable?: boolean;
+  /** Tailwind class for cell padding/size (e.g. from SIZE_CLASSES.cell). */
+  sizeCellClass?: string;
   LoadingComponent: React.ComponentType<{ colSpan: number }>;
   EmptyComponent: React.ComponentType<{
     colSpan: number;
@@ -44,6 +50,9 @@ export function DataTableBody<TData>({
   emptyComponent,
   emptyMessage,
   scrollShadow,
+  rowClassName,
+  rowHoverable = true,
+  sizeCellClass,
   LoadingComponent,
   EmptyComponent,
 }: DataTableBodyProps<TData>): React.ReactElement {
@@ -80,7 +89,9 @@ export function DataTableBody<TData>({
           <React.Fragment key={row.id}>
             <TableRow
               className={cn(
-                "group border-none transition-colors hover:bg-muted/50",
+                "group border-none transition-colors",
+                rowHoverable && "hover:bg-muted/50",
+                rowClassName?.(row),
                 rowProps.className
               )}
               style={rowProps.style}
@@ -101,18 +112,29 @@ export function DataTableBody<TData>({
                     : align === "right"
                       ? "text-right"
                       : "text-left";
+                const ellipsisOpt = cell.column.columnDef.meta?.ellipsis;
+                const ellipsis = ellipsisOpt === true || (typeof ellipsisOpt === "object" && ellipsisOpt != null);
+                const showTitle = ellipsis && (ellipsisOpt === true || ellipsisOpt?.showTitle !== false);
+                const cellContent = flexRender(
+                  cell.column.columnDef.cell,
+                  cell.getContext()
+                );
+                const titleAttr = showTitle && typeof cell.getValue() === "string" ? cell.getValue() as string : undefined;
                 return (
                   <TableCell
                     key={cell.id}
                     colSpan={cellMeta?.colSpan}
                     rowSpan={cellMeta?.rowSpan}
+                    title={titleAttr}
                     style={{
                       ...getPinningStyles(cell.column, false),
                       ...cellMeta?.style,
                     }}
                     className={cn(
-                      "border-b border-border/60 bg-background px-4 py-3 text-sm text-foreground transition-colors group-hover:bg-muted/40",
+                      "border-b border-border/60 bg-background text-foreground transition-colors group-hover:bg-muted/40",
+                      sizeCellClass ?? "px-4 py-3 text-sm",
                       alignClass,
+                      ellipsis && "truncate",
                       isPinned === "left" && "border-r border-border",
                       isPinned === "left" && showLeft && "data-table-shadow-left",
                       isPinned === "right" && "border-l border-border",
@@ -121,10 +143,7 @@ export function DataTableBody<TData>({
                     )}
                     aria-hidden={cellMeta?.["aria-hidden"]}
                   >
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
+                    {cellContent}
                   </TableCell>
                 );
               })}

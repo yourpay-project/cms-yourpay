@@ -326,7 +326,8 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 
 - **`shared/ui/data-table`** – generic, enterprise-style DataTable (AntD-like):
   - **DataTable** – main component: sticky header, column pinning (freeze left/right), scroll shadow (theme-aware), row selection (cross-page, invert, conditional), expandable rows, summary footer, empty/loading states, `onCell`/`onRow` for colSpan/rowSpan and a11y.
-  - **Styling:** Header uses `bg-muted/80`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`) so they adapt to theme.
+  - **Vertical scroll shadow:** Set `enableVerticalShadow` to show a top shadow when scrolled down and a bottom shadow when there is content below. The bottom shadow is an overlay fixed at the viewport bottom (does not scroll with rows) and hides when the user scrolls to the very bottom.
+  - **Styling:** Header uses `bg-muted`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`) so they adapt to theme.
   - **Pagination:** Client-side by default; for server-side pass `pagination`, `pageCount`, and `onPaginationChange`.
   - **Exports:** `DataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
 - **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, and server-side pagination; used by the user-list page at `/customers`.
@@ -351,6 +352,7 @@ const columns = [
   getRowId={(row) => row.id}
   initialColumnPinning={{ left: ["name"], right: ["actions"] }}
   scrollHeight="calc(100vh - 280px)"
+  enableVerticalShadow
   empty={{ emptyMessage: "No data." }}
 />
 ```

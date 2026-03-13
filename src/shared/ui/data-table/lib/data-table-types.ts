@@ -16,6 +16,8 @@ declare module "@tanstack/react-table" {
     filterOptions?: ReadonlyArray<{ value: string; label: string }>;
     /** Optional alignment for header + body cells: left | center | right (default: left). */
     align?: "left" | "center" | "right";
+    /** Ellipsis cell content; use title attribute when showTitle (AntD-style). */
+    ellipsis?: boolean | { showTitle?: boolean };
     /** Internal anchor to keep generic parameters used for tooling. */
     _dataType?: TData;
     /** Internal anchor to keep generic parameters used for tooling. */
@@ -99,57 +101,101 @@ export type ResponsiveColumnVisibility = Record<string, boolean>;
 /** Filter state: column id -> filter value. */
 export type DataTableFilterState = Record<string, unknown>;
 
+/** Table size (cell padding / density). AntD: small | medium | large. */
+export type DataTableSize = "small" | "medium" | "large";
+
+/** Scroll config (AntD-style scroll.x / scroll.y). */
+export interface DataTableScrollConfig {
+  /** Max height of scroll area (vertical). */
+  y?: string | number;
+  /** Min/max width of scroll area (horizontal). */
+  x?: string | number | true;
+  /** Scroll to first row when pagination/filter/sort changes. */
+  scrollToFirstRowOnChange?: boolean;
+}
+
+/** Locale text for table (AntD-style locale). */
+export interface DataTableLocale {
+  emptyText?: ReactNode;
+  filterConfirm?: ReactNode;
+  filterReset?: ReactNode;
+  filterEmptyText?: ReactNode;
+  filterCheckall?: ReactNode;
+  selectionAll?: ReactNode;
+  selectInvert?: ReactNode;
+  selectNone?: ReactNode;
+  selectAll?: ReactNode;
+  selectCurrentPage?: ReactNode;
+  sortTitle?: ReactNode;
+  expand?: ReactNode;
+  collapse?: ReactNode;
+  triggerDesc?: ReactNode;
+  triggerAsc?: ReactNode;
+  cancelSort?: ReactNode;
+}
+
 /**
  * Props for the shared DataTable component.
+ * Aligned with Ant Design Table API where applicable.
  *
  * All colors and borders use semantic tokens (e.g. bg-background, border-border)
- * so the table respects the app theme. Column pinning and scroll shadow are
- * applied via initialColumnPinning and the internal useScrollShadow hook.
+ * so the table respects the app theme.
  */
 export interface DataTableProps<TData, TValue = unknown> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  /** Scroll: use scroll.y for height, scroll.x for min width (AntD-style). */
+  scroll?: DataTableScrollConfig;
+  /** @deprecated Use scroll.y instead. */
   scrollHeight?: string;
   isLoading?: boolean;
+  /** Whether to show table header. */
+  showHeader?: boolean;
+  /** Table size: cell padding and density (AntD size). */
+  size?: DataTableSize;
+  /** Table title renderer (above table). AntD title. */
+  title?: ReactNode | ((currentPageData: TData[]) => ReactNode);
+  /** Table footer renderer (below table body, above summary). AntD footer. */
+  footer?: ReactNode | ((currentPageData: TData[]) => ReactNode);
+  /** Row className (AntD rowClassName). */
+  rowClassName?: (row: Row<TData>) => string;
+  /** Whether row is hoverable. */
+  rowHoverable?: boolean;
+  /** CSS table-layout. AntD tableLayout. */
+  tableLayout?: "auto" | "fixed";
+  /** Locale text (emptyText, etc.). */
+  locale?: DataTableLocale;
+  /**
+   * Enable vertical scroll shadows: top shadow when scrolled down; bottom shadow
+   * fixed at viewport bottom (hides when scrolled to the very bottom).
+   */
+  enableVerticalShadow?: boolean;
   initialColumnPinning?: ColumnPinningState;
-  /** Initial sort (multi-column supported). */
   initialSorting?: SortingState;
-  /** Initial column visibility (responsive). */
   initialColumnVisibility?: VisibilityState;
-  /** Initial filter values. */
   initialFiltering?: DataTableFilterState;
-  /** Unique row id for selection across pages. */
   getRowId?: (row: TData, index: number) => string;
-  /** Selection (cross-page, conditional, toolbar). */
   selection?: DataTableSelectionConfig<TData>;
-  /** Expandable / tree rows. */
   expandable?: DataTableExpandableConfig<TData>;
-  /** Sticky summary footer. */
   summary?: DataTableSummaryConfig;
-  /** Empty state. */
   empty?: DataTableEmptyConfig;
-  /** Loading state. */
   loading?: DataTableLoadingConfig;
-  /** onCell hook for colSpan, rowSpan, className. */
   onCell?: (row: Row<TData>, columnId: string) => TableCellProps | undefined;
-  /** onRow hook for className, onClick, aria. */
   onRow?: (row: Row<TData>) => TableRowProps | undefined;
-  /** Enable virtual scroll for large data (requires @tanstack/react-virtual). */
   enableVirtualScroll?: boolean;
-  /** Estimated row height for virtual scroll. */
   virtualRowHeight?: number;
-  /** Pagination: show or hide. */
   showPagination?: boolean;
-  /** Page size options. */
   pageSizeOptions?: readonly number[];
-  /** Bordered table style. */
   bordered?: boolean;
-  /** Server-side pagination: total number of pages (required when pagination is provided). */
   pageCount?: number;
-  /** Controlled pagination state (use with pageCount and onPaginationChange for server-side). */
   pagination?: { pageIndex: number; pageSize: number };
-  /** Called when user changes page or page size (for server-side pagination). */
   onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void;
+  /** Unified onChange (pagination, filters, sorter). AntD onChange. */
+  onChange?: (info: {
+    pagination: { pageIndex: number; pageSize: number; pageCount: number };
+    sorting: SortingState;
+    columnVisibility?: VisibilityState;
+  }) => void;
 }
 
 /** Default empty message. */

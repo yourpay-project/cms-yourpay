@@ -150,6 +150,7 @@ export const UserTable: FC<UserTableProps> = ({
           data={data}
           getRowId={(row) => row.id}
           scrollHeight="calc(100vh - 320px)"
+          enableVerticalShadow
           isLoading={isRefetching}
           loading={{ loadingVariant: "spinner" }}
           initialColumnPinning={{ left: ["name"], right: ["actions"] }}

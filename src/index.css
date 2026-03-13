@@ -113,3 +113,20 @@
 .dark .data-table-shadow-right {
   box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.15);
 }
+
+/* DataTable: vertical scroll shadows for sticky header/footer */
+.data-table-shadow-top {
+  box-shadow: 0 6px 12px -4px hsl(var(--foreground) / 0.08);
+}
+
+.data-table-shadow-bottom {
+  box-shadow: 0 -6px 12px -4px hsl(var(--foreground) / 0.08);
+}
+
+.dark .data-table-shadow-top {
+  box-shadow: 0 6px 12px -4px hsl(var(--foreground) / 0.15);
+}
+
+.dark .data-table-shadow-bottom {
+  box-shadow: 0 -6px 12px -4px hsl(var(--foreground) / 0.15);
+}
