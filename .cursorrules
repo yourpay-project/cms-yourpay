@@ -1,4 +1,10 @@
-# React CMS Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard v3.0
+---
+description: React CMS Master Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard v4.0
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# React CMS Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard
 
 ## 1. The FSD Philosophy & Core Rules
 - Downward Discovery: Imports MUST only flow downwards (App -> Pages -> Widgets -> Features -> Entities -> Shared). Higher layers cannot be imported by lower layers.
@@ -104,3 +110,75 @@ src/[layer]/[slice-name]/
 ## 20. Code Cleanliness & Maintenance
 - No Magic Numbers: Use constants defined in 'lib' or 'model' segments.
 - Comments: Avoid comments that explain "what" (code should be self-documenting). Use comments to explain "why".
+
+## 21. Explicit Component Typing (Strict Mode Enforcement)
+- Explicit Typing: ALWAYS use `React.FC` or explicit Return Types for components. Never leave component definitions untyped.
+- Props Definition: Every component must have an `interface` for its props, even if empty.
+
+## 22. SVG & Asset Integration (SVGR)
+- SVG Handling: Use SVGR for icons. Import via `?react` suffix (e.g., `import LogoIcon from '@/shared/assets/icons/logo.svg?react'`).
+- Semantic Styling: Use Tailwind (`text-*`, `w-*`) on SVG components. Source SVGs must use `fill="currentColor"`.
+
+## 23. Structural Refactoring Protocol
+- Zero Behavior Change: Refactors must be strictly structural. Logic/UI output MUST remain identical.
+- API Stability: Preserve existing `index.ts` exports.
+- Module-Scope Lookups: Move expensive `find/filter` out of render. Use `Map` lookups in `model/`.
+
+## 24. Backend-for-Frontend (BFF) & Security Protocol
+- Token Handling: Use secure HttpOnly cookies. NEVER store sensitive tokens in `localStorage`.
+- Biometric/Hardware Keys: Isolate cryptographic logic in `shared/lib/crypto` and expose via hooks in `features/auth`.
+
+## 25. Server-Driven UI (SDUI) Readiness
+- Dynamic Rendering: Maintain a strict "Component Registry" in the `widgets/` layer.
+- Payload Validation: SDUI JSON MUST be strictly validated via Zod before rendering.
+- Fallbacks: Always provide an `UnknownWidget` fallback.
+
+## 26. Webview Bridges & External SDKs
+- Bridge Isolation: All `window.*` injections, SDKs, or bridges MUST be isolated in `shared/api/bridges` or `shared/lib/integrations`.
+- Type-Safe Bridges: Define strict TypeScript interfaces for all data passing through webview bridges.
+
+## 27. Best Practice Code Examples
+
+### Example: Strict Public API (index.ts)
+```typescript
+export { LoginForm } from './ui/LoginForm';
+export { useAuthStore } from './model/auth-store';
+export type { AuthSession } from './model/types';
+
+### Example: SRP Hook with Zod & TanStack Query (model)
+import { useMutation } from '@tanstack/react-query';
+import { z } from 'zod';
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+export type LoginFormValues = z.infer<typeof loginSchema>;
+
+export const useLoginLogic = () => {
+  return useMutation({
+    mutationFn: async (data: LoginFormValues) => {
+      const validated = loginSchema.parse(data);
+      return await loginApi(validated);
+    },
+  });
+};
+
+### Example: Pure UI Component with SVGR (ui)
+import React from 'react';
+import LockIcon from '@/shared/assets/icons/lock.svg?react';
+import { Button } from '@/shared/ui';
+import { useLoginLogic } from '../model/use-login-logic';
+
+export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+  const { mutate, isPending } = useLoginLogic();
+  return (
+    <form className="flex flex-col gap-4 border-border">
+      <div className="flex gap-2">
+         <LockIcon className="w-5 h-5 text-muted-foreground" />
+         <h2 className="text-foreground">Login</h2>
+      </div>
+      <Button disabled={isPending}>{isPending ? 'Wait...' : 'Sign In'}</Button>
+    </form>
+  );
+};
