@@ -1,15 +1,9 @@
 /**
- * HTTP API client with JWT in Authorization header and auto refresh token from cookies.
+ * HTTP API client with JWT in Authorization header.
  *
  * This file intentionally re-exports a compact public API while the
  * implementation lives in smaller modules under `shared/api/*`.
  */
-import {
-  clearTokensInCookies,
-  getDefaultAccessToken,
-  getDefaultRefreshToken,
-  setTokensInCookies,
-} from "./cookies";
 import { createApiRequest } from "./request";
 import { ApiClientError } from "./errors";
 import type { ApiClientConfig, ApiResponse, RequestOptions } from "./types";
@@ -25,17 +19,18 @@ export function getApiClientConfig(): ApiClientConfig | null {
 }
 
 export type { ApiClientConfig, ApiResponse, RequestOptions };
-export { ApiClientError, getDefaultAccessToken, getDefaultRefreshToken, setTokensInCookies, clearTokensInCookies };
+export { ApiClientError };
 
 export async function apiRequest<T>(
   path: string,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> {
   const getConfig = () =>
-    sharedConfig ?? ({
+    sharedConfig ??
+    ({
       baseUrl: import.meta.env.VITE_API_BASE_URL ?? "/api",
-      getAccessToken: getDefaultAccessToken,
-      getRefreshToken: getDefaultRefreshToken,
+      getAccessToken: () => null,
+      getRefreshToken: () => null,
     } satisfies ApiClientConfig);
 
   const request = createApiRequest(getConfig);

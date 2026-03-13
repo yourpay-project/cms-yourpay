@@ -30,6 +30,7 @@ export function useLoginCallback(): { status: LoginCallbackStatus } {
     const parsed = loginCallbackSearchSchema.parse(raw);
 
     if (parsed.token) {
+      // Store token into auth store for subsequent API calls.
       setTokenFromCallback(parsed.token);
     }
 
@@ -39,7 +40,8 @@ export function useLoginCallback(): { status: LoginCallbackStatus } {
       .then((user) => {
         setUser(user);
         toast.success('Signed in successfully');
-        navigate({ to: '/', replace: true });
+        // Temporary: keep user on callback page to inspect auth state instead of redirecting.
+        // navigate({ to: '/', replace: true });
       })
       .catch((err) => {
         if (controller.signal.aborted) return;
@@ -49,7 +51,8 @@ export function useLoginCallback(): { status: LoginCallbackStatus } {
             ? err.message
             : 'Failed to complete sign in.';
         toast.error(message);
-        navigate({ to: '/login', replace: true });
+        // Temporary: do not redirect on error to simplify debugging.
+        // navigate({ to: '/login', replace: true });
       });
 
     return () => controller.abort();

@@ -1,24 +1,28 @@
-import {
-  clearTokensInCookies,
-  configureApiClient,
-  getDefaultAccessToken,
-  getDefaultRefreshToken,
-  setTokensInCookies,
-} from "./api-client";
+import { configureApiClient } from "./api-client";
+import { useAuthStore } from "@/entities/session";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 export function initApiClient(): void {
   configureApiClient({
     baseUrl,
-    getAccessToken: getDefaultAccessToken,
-    getRefreshToken: getDefaultRefreshToken,
-    onTokensRefreshed: (access, refresh) => {
-      setTokensInCookies(access, refresh);
+    getAccessToken: () => {
+      try {
+        return useAuthStore.getState().token;
+      } catch {
+        return null;
+      }
+    },
+    getRefreshToken: () => null,
+    onTokensRefreshed: () => {
+      // No-op: refresh flow is currently disabled in client-only auth mode.
     },
     onUnauthorized: () => {
-      clearTokensInCookies();
-      window.location.href = "/login";
+      try {
+        useAuthStore.getState().logout();
+      } catch {
+        // ignore
+      }
     },
   });
 }

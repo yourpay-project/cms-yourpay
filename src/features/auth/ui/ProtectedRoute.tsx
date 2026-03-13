@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../model";
 
 interface ProtectedRouteProps {
@@ -14,7 +14,6 @@ interface ProtectedRouteProps {
  */
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated } = useAuth();
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         replace: true,
       });
     }
-  }, [isAuthenticated, location, navigate]);
+  }, [isAuthenticated, navigate]);
 
   if (!isAuthenticated) {
     return null;

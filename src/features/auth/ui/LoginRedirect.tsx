@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../model";
 
 export interface LoginRedirectProps {
@@ -15,13 +15,12 @@ export interface LoginRedirectProps {
  */
 export const LoginRedirect: FC<LoginRedirectProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) return;
     void navigate({ to: "/", replace: true });
-  }, [isAuthenticated, location, navigate]);
+  }, [isAuthenticated, navigate]);
 
   if (isAuthenticated) {
     return null;

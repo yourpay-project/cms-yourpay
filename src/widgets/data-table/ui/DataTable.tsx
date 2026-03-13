@@ -27,6 +27,7 @@ export function DataTable<TData, TValue>({
   columnVisibility,
   onColumnVisibilityChange,
   className,
+  tableClassName,
   rowCount,
 }: DataTableProps<TData, TValue>): JSX.Element {
   const {
@@ -50,25 +51,29 @@ export function DataTable<TData, TValue>({
 
   return (
     <ErrorBoundary>
-      <div className={cn('space-y-4', className)}>
-        <div className="rounded-md border border-border bg-card">
-          <Table>
-            <DataTableHead table={table} />
-            <DataTableBody table={table} columnCount={columns.length} />
-          </Table>
-        </div>
+      <div className={cn("flex h-full flex-col", className)}>
+        <div className="relative flex-1 min-h-0 rounded-lg border border-border bg-card shadow-sm">
+          <div className="h-full overflow-auto bg-card">
+            <Table className={cn('min-w-full', tableClassName)}>
+              <DataTableHead table={table} />
+              <DataTableBody table={table} columnCount={columns.length} />
+            </Table>
+          </div>
 
-        <DataTablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          rowCount={rowCount}
-          canPreviousPage={canPreviousPage}
-          canNextPage={canNextPage}
-          onFirstPage={() => table.firstPage()}
-          onPreviousPage={() => table.previousPage()}
-          onNextPage={() => table.nextPage()}
-          onLastPage={() => table.lastPage()}
-        />
+          <div className="sticky bottom-0 border-t border-border/60 bg-card px-4 py-2">
+            <DataTablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              rowCount={rowCount}
+              canPreviousPage={canPreviousPage}
+              canNextPage={canNextPage}
+              onFirstPage={() => table.firstPage()}
+              onPreviousPage={() => table.previousPage()}
+              onNextPage={() => table.nextPage()}
+              onLastPage={() => table.lastPage()}
+            />
+          </div>
+        </div>
       </div>
     </ErrorBoundary>
   );

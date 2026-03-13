@@ -3,15 +3,13 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { authUserSchema, useAuthStore } from "@/entities/session";
 import { ApiClientError } from "@/shared/api";
-import { DEMO_ADMIN_USER, isDemoCredentials } from "../constants";
 import { login } from "../api";
 import type { LoginFormValues } from "./login-schema";
 
 /**
- * Mutation hook for handling the login flow (email/password + demo mode).
+ * Mutation hook for handling the real login flow (email/password).
  *
  * - Sends credentials to the backend via `auth-service.login`.
- * - Falls back to a local demo admin user when demo credentials are used.
  * - Stores the resulting user into the session store and redirects to `/`.
  */
 export const useLoginMutation = () => {
@@ -20,12 +18,6 @@ export const useLoginMutation = () => {
 
   return useMutation({
     mutationFn: async (values: LoginFormValues) => {
-      if (isDemoCredentials(values.email, values.password)) {
-        return {
-          user: authUserSchema.parse(DEMO_ADMIN_USER),
-          token: "demo",
-        };
-      }
       const data = await login({ username: values.email, password: values.password });
       const user = authUserSchema.parse({
         id: data.operator_id,
@@ -38,7 +30,7 @@ export const useLoginMutation = () => {
       return { ...data, user };
     },
     onSuccess: (data) => {
-      setUser(data.user);
+      setUser(data.user, data.token);
       toast.success("Login successful");
       navigate({ to: "/" });
     },

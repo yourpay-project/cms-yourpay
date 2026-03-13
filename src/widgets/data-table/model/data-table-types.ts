@@ -39,6 +39,8 @@ export interface DataTableProps<TData, TValue> {
   onColumnVisibilityChange?: (state: VisibilityState) => void;
   /** Optional class name for the root wrapper. */
   className?: string;
+  /** Optional class name for the underlying `<table>` element. */
+  tableClassName?: string;
   /** Total row count from server; required for correct page count when using server-side pagination. */
   rowCount?: number;
 }

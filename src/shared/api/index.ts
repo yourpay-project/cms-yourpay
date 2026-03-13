@@ -7,10 +7,6 @@ export {
   configureApiClient,
   getApiClientConfig,
   ApiClientError,
-  getDefaultAccessToken,
-  getDefaultRefreshToken,
-  setTokensInCookies,
-  clearTokensInCookies,
 } from "./api-client";
 
 export { initApiClient } from "./api-config";

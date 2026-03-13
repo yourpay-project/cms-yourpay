@@ -1,5 +1,5 @@
-import { apiClient, clearTokensInCookies, parseApiData } from "@/shared/api";
-import { authUserSchema, type AuthUser } from "@/entities/session";
+import { apiClient, parseApiData } from "@/shared/api";
+import { authUserSchema, useAuthStore, type AuthUser } from "@/entities/session";
 
 const AUTH_BASE = "auth";
 
@@ -9,7 +9,8 @@ export const getMe = async (signal?: AbortSignal): Promise<AuthUser> => {
 };
 
 export const logout = async (): Promise<void> => {
-  clearTokensInCookies();
+  // Clear auth store (user + token).
+  useAuthStore.getState().logout();
   try {
     await apiClient.post<unknown>(`${AUTH_BASE}/logout`, undefined, { skipAuth: true });
   } catch {

@@ -1,4 +1,4 @@
-import { setTokensInCookies } from "@/shared/api";
+import { useAuthStore } from "@/entities/session";
 
 export const getGoogleAuthUrl = (): string => {
   const base = import.meta.env.VITE_API_BASE_URL ?? "/api";
@@ -8,6 +8,7 @@ export const getGoogleAuthUrl = (): string => {
 };
 
 export const setTokenFromCallback = (token: string): void => {
-  setTokensInCookies(token, undefined, 60 * 15);
+  // Store bearer token directly in the auth store for client-only auth.
+  useAuthStore.getState().setToken(token);
 };
 

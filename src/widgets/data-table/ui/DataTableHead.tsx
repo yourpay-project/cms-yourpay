@@ -12,13 +12,14 @@ export interface DataTableHeadProps<TData> {
 /** Renders table header rows from the table instance's header groups. */
 export function DataTableHead<TData>({ table }: DataTableHeadProps<TData>): JSX.Element {
   return (
-    <TableHeader>
+    <TableHeader className="sticky top-0 z-20 bg-card">
       {table.getHeaderGroups().map((headerGroup) => (
         <TableRow key={headerGroup.id}>
           {headerGroup.headers.map((header) => {
             if (header.isPlaceholder) {
               return null;
             }
+
             return (
               <TableHead key={header.id}>
                 {flexRender(

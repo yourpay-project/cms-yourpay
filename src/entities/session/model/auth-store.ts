@@ -5,7 +5,19 @@ import type { AuthUser } from "./types";
 interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  setUser: (user: AuthUser | null) => void;
+  /**
+   * Raw bearer token used for `Authorization` header.
+   * Persisted together with the user for client-only auth.
+   */
+  token: string | null;
+  /**
+   * Update the current user and, optionally, the bearer token.
+   */
+  setUser: (user: AuthUser | null, token?: string | null) => void;
+  /**
+   * Update only the bearer token without touching the current user.
+   */
+  setToken: (token: string | null) => void;
   logout: () => void;
   hasPermission: (permission: string) => boolean;
   hasRole: (role: string) => boolean;
@@ -16,7 +28,7 @@ interface AuthState {
 /**
  * Global session store for the CMS operator.
  *
- * - Persists the authenticated `AuthUser` in `localStorage` under `cms-auth`.
+ * - Persists the authenticated `AuthUser` and bearer token in `localStorage` under `cms-auth`.
  * - Exposes boolean helpers for permission/role checks used by the auth feature.
  * - Keeps a denormalized `isAuthenticated` flag for inexpensive routing guards.
  */
@@ -25,23 +37,20 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      token: null,
+      setUser: (user, token) =>
+        set((state) => ({
+          user,
+          isAuthenticated: !!user,
+          token: token ?? state.token,
+        })),
+      setToken: (token) =>
+        set((state) => ({
+          ...state,
+          token,
+        })),
+      logout: () => set({ user: null, isAuthenticated: false, token: null }),
       // NOTE: Temporary relaxed RBAC logic.
-      // Original implementations:
-      // hasPermission: (permission) => {
-      //   const { user } = get();
-      //   if (!user?.permissions?.length) return false;
-      //   return user.permissions.includes(permission) || user.permissions.includes("*");
-      // },
-      // hasRole: (role) => {
-      //   const { user } = get();
-      //   if (!user?.roles?.length) return false;
-      //   return user.roles.includes(role) || user.roles.includes("super_admin");
-      // },
-      // hasAnyPermission: (permissions) =>
-      //   permissions.some((p) => get().hasPermission(p)),
-      // hasAnyRole: (roles) => roles.some((r) => get().hasRole(r)),
       hasPermission: () => true,
       hasRole: () => true,
       hasAnyPermission: () => true,
