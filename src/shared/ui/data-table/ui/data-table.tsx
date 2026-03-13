@@ -117,7 +117,15 @@ export function DataTable<TData, TValue = unknown>(
         EmptyComponent={EmptyComponent}
       />
       {showPagination && (
-        <DataTablePagination table={table} pageSizeOptions={pageSizeOptions} />
+        <DataTablePagination
+          table={table}
+          pageSizeOptions={pageSizeOptions}
+          showSelectionCount={
+            !!selection &&
+            (selection.enableRowSelection === true ||
+              typeof selection.enableRowSelection === "function")
+          }
+        />
       )}
     </div>
   );

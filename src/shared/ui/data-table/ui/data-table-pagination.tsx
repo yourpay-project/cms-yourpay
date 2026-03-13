@@ -17,6 +17,8 @@ export interface DataTablePaginationProps<TData> {
   table: Table<TData>;
   /** Override default page size options (default: PAGE_SIZE_OPTIONS [10, 20, 30, 40, 50]). */
   pageSizeOptions?: readonly number[];
+  /** When false, hides "X of Y row(s) selected." (e.g. when table does not use selection). */
+  showSelectionCount?: boolean;
 }
 
 /**
@@ -31,6 +33,7 @@ const DEFAULT_PAGE_SIZE_OPTIONS = PAGE_SIZE_OPTIONS;
 export function DataTablePagination<TData>({
   table,
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+  showSelectionCount = true,
 }: DataTablePaginationProps<TData>): React.ReactElement {
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
   const totalCount = table.getFilteredRowModel().rows.length;
@@ -40,10 +43,17 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 px-2 py-2">
-      <div className="text-sm text-muted-foreground">
-        {selectedCount} of {totalCount} row(s) selected.
-      </div>
-      <div className="flex items-center gap-4 lg:gap-6">
+      {showSelectionCount && (
+        <div className="text-sm text-muted-foreground">
+          {selectedCount} of {totalCount} row(s) selected.
+        </div>
+      )}
+      <div
+        className={cn(
+          "flex items-center gap-4 lg:gap-6",
+          !showSelectionCount && "ml-auto"
+        )}
+      >
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">Rows per page</span>
           <select

@@ -234,7 +234,6 @@ export function useDataTable<TData>(
 
   const scrollStyle = React.useMemo<React.CSSProperties>(
     () => ({
-      height: resolvedScrollHeight,
       maxHeight: resolvedScrollHeight,
       ...(scrollX != null &&
         scrollX !== true && {
