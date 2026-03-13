@@ -103,8 +103,8 @@ src/
         ├── button.tsx
         ├── card.tsx
         ├── data-table/      # Generic DataTable (AntD-style): pinning, selection, scroll shadow
-        │   ├── ui/          # DataTable, DataTablePagination, DataTableToolbar, etc.
-        │   ├── lib/         # table-utils (getPinningStyles, useScrollShadow), data-table-types
+        │   ├── ui/          # DataTable, DataTableScrollArea, DataTableHeader, DataTableBody, Pagination, etc.
+        │   ├── lib/         # use-data-table, data-table-constants, table-utils, data-table-types
         │   └── index.ts
         ├── dropdown-menu.tsx
         ├── input.tsx
@@ -324,12 +324,15 @@ For navigation inside components, use **TanStack Router hooks**:
 
 The primary table for the app is the **shared DataTable** (`shared/ui/data-table`). It uses **@tanstack/react-table** with **semantic Tailwind tokens** (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-card`) so it respects light/dark theme and stays consistent with the rest of the UI.
 
-- **`shared/ui/data-table`** – generic, enterprise-style DataTable (AntD-like):
-  - **DataTable** – main component: sticky header, column pinning (freeze left/right), scroll shadow (theme-aware), row selection (cross-page, invert, conditional), expandable rows, summary footer, empty/loading states, `onCell`/`onRow` for colSpan/rowSpan and a11y.
+- **`shared/ui/data-table`** – generic, enterprise-style DataTable (AntD-like), split into small parts for readability:
+  - **DataTable** – thin main component: uses `useDataTable` hook and composes `DataTableScrollArea` and pagination.
+  - **useDataTable** – central hook: table state, `useReactTable` instance, scroll shadow, derived values (empty message, title/footer nodes, etc.). Export for advanced or custom table UIs.
+  - **DataTableScrollArea** – scroll wrapper + table shell + `DataTableHeader`, `DataTableBody`, footers, and fixed bottom shadow overlay.
+  - **DataTableHeader** – sticky thead with pinning and scroll shadow classes; **DataTableBody** – tbody with loading/empty/rows and expandable support.
   - **Vertical scroll shadow:** Set `enableVerticalShadow` to show a top shadow when scrolled down and a bottom shadow when there is content below. The bottom shadow is an overlay fixed at the viewport bottom (does not scroll with rows) and hides when the user scrolls to the very bottom.
-  - **Styling:** Header uses `bg-muted`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`) so they adapt to theme.
+  - **Styling:** Header uses `bg-muted`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`).
   - **Pagination:** Client-side by default; for server-side pass `pagination`, `pageCount`, and `onPaginationChange`.
-  - **Exports:** `DataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
+  - **Exports:** `DataTable`, `useDataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
 - **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, and server-side pagination; used by the user-list page at `/customers`.
 - **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
 - **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
