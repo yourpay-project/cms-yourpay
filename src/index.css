@@ -1,7 +1,11 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Theme: comfortable contrast, semantic colors (success/warning) for readability. */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -10,7 +14,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 28%;
+    --primary: 199 89% 32%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -20,32 +24,53 @@
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 28%;
+    --ring: 199 89% 32%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 38%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 38%;
+    --background: 222 18% 11%;
+    --foreground: 210 20% 92%;
+    --card: 222 18% 13%;
+    --card-foreground: 210 20% 92%;
+    --popover: 222 18% 13%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 199 70% 52%;
+    --primary-foreground: 222 30% 12%;
+    --secondary: 217 25% 22%;
+    --secondary-foreground: 210 20% 92%;
+    --muted: 217 25% 20%;
+    --muted-foreground: 215 18% 68%;
+    --accent: 217 25% 22%;
+    --accent-foreground: 210 20% 92%;
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 210 20% 95%;
+    --success: 142 55% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 85% 52%;
+    --warning-foreground: 0 0% 100%;
+    --border: 217 20% 24%;
+    --input: 217 20% 24%;
+    --ring: 199 70% 52%;
+  }
+
+  .theme {
+    --font-sans: "Geist Variable", sans-serif;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
