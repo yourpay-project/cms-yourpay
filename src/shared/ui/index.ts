@@ -1,5 +1,11 @@
 export { Button, buttonVariants, type ButtonProps } from "./button";
 export {
+  Calendar,
+  CalendarDayButton,
+  type CalendarProps,
+  type DateRange,
+} from "./calendar";
+export {
   Card,
   CardContent,
   CardDescription,
@@ -28,6 +34,11 @@ export { Skeleton } from "./skeleton";
 export { PageSkeleton } from "./page-skeleton";
 export { RouteFallback } from "./route-fallback";
 export { ErrorBoundary } from "./error-boundary";
+export {
+  FilterSelectWithClear,
+  type FilterSelectOption,
+  type FilterSelectWithClearProps,
+} from "./filter-select-with-clear";
 export { ThemeToggle } from "./theme-toggle";
 export {
   Table,
@@ -53,6 +64,7 @@ export {
   useScrollShadow,
   PAGE_SIZE_OPTIONS,
   DEFAULT_SKELETON_ROW_COUNT,
+  TABLE_BODY_VIEWPORT_HEIGHT,
   DEFAULT_EMPTY_MESSAGE,
   type DataTableProps,
   type DataTablePaginationProps,
