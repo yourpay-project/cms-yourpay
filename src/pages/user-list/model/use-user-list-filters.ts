@@ -1,9 +1,8 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useDebouncedValue } from "@/shared/lib";
+import { useUserListStore } from "./user-list-store";
 import { useUserListQuery } from "./use-user-list-query";
 import { USER_STATUS_OPTIONS, USER_GENDER_OPTIONS } from "./constants";
-
-const DEFAULT_PAGE_SIZE = 10;
 
 export interface UserListFilterBadge {
   key: string;
@@ -13,19 +12,29 @@ export interface UserListFilterBadge {
 
 /**
  * Encapsulates filter state, query, and derived values for the User Yourpay list page.
- * Mirrors KYC submission page pattern: collapsible filters, badges, reset. Country is
- * rendered as buttons (All, BN, HK, …) outside the filters card; status/gender live in the card.
+ * State is persisted via {@link useUserListStore} (localStorage key: cms-user-yourpay).
+ * Country is rendered as buttons (All, BN, HK, …) outside the filters card; status/gender live in the card.
  *
  * @returns Filter state, handlers, badges, query result (users, total, isLoading, isError), and refs for selects
  */
 export function useUserListFilters() {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const [country, setCountry] = useState<string>("ALL");
-  const [status, setStatus] = useState<string>("all");
-  const [gender, setGender] = useState<string>("all");
-  const [searchInput, setSearchInput] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const {
+    pageIndex,
+    pageSize,
+    country,
+    status,
+    gender,
+    searchInput,
+    filtersOpen,
+    setPageIndex,
+    setPageSize,
+    setCountry,
+    setStatus,
+    setGender,
+    setSearchInput,
+    setFiltersOpen,
+    resetFilters,
+  } = useUserListStore();
 
   const countrySelectRef = useRef<HTMLSelectElement>(null);
   const statusSelectRef = useRef<HTMLSelectElement>(null);
@@ -43,12 +52,8 @@ export function useUserListFilters() {
   });
 
   const handleResetFilters = useCallback(() => {
-    setCountry("ALL");
-    setStatus("all");
-    setGender("all");
-    setSearchInput("");
-    setPageIndex(0);
-  }, []);
+    resetFilters();
+  }, [resetFilters]);
 
   const badges = useMemo((): UserListFilterBadge[] => {
     const list: UserListFilterBadge[] = [];
@@ -75,9 +80,9 @@ export function useUserListFilters() {
       });
     }
     return list;
-  }, [status, gender]);
+  }, [status, gender, setStatus, setGender, setPageIndex]);
 
-  const resetPageIndex = useCallback(() => setPageIndex(0), []);
+  const resetPageIndex = useCallback(() => setPageIndex(0), [setPageIndex]);
 
   const users = query.data?.data ?? [];
   const total = query.data?.total ?? 0;

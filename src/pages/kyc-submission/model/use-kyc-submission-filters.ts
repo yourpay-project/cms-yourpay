@@ -1,15 +1,14 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useDebouncedValue } from "@/shared/lib";
-import { getLast30DaysInitial } from "../lib/date-range-presets";
 import { toCreatedAtFrom, toCreatedAtTo } from "../lib/date-api-format";
+import { useKycSubmissionStore } from "./kyc-submission-store";
 import { useKycSubmissionQuery } from "./use-kyc-submission-query";
 import {
   KYC_STATUS_OPTIONS,
   KYC_DOCUMENT_TYPE_OPTIONS,
+  KYC_COUNTRY_OPTIONS,
   REVERIFY_OPTIONS,
 } from "./constants";
-
-const DEFAULT_PAGE_SIZE = 10;
 
 export interface FilterBadge {
   key: string;
@@ -19,23 +18,42 @@ export interface FilterBadge {
 
 /**
  * Encapsulates filter state, query, and derived values for the KYC submission list page.
- * Keeps page component thin and logic in model (SRP).
+ * State is persisted via {@link useKycSubmissionStore} (localStorage key: cms-kyc-submission).
  */
 export function useKycSubmissionFilters() {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const [status, setStatus] = useState("all");
-  const [documentType, setDocumentType] = useState("all");
-  const [country, setCountry] = useState("all");
-  const [reverifyStatus, setReverifyStatus] = useState("all");
-  const [kycFrom, setKycFrom] = useState(() => getLast30DaysInitial().from);
-  const [kycTo, setKycTo] = useState(() => getLast30DaysInitial().to);
-  const [lastUpdateFrom, setLastUpdateFrom] = useState("");
-  const [lastUpdateTo, setLastUpdateTo] = useState("");
-  const [kycPresetLabel, setKycPresetLabel] = useState<string | null>(() => getLast30DaysInitial().presetLabel);
-  const [lastUpdatePresetLabel, setLastUpdatePresetLabel] = useState<string | null>(null);
-  const [searchInput, setSearchInput] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const store = useKycSubmissionStore();
+
+  const {
+    pageIndex,
+    pageSize,
+    status,
+    documentType,
+    country,
+    reverifyStatus,
+    kycFrom,
+    kycTo,
+    lastUpdateFrom,
+    lastUpdateTo,
+    kycPresetLabel,
+    lastUpdatePresetLabel,
+    searchInput,
+    filtersOpen,
+    setPageIndex,
+    setPageSize,
+    setStatus,
+    setDocumentType,
+    setCountry,
+    setReverifyStatus,
+    setKycFrom,
+    setKycTo,
+    setLastUpdateFrom,
+    setLastUpdateTo,
+    setKycPresetLabel,
+    setLastUpdatePresetLabel,
+    setSearchInput,
+    setFiltersOpen,
+    resetFilters,
+  } = store;
 
   const statusSelectRef = useRef<HTMLSelectElement>(null);
   const documentTypeSelectRef = useRef<HTMLSelectElement>(null);
@@ -67,19 +85,8 @@ export function useKycSubmissionFilters() {
   }, [kycPresetLabel, kycFrom, kycTo]);
 
   const handleResetFilters = useCallback(() => {
-    setStatus("all");
-    setDocumentType("all");
-    setCountry("all");
-    setReverifyStatus("all");
-    setKycFrom("");
-    setKycTo("");
-    setLastUpdateFrom("");
-    setLastUpdateTo("");
-    setKycPresetLabel(null);
-    setLastUpdatePresetLabel(null);
-    setSearchInput("");
-    setPageIndex(0);
-  }, []);
+    resetFilters();
+  }, [resetFilters]);
 
   const badges = useMemo((): FilterBadge[] => {
     const list: FilterBadge[] = [];
@@ -101,6 +108,17 @@ export function useKycSubmissionFilters() {
         label: `Document: ${label}`,
         onClear: () => {
           setDocumentType("all");
+          setPageIndex(0);
+        },
+      });
+    }
+    if (country !== "all") {
+      const label = KYC_COUNTRY_OPTIONS.find((o) => o.value === country)?.label ?? country;
+      list.push({
+        key: "country",
+        label: `Country: ${label}`,
+        onClear: () => {
+          setCountry("all");
           setPageIndex(0);
         },
       });
@@ -146,6 +164,7 @@ export function useKycSubmissionFilters() {
   }, [
     status,
     documentType,
+    country,
     reverifyStatus,
     kycFrom,
     kycTo,
@@ -153,9 +172,20 @@ export function useKycSubmissionFilters() {
     lastUpdateFrom,
     lastUpdateTo,
     lastUpdatePresetLabel,
+    setStatus,
+    setDocumentType,
+    setCountry,
+    setReverifyStatus,
+    setKycFrom,
+    setKycTo,
+    setLastUpdateFrom,
+    setLastUpdateTo,
+    setKycPresetLabel,
+    setLastUpdatePresetLabel,
+    setPageIndex,
   ]);
 
-  const resetPageIndex = useCallback(() => setPageIndex(0), []);
+  const resetPageIndex = useCallback(() => setPageIndex(0), [setPageIndex]);
 
   return {
     ...query,

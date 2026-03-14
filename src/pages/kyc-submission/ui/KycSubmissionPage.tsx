@@ -2,12 +2,12 @@ import type { FC } from "react";
 import { ApiClientError } from "@/shared/api";
 import { PageSkeleton } from "@/shared/ui";
 import { KycSubmissionTable } from "@/widgets/kyc-submission-table";
-import { useKycSubmissionFilters, KYC_COUNTRY_OPTIONS } from "..";
+import { useKycSubmissionFilters } from "..";
 import { KycSubmissionFiltersCard } from "./KycSubmissionFiltersCard";
 import { KycSubmissionSearchBar } from "./KycSubmissionSearchBar";
 
 /**
- * KYC Submissions page. Renders filters card (status, document type, reverify, date ranges), country dropdown, search, and KycSubmissionTable. Uses {@link useKycSubmissionFilters} for state and server-side pagination.
+ * KYC Submissions page. Renders filters card (status, document type, country, reverify, date ranges), search, and KycSubmissionTable. Uses {@link useKycSubmissionFilters} for state and server-side pagination. Filter state is persisted in localStorage (cms-kyc-submission).
  */
 const KycSubmissionPage: FC = () => {
   const filters = useKycSubmissionFilters();
@@ -42,6 +42,9 @@ const KycSubmissionPage: FC = () => {
         documentType={filters.documentType}
         setDocumentType={filters.setDocumentType}
         documentTypeSelectRef={filters.documentTypeSelectRef}
+        country={filters.country}
+        setCountry={filters.setCountry}
+        countrySelectRef={filters.countrySelectRef}
         reverifyStatus={filters.reverifyStatus}
         setReverifyStatus={filters.setReverifyStatus}
         reverifySelectRef={filters.reverifySelectRef}
@@ -60,24 +63,7 @@ const KycSubmissionPage: FC = () => {
         resetPageIndex={filters.resetPageIndex}
       />
 
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex shrink-0 items-center gap-2">
-          <label className="text-xs font-medium text-muted-foreground">Country</label>
-          <select
-            className="h-10 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            value={filters.country}
-            onChange={(e) => {
-              filters.setCountry(e.target.value);
-              filters.resetPageIndex();
-            }}
-          >
-            {KYC_COUNTRY_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="flex flex-wrap items-end justify-end gap-3">
         <KycSubmissionSearchBar
           value={filters.searchInput}
           onChange={filters.setSearchInput}

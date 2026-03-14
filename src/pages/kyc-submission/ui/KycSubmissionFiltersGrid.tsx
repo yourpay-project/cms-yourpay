@@ -2,6 +2,7 @@ import type { FC } from "react";
 import {
   KYC_STATUS_OPTIONS,
   KYC_DOCUMENT_TYPE_OPTIONS,
+  KYC_COUNTRY_OPTIONS,
   REVERIFY_OPTIONS,
 } from "..";
 import { FilterSelectWithClear } from "@/shared/ui";
@@ -14,6 +15,9 @@ export interface KycSubmissionFiltersGridProps {
   documentType: string;
   setDocumentType: (v: string) => void;
   documentTypeSelectRef: React.RefObject<HTMLSelectElement>;
+  country: string;
+  setCountry: (v: string) => void;
+  countrySelectRef: React.RefObject<HTMLSelectElement>;
   reverifyStatus: string;
   setReverifyStatus: (v: string) => void;
   reverifySelectRef: React.RefObject<HTMLSelectElement>;
@@ -64,6 +68,20 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
         }}
         onClear={() => {
           props.setDocumentType("all");
+          resetPageIndex();
+        }}
+      />
+      <FilterSelectWithClear
+        label="Country"
+        value={props.country}
+        options={KYC_COUNTRY_OPTIONS}
+        selectRef={props.countrySelectRef}
+        onChange={(v) => {
+          props.setCountry(v);
+          resetPageIndex();
+        }}
+        onClear={() => {
+          props.setCountry("all");
           resetPageIndex();
         }}
       />

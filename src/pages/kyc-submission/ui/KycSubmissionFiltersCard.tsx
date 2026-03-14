@@ -16,6 +16,9 @@ export interface KycSubmissionFiltersCardProps {
   documentType: string;
   setDocumentType: (v: string) => void;
   documentTypeSelectRef: React.RefObject<HTMLSelectElement>;
+  country: string;
+  setCountry: (v: string) => void;
+  countrySelectRef: React.RefObject<HTMLSelectElement>;
   reverifyStatus: string;
   setReverifyStatus: (v: string) => void;
   reverifySelectRef: React.RefObject<HTMLSelectElement>;
