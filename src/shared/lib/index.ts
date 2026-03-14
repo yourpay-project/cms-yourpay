@@ -6,4 +6,5 @@ export { useThemeStore, type Theme } from "./theme-store";
 export { useThemeEffect } from "./use-theme-effect";
 export { initSentry, captureException } from "./sentry";
 export { useDebouncedValue } from "./use-debounced-value";
+export { getFilterBadgeClassName } from "./filter-badge-colors";
 
