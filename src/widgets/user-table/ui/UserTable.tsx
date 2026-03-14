@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable, Button, ErrorBoundary } from "@/shared/ui";
+import { DataTable, Button, ErrorBoundary, TABLE_BODY_VIEWPORT_HEIGHT } from "@/shared/ui";
 import type { User } from "@/entities/user";
 
 /** Props for the customers list table; wires server-side pagination to DataTable. */
@@ -59,7 +59,7 @@ export const UserTable: FC<UserTableProps> = ({
           const value = getValue<boolean | undefined>();
           const label = value ? "Active" : "Inactive";
           const badgeClassName = value
-            ? "bg-primary/10 text-primary"
+            ? "bg-success/15 text-success border border-success/30"
             : "bg-muted text-muted-foreground";
 
           return (
@@ -101,13 +101,13 @@ export const UserTable: FC<UserTableProps> = ({
 
           if (value === "active") {
             label = "Active";
-            badgeClassName = "bg-primary/10 text-primary";
+            badgeClassName = "bg-success/15 text-success border border-success/30";
           } else if (value === "blocked") {
             label = "Blocked";
-            badgeClassName = "bg-destructive/10 text-destructive";
+            badgeClassName = "bg-destructive/15 text-destructive border border-destructive/30";
           } else if (value === "inactive") {
             label = "Inactive";
-            badgeClassName = "bg-muted text-muted-foreground";
+            badgeClassName = "bg-warning/15 text-warning border border-warning/30";
           }
 
           return (
@@ -144,12 +144,12 @@ export const UserTable: FC<UserTableProps> = ({
 
   return (
     <ErrorBoundary>
-      <div className="relative flex h-full flex-col">
+      <div className="relative flex flex-col">
         <DataTable<User>
           columns={columns}
           data={data}
           getRowId={(row) => row.id}
-          scrollHeight="calc(100vh - 320px)"
+          scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}
           enableVerticalShadow
           isLoading={isRefetching}
           loading={{ loadingVariant: "spinner" }}
