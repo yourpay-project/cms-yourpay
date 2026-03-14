@@ -107,15 +107,6 @@ export function useUsersQuery({
     // to avoid visual glitches in the table.
     placeholderData: (previousData) => previousData,
     select: (res): UsersResponse => {
-      // Helpful console for local debugging (no user-facing side effects).
-      // eslint-disable-next-line no-console
-      console.debug("Fetching customers from v1/operators/customers", {
-        path,
-        status,
-        gender,
-        country,
-      });
-
       const validated = apiCustomersResponseSchema.parse(res.data);
       const page = validated.data;
 

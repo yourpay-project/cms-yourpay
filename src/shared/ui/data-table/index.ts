@@ -26,7 +26,7 @@ export {
 export {
   createSelectionColumn,
   SELECTION_COLUMN_ID,
-} from "./ui/selection-column";
+} from "./lib/selection-column";
 export { useDataTable, type UseDataTableResult } from "./lib/use-data-table";
 export {
   getPinningStyles,

@@ -1,18 +1,22 @@
 import * as React from "react";
-import type { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/shared/lib/utils";
 
-/**
- * Column id for the selection checkbox column. Use in initialColumnPinning.left/right (e.g. ["select"]).
- */
-export const SELECTION_COLUMN_ID = "select";
-
 /** Props for the selection column header (select-all checkbox). */
-interface SelectionHeaderProps {
-  table: { getIsAllPageRowsSelected: () => boolean; getIsSomePageRowsSelected: () => boolean; getToggleAllPageRowsSelectedHandler: () => (event: unknown) => void };
+export interface SelectionHeaderProps {
+  table: {
+    getIsAllPageRowsSelected: () => boolean;
+    getIsSomePageRowsSelected: () => boolean;
+    getToggleAllPageRowsSelectedHandler: () => (event: unknown) => void;
+  };
 }
 
-function SelectionHeader({ table }: SelectionHeaderProps): React.ReactElement {
+/**
+ * Header cell for the selection column: select-all checkbox.
+ *
+ * @param props - {@link SelectionHeaderProps}
+ * @returns Checkbox to select/deselect all rows on the page
+ */
+export function SelectionHeader({ table }: SelectionHeaderProps): React.ReactElement {
   const isAllSelected = table.getIsAllPageRowsSelected();
   const isSomeSelected = table.getIsSomePageRowsSelected();
   const toggleHandler = table.getToggleAllPageRowsSelectedHandler();
@@ -35,11 +39,21 @@ function SelectionHeader({ table }: SelectionHeaderProps): React.ReactElement {
 }
 
 /** Props for the selection column cell (per-row checkbox). */
-interface SelectionCellProps {
-  row: { getCanSelect: () => boolean; getIsSelected: () => boolean; getToggleSelectedHandler: () => (event: unknown) => void };
+export interface SelectionCellProps {
+  row: {
+    getCanSelect: () => boolean;
+    getIsSelected: () => boolean;
+    getToggleSelectedHandler: () => (event: unknown) => void;
+  };
 }
 
-function SelectionCell({ row }: SelectionCellProps): React.ReactElement | null {
+/**
+ * Cell for the selection column: per-row checkbox.
+ *
+ * @param props - {@link SelectionCellProps}
+ * @returns Checkbox to select/deselect the row, or a dash when row is not selectable
+ */
+export function SelectionCell({ row }: SelectionCellProps): React.ReactElement | null {
   const canSelect = row.getCanSelect();
   const isSelected = row.getIsSelected();
   const toggleHandler = row.getToggleSelectedHandler();
@@ -65,21 +79,4 @@ function SelectionCell({ row }: SelectionCellProps): React.ReactElement | null {
       />
     </div>
   );
-}
-
-/**
- * Returns a TanStack column definition for the row selection checkbox column.
- * Add to your columns array and use initialColumnPinning.left: [SELECTION_COLUMN_ID] to freeze it.
- * Checkbox uses border-border, bg-background, text-primary (semantic tokens).
- *
- * @returns ColumnDef with id {@link SELECTION_COLUMN_ID}, header (select all), cell (per-row checkbox), enableSorting and enableHiding false
- */
-export function createSelectionColumn<TData>(): ColumnDef<TData, unknown> {
-  return {
-    id: SELECTION_COLUMN_ID,
-    header: ({ table }) => <SelectionHeader table={table} />,
-    cell: ({ row }) => <SelectionCell row={row} />,
-    enableSorting: false,
-    enableHiding: false,
-  };
 }
