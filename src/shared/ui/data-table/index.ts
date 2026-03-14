@@ -35,6 +35,7 @@ export {
   DEFAULT_SKELETON_ROW_COUNT,
   type ScrollShadowState,
 } from "./lib/table-utils";
+export { TABLE_BODY_VIEWPORT_HEIGHT } from "./lib/data-table-constants";
 export {
   DEFAULT_EMPTY_MESSAGE,
   type DataTableSelectionConfig,

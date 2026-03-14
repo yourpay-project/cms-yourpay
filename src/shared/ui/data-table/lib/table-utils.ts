@@ -17,6 +17,8 @@ export const DEFAULT_SKELETON_ROW_COUNT = 5;
 /**
  * Maps TanStack Table column pinning state to inline CSS for sticky/freeze columns.
  * Uses `hsl(var(--background))` so pinned cells match the theme.
+ * Multiple pinned columns: higher z-index for header so it stays above body;
+ * body pinned cells use z-index 20 so scrolling content never overlaps them.
  *
  * @param column - TanStack Table column (from header or cell).
  * @param isHeader - When true, applies higher z-index so header is not covered by body.
@@ -30,12 +32,14 @@ export function getPinningStyles<TData, TValue>(
 
   if (!isPinned) return {};
 
+  const baseZ = isHeader ? 40 : 20;
   return {
     position: "sticky",
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
-    zIndex: isPinned ? (isHeader ? 30 : 10) : isHeader ? 20 : 0,
+    zIndex: baseZ,
     backgroundColor: "hsl(var(--background))",
+    minWidth: column.getSize(),
   };
 }
 

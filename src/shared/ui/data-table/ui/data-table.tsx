@@ -46,6 +46,7 @@ export function DataTable<TData, TValue = unknown>(
     scrollRef,
     shadow,
     scrollStyle,
+    resolvedScrollHeight,
     sizeClasses,
     emptyMsg,
     titleNode,
@@ -84,7 +85,7 @@ export function DataTable<TData, TValue = unknown>(
   );
 
   return (
-    <div className="flex w-full flex-col gap-4" role="grid" aria-label="Data table">
+    <div className="flex min-h-0 w-full flex-col flex-none gap-4" role="grid" aria-label="Data table">
       {selection?.showSelectionActions && (
         <DataTableToolbar table={table} />
       )}
@@ -95,6 +96,7 @@ export function DataTable<TData, TValue = unknown>(
         table={table}
         scrollRef={scrollRef}
         scrollStyle={scrollStyle}
+        scrollHeight={resolvedScrollHeight}
         bordered={bordered}
         tableLayout={tableLayout}
         showHeader={showHeader}

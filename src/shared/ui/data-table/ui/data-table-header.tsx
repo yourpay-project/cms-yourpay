@@ -41,46 +41,55 @@ export function DataTableHeader<TData>({
   return (
     <TableHeader
       className={cn(
-        "sticky top-0 z-20 border-b border-border bg-muted",
+        "border-b border-border bg-muted",
         enableVerticalShadow && shadow.showTop && "data-table-shadow-top"
       )}
     >
-      {table.getHeaderGroups().map((headerGroup) => (
-        <TableRow
-          key={headerGroup.id}
-          className="border-none hover:bg-transparent"
-          role="row"
-        >
-          {headerGroup.headers.map((header) => {
-            const isPinned = header.column.getIsPinned();
-            const canSort = header.column.getCanSort();
-            const sortDir = header.column.getIsSorted();
-            const ariaSort =
-              sortDir === false
-                ? undefined
-                : sortDir === "asc"
-                  ? "ascending"
-                  : "descending";
-            const align = header.column.columnDef.meta?.align ?? "left";
-            const alignClass =
-              align === "center"
-                ? "text-center"
-                : align === "right"
-                  ? "text-right"
-                  : "text-left";
-            return (
-              <TableHead
-                key={header.id}
-                style={getPinningStyles(header.column, true)}
-                className={cn(
-                  "border-b border-border bg-muted font-semibold text-foreground",
-                  sizeHeaderClass,
-                  alignClass,
-                  isPinned === "left" && "border-r border-border",
-                  isPinned === "left" && shadow.showLeft && "data-table-shadow-left",
-                  isPinned === "right" && "border-l border-border",
-                  isPinned === "right" && shadow.showRight && "data-table-shadow-right"
-                )}
+      {table.getHeaderGroups().map((headerGroup) => {
+        const firstRightPinnedId = headerGroup.headers.find((h) => h.column.getIsPinned() === "right")?.id ?? null;
+        return (
+          <TableRow
+            key={headerGroup.id}
+            className="border-none hover:bg-transparent"
+            role="row"
+          >
+            {headerGroup.headers.map((header) => {
+              const isPinned = header.column.getIsPinned();
+              const canSort = header.column.getCanSort();
+              const sortDir = header.column.getIsSorted();
+              const ariaSort =
+                sortDir === false
+                  ? undefined
+                  : sortDir === "asc"
+                    ? "ascending"
+                    : "descending";
+              const align = header.column.columnDef.meta?.align ?? "left";
+              const alignClass =
+                align === "center"
+                  ? "text-center"
+                  : align === "right"
+                    ? "text-right"
+                    : "text-left";
+              const isFirstRightPinned = isPinned === "right" && header.id === firstRightPinnedId;
+              const pinningStyles = getPinningStyles(header.column, true);
+              return (
+                <TableHead
+                  key={header.id}
+                  style={{
+                    ...pinningStyles,
+                    position: pinningStyles.position ?? "sticky",
+                    top: pinningStyles.top ?? 0,
+                  }}
+                  className={cn(
+                    "sticky top-0 z-20 border-b border-border font-semibold text-foreground",
+                    isPinned ? "bg-background" : "bg-muted",
+                    sizeHeaderClass,
+                    alignClass,
+                    isPinned === "left" && "border-r border-border",
+                    isPinned === "left" && shadow.showLeft && "data-table-shadow-left",
+                    isPinned === "right" && "border-l border-border",
+                    isFirstRightPinned && shadow.showRight && "data-table-shadow-right"
+                  )}
                 role="columnheader"
                 aria-sort={canSort ? ariaSort : undefined}
               >
@@ -91,10 +100,11 @@ export function DataTableHeader<TData>({
                       header.getContext()
                     )}
               </TableHead>
-            );
-          })}
-        </TableRow>
-      ))}
+              );
+            })}
+          </TableRow>
+        );
+      })}
     </TableHeader>
   );
 }

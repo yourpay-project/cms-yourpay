@@ -28,9 +28,9 @@ export interface UseDataTableResult<TData> {
   scrollRef: React.RefObject<HTMLDivElement | null>;
   /** Scroll shadow flags (showLeft, showRight, showTop, showBottom). */
   shadow: ReturnType<typeof useScrollShadow>;
-  /** Resolved CSS height for the scroll container (e.g. "600px" or "calc(100vh - 320px)"). */
+  /** Resolved CSS height for the scroll viewport (e.g. TABLE_BODY_VIEWPORT_HEIGHT or "calc(100vh - 320px)"). */
   resolvedScrollHeight: string;
-  /** Inline style for the scroll div (height, maxHeight, minWidth when scroll.x set). */
+  /** Inline style for the scroll div: height auto, maxHeight resolvedScrollHeight; content-sized when short, scrolls when tall. */
   scrollStyle: React.CSSProperties;
   /** Tailwind classes for header and cell padding (from SIZE_CLASSES[size]). */
   sizeClasses: (typeof SIZE_CLASSES)[keyof typeof SIZE_CLASSES];
@@ -234,13 +234,15 @@ export function useDataTable<TData>(
 
   const scrollStyle = React.useMemo<React.CSSProperties>(
     () => ({
+      height: "auto",
+      minHeight: 0,
       maxHeight: resolvedScrollHeight,
       ...(scrollX != null &&
         scrollX !== true && {
           minWidth: typeof scrollX === "number" ? `${scrollX}px` : scrollX,
         }),
     }),
-    [resolvedScrollHeight, scrollX]
+    [scrollX, resolvedScrollHeight]
   );
 
   return {

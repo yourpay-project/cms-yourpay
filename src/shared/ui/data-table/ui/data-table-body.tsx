@@ -62,6 +62,10 @@ export function DataTableBody<TData>({
   const showLeft = scrollShadow?.showLeft ?? false;
   const showRight = scrollShadow?.showRight ?? false;
   const rows = table.getRowModel().rows;
+  const firstRightPinnedId =
+    rows.length > 0
+      ? rows[0].getVisibleCells().find((c) => c.column.getIsPinned() === "right")?.column.id ?? null
+      : null;
 
   if (isLoading) {
     return (
@@ -108,6 +112,7 @@ export function DataTableBody<TData>({
                 const isPinned = cell.column.getIsPinned();
                 const hide = cellMeta?.rowSpan === 0;
                 if (hide) return null;
+                const isFirstRightPinned = isPinned === "right" && cell.column.id === firstRightPinnedId;
                 const align = cell.column.columnDef.meta?.align ?? "left";
                 const alignClass =
                   align === "center"
@@ -134,14 +139,15 @@ export function DataTableBody<TData>({
                       ...cellMeta?.style,
                     }}
                     className={cn(
-                      "border-b border-border/60 bg-background text-foreground transition-colors group-hover:bg-muted/40",
+                      "border-b border-border/60 text-foreground transition-colors group-hover:bg-muted/40",
+                      isPinned ? "bg-background" : "bg-background",
                       sizeCellClass ?? "px-4 py-3 text-sm",
                       alignClass,
                       ellipsis && "truncate",
                       isPinned === "left" && "border-r border-border",
                       isPinned === "left" && showLeft && "data-table-shadow-left",
                       isPinned === "right" && "border-l border-border",
-                      isPinned === "right" && showRight && "data-table-shadow-right",
+                      isFirstRightPinned && showRight && "data-table-shadow-right",
                       cellMeta?.className
                     )}
                     aria-hidden={cellMeta?.["aria-hidden"]}

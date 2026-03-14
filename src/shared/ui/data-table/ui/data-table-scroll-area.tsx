@@ -19,6 +19,11 @@ export interface DataTableScrollAreaProps<TData> {
   table: Table<TData>;
   scrollRef: React.RefObject<HTMLDivElement | null> | React.LegacyRef<HTMLDivElement>;
   scrollStyle: React.CSSProperties;
+  /**
+   * Max height of the scroll viewport (e.g. "480px"). Body content scrolls inside when it exceeds this;
+   * when empty or few rows, the area is content-sized. Pass {@link TABLE_BODY_VIEWPORT_HEIGHT} for ~10 rows.
+   */
+  scrollHeight: string;
   bordered: boolean;
   tableLayout?: "auto" | "fixed";
   showHeader: boolean;
@@ -50,6 +55,9 @@ export interface DataTableScrollAreaProps<TData> {
  * and fixed bottom shadow overlay. The bottom shadow is rendered outside the scroll
  * div so it does not move when content scrolls.
  *
+ * Viewport height is capped by `scrollHeight` (maxHeight); when content is empty or short,
+ * the area stays content-sized. When content exceeds `scrollHeight`, it scrolls inside.
+ *
  * @param props - {@link DataTableScrollAreaProps}
  * @returns Wrapper div containing scroll div (table) and optional bottom shadow overlay
  */
@@ -57,6 +65,7 @@ export function DataTableScrollArea<TData>({
   table,
   scrollRef,
   scrollStyle,
+  scrollHeight,
   bordered,
   tableLayout,
   showHeader,
@@ -79,11 +88,14 @@ export function DataTableScrollArea<TData>({
   EmptyComponent,
 }: DataTableScrollAreaProps<TData>): React.ReactElement {
   return (
-    <div className="relative w-full">
+    <div
+      className="relative flex w-full flex-none flex-col overflow-hidden [&>div]:min-h-0"
+      style={{ maxHeight: scrollHeight }}
+    >
       <div
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}
         className={cn(
-          "custom-scrollbar w-full overflow-auto rounded-lg border border-border bg-card",
+          "custom-scrollbar w-full self-start overflow-auto rounded-lg border border-border bg-card",
           bordered && "border"
         )}
         style={scrollStyle}
