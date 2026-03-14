@@ -1,5 +1,5 @@
 ---
-description: React CMS Master Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard v4.0
+description: React CMS Master Rules: Feature-Sliced Design (FSD) Ultra-Strict Industry Standard v4.1
 globs: src/**/*.{ts,tsx}
 alwaysApply: false
 ---
@@ -87,7 +87,7 @@ src/[layer]/[slice-name]/
 ## 15. Technical Stack Standards
 - Data Fetching: TanStack Query (Queries in entities, Mutations in features).
 - Forms: react-hook-form + Zod.
-- UI: shadcn/ui components only.
+- UI: shadcn/ui and Radix UI primitives ONLY. Strictly no heavy UI component libraries (See Rule 30).
 
 ## 16. Implementation & Safety
 - No Cross-Importing: Slices in the same layer are strictly isolated.
@@ -150,3 +150,10 @@ src/[layer]/[slice-name]/
 ## 29. Global Loading & UX Feedback
 - **Sync Loading**: Use `useSyncGlobalLoading(isLoading)` from `shared/lib` for the main page query to trigger the global Nav loader.
 - **Skeletons**: Always provide a `PageSkeleton` or widget-level skeleton while `isLoading` is true.
+
+## 30. shadcn/ui & Radix UI Governance
+- **Placement & Ownership:** All generated shadcn/ui components MUST be placed strictly inside `src/shared/ui/`. Treat them as your own source code, not external dependencies.
+- **Radix Primitives Usage:** shadcn/ui is built on top of `@radix-ui`. Preserve all Radix accessibility (a11y) props, `forwardRef`, and `asChild` behaviors when modifying shadcn components. 
+- **Custom Headless UI:** If a required UI component is not available in shadcn/ui, you MUST use `@radix-ui/react-*` primitives directly and style them with Tailwind. Do NOT introduce other component libraries (e.g., MUI, AntD).
+- **Modification & Theming:** Modify shadcn component internals (in `shared/ui`) if global design changes are needed. Manage colors and themes EXCLUSIVELY via CSS variables in `globals.css` (e.g., `--primary`, `--muted`) to ensure the Design Tokens apply seamlessly to all Radix/shadcn components.
+- **Bundle Optimization:** Always import `lucide-react` icons individually in shadcn components to maintain the tree-shaking benefits of the Radix+shadcn ecosystem.

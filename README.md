@@ -327,21 +327,31 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`shared/ui/data-table`** – generic, enterprise-style DataTable (AntD-like), split into small parts for readability:
   - **DataTable** – thin main component: uses `useDataTable` hook and composes `DataTableScrollArea` and pagination.
   - **useDataTable** – central hook: table state, `useReactTable` instance, scroll shadow, derived values (empty message, title/footer nodes, etc.). Export for advanced or custom table UIs.
-  - **DataTableScrollArea** – scroll wrapper + table shell + `DataTableHeader`, `DataTableBody`, footers, and fixed bottom shadow overlay.
+  - **DataTableScrollArea** – scroll wrapper + table shell + `DataTableHeader`, `DataTableBody`, footers, and fixed bottom shadow overlay. Accepts `scrollHeight` (e.g. `TABLE_BODY_VIEWPORT_HEIGHT`) to cap the visible body height; content scrolls inside when rows exceed that height. When data is empty or few rows, the area is content-sized (no extra empty space).
+  - **Viewport height:** Use `scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}` (or a custom CSS height string). The constant `TABLE_BODY_VIEWPORT_HEIGHT` (`"480px"`) gives a fixed viewport of ~10 rows: empty/few rows use only the space needed; many rows (e.g. 50) scroll inside the same viewport. Export from `@/shared/ui`.
   - **DataTableHeader** – sticky thead with pinning and scroll shadow classes; **DataTableBody** – tbody with loading/empty/rows and expandable support.
   - **Vertical scroll shadow:** Set `enableVerticalShadow` to show a top shadow when scrolled down and a bottom shadow when there is content below. The bottom shadow is an overlay fixed at the viewport bottom (does not scroll with rows) and hides when the user scrolls to the very bottom.
   - **Styling:** Header uses `bg-muted`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`).
   - **Pagination:** Client-side by default; for server-side pass `pagination`, `pageCount`, and `onPaginationChange`. The "X of Y row(s) selected." line is shown only when the table uses row selection (`selection` with `enableRowSelection`); otherwise the pagination controls stay right-aligned.
-  - **Exports:** `DataTable`, `useDataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
-- **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, and server-side pagination; used by the user-list page at `/customers`.
+  - **Exports:** `DataTable`, `useDataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, `TABLE_BODY_VIEWPORT_HEIGHT`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
+- **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, server-side pagination, and `scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}`; used by the user-list page at `/customers`.
 - **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
 - **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
-- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListQuery`, filters, and `UserTable`.
+- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` (collapsible filters card, country buttons, search), badges via `shared/lib/filter-badge-colors`, and `UserTable`.
+
+**Filter badges and shared filter UI:**
+
+- **`shared/lib/filter-badge-colors.ts`** – `getFilterBadgeClassName(key)` returns distinct Tailwind classes per filter key (status, country, documentType, kyc, gender, etc.) for consistent badge styling across KYC and User Yourpay.
+- **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select plus clear (X) or open (chevron) button; used inside KYC and User Yourpay filter cards.
+
+**Calendar and date picker:**
+
+- **`shared/ui/calendar.tsx`** – shadcn-style Calendar (react-day-picker) with optional month/year dropdown (`captionLayout="dropdown"`). Used by KYC date range picker in `pages/kyc-submission`.
 
 Example – use the shared DataTable (recommended):
 
 ```tsx
-import { DataTable, createSelectionColumn } from "@/shared/ui";
+import { DataTable, createSelectionColumn, TABLE_BODY_VIEWPORT_HEIGHT } from "@/shared/ui";
 
 const columns = [
   { id: "name", header: "Name", cell: ({ row }) => row.original.name },
@@ -354,7 +364,7 @@ const columns = [
   data={rows}
   getRowId={(row) => row.id}
   initialColumnPinning={{ left: ["name"], right: ["actions"] }}
-  scrollHeight="calc(100vh - 280px)"
+  scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}
   enableVerticalShadow
   empty={{ emptyMessage: "No data." }}
 />
