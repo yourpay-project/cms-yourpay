@@ -48,6 +48,11 @@ const SectionRoutePage = lazyRouteComponent(
   () => import('@/pages/section'),
   'SectionRoutePage',
 );
+/** Lazy-loaded route for KYC Submission list. */
+const KycSubmissionRoutePage = lazyRouteComponent(
+  () => import('@/pages/kyc-submission').then((m) => ({ default: m.KycSubmissionRoutePage })),
+  'default',
+);
 
 /**
  * Static route for the main dashboard.
@@ -84,6 +89,9 @@ const sectionRoutes = createSectionRoutes({
   navGroups,
   customersComponent: UserListRoutePage,
   sectionComponent: SectionRoutePage,
+  sectionOverrides: {
+    '/kyc-submission': KycSubmissionRoutePage,
+  },
 });
 
 /**
