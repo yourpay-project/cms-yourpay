@@ -297,6 +297,11 @@ For navigation inside components, use **TanStack Router hooks**:
     - `collapsed`, `setCollapsed`, `toggle`.
     - `pinned: string[]`, `togglePinned(path)`; pinned entries are persisted.
 
+**Page-level persisted filter state (separate localStorage keys):**
+
+- **`pages/user-list/model/user-list-store.ts`** – `useUserListStore` persisted as `cms-user-yourpay`. Holds filters (country, status, gender), search, pagination, and filters card open state. Isolated from KYC state.
+- **`pages/kyc-submission/model/kyc-submission-store.ts`** – `useKycSubmissionStore` persisted as `cms-kyc-submission`. Holds filters (status, document type, country, reverify, KYC/Last update date ranges), search, pagination, and filters card open state. Isolated from User Yourpay state.
+
 ### 5.4 Shared Layer
 
 - `shared/api/api-client.ts`
@@ -334,10 +339,12 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
   - **Styling:** Header uses `bg-muted`, body uses `bg-background` with `hover:bg-muted/40`, borders use `border-border`. Pinned-column shadows use CSS classes `data-table-shadow-left` / `data-table-shadow-right` (defined in `src/index.css`).
   - **Pagination:** Client-side by default; for server-side pass `pagination`, `pageCount`, and `onPaginationChange`. The "X of Y row(s) selected." line is shown only when the table uses row selection (`selection` with `enableRowSelection`); otherwise the pagination controls stay right-aligned.
   - **Exports:** `DataTable`, `useDataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, `TABLE_BODY_VIEWPORT_HEIGHT`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
+  - **Selection column:** `createSelectionColumn` and `SELECTION_COLUMN_ID` are in `lib/selection-column.ts`; header/cell UI in `ui/selection-column-components.tsx` (split for fast refresh).
 - **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, server-side pagination, and `scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}`; used by the user-list page at `/customers`.
 - **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
 - **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
-- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` (collapsible filters card, country buttons, search), badges via `shared/lib/filter-badge-colors`, and `UserTable`.
+- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` backed by `useUserListStore` (persisted as `cms-user-yourpay`), collapsible filters card (status, gender), country buttons, search, badges via `shared/lib/filter-badge-colors`, and `UserTable`.
+- **`pages/kyc-submission`** – KYC Submissions page: `useKycSubmissionFilters` backed by `useKycSubmissionStore` (persisted as `cms-kyc-submission`), collapsible filters card including status, document type, **country**, reverify, KYC and Last update date ranges; search and `KycSubmissionTable`. Country filter lives inside the filter card and appears as a badge when set.
 
 **Filter badges and shared filter UI:**
 
