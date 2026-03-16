@@ -35,6 +35,7 @@ export const LoginForm: FC<LoginFormProps> = ({
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
+    mode: "onChange",
   });
 
   const onSubmit = (values: LoginFormValues) => mutate(values);
@@ -53,50 +54,43 @@ export const LoginForm: FC<LoginFormProps> = ({
         {isUsernamePasswordEnabled && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
               <Input
                 id="email"
+                size="md"
                 type="text"
                 autoComplete="email"
-                autoFocus
-                placeholder="you@yourpay.co.id"
+                label="Email"
+                allowClear
+                status={errors.email ? "error" : undefined}
+                helperText={errors.email?.message}
                 {...register("email")}
-                className={errors.email ? "border-destructive" : ""}
               />
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email.message}</p>
-              )}
             </div>
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={isPasswordVisible ? "text" : "password"}
-                  autoComplete="current-password"
-                  {...register("password")}
-                  className={errors.password ? "border-destructive pr-10" : "pr-10"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setIsPasswordVisible((prev) => !prev)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
-                  aria-label={isPasswordVisible ? "Hide password" : "Show password"}
-                >
-                  {isPasswordVisible ? (
-                    <EyeOff className="h-4 w-4" aria-hidden="true" />
-                  ) : (
-                    <Eye className="h-4 w-4" aria-hidden="true" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-xs text-destructive">{errors.password.message}</p>
-              )}
+              <Input
+                id="password"
+                size="md"
+                type={isPasswordVisible ? "text" : "password"}
+                autoComplete="current-password"
+                label="Password"
+                status={errors.password ? "error" : undefined}
+                helperText={errors.password?.message}
+                endIcon={
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordVisible((prev) => !prev)}
+                    className="flex items-center text-muted-foreground hover:text-foreground"
+                    aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+                  >
+                    {isPasswordVisible ? (
+                      <EyeOff className="h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                }
+                {...register("password")}
+              />
             </div>
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
