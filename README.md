@@ -107,7 +107,7 @@ src/
     │   ├── theme-store.ts   # Light/dark/system theme state
     │   ├── use-theme-effect.ts
     │   └── index.ts
-    └── ui/                  # shadcn/ui facade + enterprise DataTable
+    └── ui/                  # shadcn/ui facade + enterprise inputs & DataTable
         ├── button.tsx
         ├── card.tsx
         ├── data-table/      # Generic DataTable (AntD-style): pinning, selection, scroll shadow
@@ -115,7 +115,8 @@ src/
         │   ├── lib/         # use-data-table, data-table-constants, table-utils, data-table-types
         │   └── index.ts
         ├── dropdown-menu.tsx
-        ├── input.tsx
+        ├── input/           # Floating-label Input slice (FSD, variants + hooks)
+        ├── input.tsx        # Legacy alias kept for backwards-compat imports
         ├── search-input.tsx # Generic SearchInput used across list pages
         ├── skeleton.tsx
         ├── page-skeleton.tsx
