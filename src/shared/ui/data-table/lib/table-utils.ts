@@ -32,6 +32,15 @@ export function getPinningStyles<TData, TValue>(
 
   if (!isPinned) return {};
 
+  // Disable sticky/frozen columns on small screens so tables behave normally
+  // on mobile. Pinning remains enabled from the `md` breakpoint upwards.
+  if (typeof window !== "undefined") {
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (isMobile) {
+      return {};
+    }
+  }
+
   const baseZ = isHeader ? 40 : 20;
   return {
     position: "sticky",

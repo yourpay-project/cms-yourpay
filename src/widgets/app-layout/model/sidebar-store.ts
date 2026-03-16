@@ -11,8 +11,14 @@ interface SidebarState {
    * rendered in a dedicated "Pinned" section at the top of the sidebar.
    */
   pinned: string[];
+  /**
+   * Whether the mobile sidebar overlay is currently open.
+   */
+  mobileOpen: boolean;
   setCollapsed: (collapsed: boolean) => void;
   toggle: () => void;
+  setMobileOpen: (open: boolean) => void;
+  toggleMobile: () => void;
   togglePinned: (path: string) => void;
 }
 
@@ -21,8 +27,11 @@ export const useSidebarStore = create<SidebarState>()(
     (set) => ({
       collapsed: false,
       pinned: [],
+      mobileOpen: false,
       setCollapsed: (collapsed) => set({ collapsed }),
       toggle: () => set((s) => ({ collapsed: !s.collapsed })),
+      setMobileOpen: (open) => set({ mobileOpen: open }),
+      toggleMobile: () => set((s) => ({ mobileOpen: !s.mobileOpen })),
       togglePinned: (path) =>
         set((s) =>
           s.pinned.includes(path)

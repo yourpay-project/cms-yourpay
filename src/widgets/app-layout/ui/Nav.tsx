@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Loader2, LogOut, PanelLeft, PanelLeftClose, User } from "lucide-react";
+import { Loader2, LogOut, Menu, PanelLeft, PanelLeftClose, User } from "lucide-react";
 import { useAuth, useLogout } from "@/features/auth";
 import { cn, useLoadingStore } from "@/shared/lib";
 import { ThemeToggle } from "@/shared/ui";
@@ -33,6 +33,7 @@ export const Nav: FC<NavProps> = ({ title = "YourPay CMS", className }) => {
   const globalLoading = useLoadingStore((s) => s.globalLoading);
   const collapsed = useSidebarStore((s) => s.collapsed);
   const toggleSidebar = useSidebarStore((s) => s.toggle);
+  const toggleMobileSidebar = useSidebarStore((s) => s.toggleMobile);
 
   return (
     <header
@@ -45,8 +46,18 @@ export const Nav: FC<NavProps> = ({ title = "YourPay CMS", className }) => {
         <Button
           variant="ghost"
           size="icon"
+          onClick={toggleMobileSidebar}
+          aria-label="Open navigation"
+          className="inline-flex md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleSidebar}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="hidden md:inline-flex"
         >
           {collapsed ? (
             <PanelLeft className="h-5 w-5" />
@@ -60,7 +71,21 @@ export const Nav: FC<NavProps> = ({ title = "YourPay CMS", className }) => {
             aria-hidden
           />
         )}
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <div className="flex flex-col">
+          <h1 className="hidden text-lg font-semibold md:inline">{title}</h1>
+          <button
+            type="button"
+            onClick={toggleMobileSidebar}
+            className="flex items-center text-sm text-muted-foreground md:hidden focus:outline-none"
+            aria-label="Open navigation"
+          >
+            <span className="truncate">Home</span>
+            <span className="mx-1">/</span>
+            <span className="font-medium text-foreground truncate">
+              {title}
+            </span>
+          </button>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />

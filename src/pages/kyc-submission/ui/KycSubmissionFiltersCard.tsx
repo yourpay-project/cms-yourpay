@@ -64,23 +64,25 @@ export const KycSubmissionFiltersCard: FC<KycSubmissionFiltersCardProps> = (prop
               <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
             )}
           </button>
-          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-            {badges.map((b) => (
-              <span key={b.key} className={getFilterBadgeClassName(b.key)}>
-                {b.label}
-                <button
-                  type="button"
-                  className="rounded p-0.5 hover:bg-muted hover:text-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    b.onClear();
-                  }}
-                  aria-label={`Remove ${b.label}`}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
+            <div className="hidden flex-wrap items-center gap-1.5 sm:flex">
+              {badges.map((b) => (
+                <span key={b.key} className={getFilterBadgeClassName(b.key)}>
+                  {b.label}
+                  <button
+                    type="button"
+                    className="rounded p-0.5 hover:bg-muted hover:text-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      b.onClear();
+                    }}
+                    aria-label={`Remove ${b.label}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
             <Button
               variant="ghost"
               size="sm"

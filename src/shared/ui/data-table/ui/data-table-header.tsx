@@ -77,11 +77,11 @@ export function DataTableHeader<TData>({
                   key={header.id}
                   style={{
                     ...pinningStyles,
-                    position: pinningStyles.position ?? "sticky",
-                    top: pinningStyles.top ?? 0,
+                    position: pinningStyles.position ?? undefined,
+                    top: pinningStyles.top ?? undefined,
                   }}
                   className={cn(
-                    "sticky top-0 z-20 border-b border-border font-semibold text-foreground",
+                    "z-20 border-b border-border font-semibold text-foreground md:sticky md:top-0",
                     isPinned ? "bg-background" : "bg-muted",
                     sizeHeaderClass,
                     alignClass,

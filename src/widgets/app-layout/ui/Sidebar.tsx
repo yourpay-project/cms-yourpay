@@ -8,6 +8,12 @@ import { SidebarSearch } from "./sidebar/SidebarSearch";
 
 interface SidebarProps {
   className?: string;
+  /**
+   * When true, sidebar is forced expanded (labels visible, full width),
+   * ignoring the persisted `collapsed` state. Used for the mobile overlay
+   * so navigation is always readable even if desktop sidebar is collapsed.
+   */
+  forceExpanded?: boolean;
 }
 
 /**
@@ -17,9 +23,10 @@ interface SidebarProps {
  * - Hides items the current user does not have permission to view.
  * - Supports pinning up to 5 frequently used items to a fixed section at the top.
  */
-export const Sidebar = ({ className }: SidebarProps) => {
+export const Sidebar = ({ className, forceExpanded }: SidebarProps) => {
   const { can } = useCan();
-  const collapsed = useSidebarStore((s) => s.collapsed);
+  const collapsedState = useSidebarStore((s) => s.collapsed);
+  const collapsed = forceExpanded ? false : collapsedState;
   const pinned = useSidebarStore((s) => s.pinned);
   const togglePinned = useSidebarStore((s) => s.togglePinned);
   const [search, setSearch] = useState("");
