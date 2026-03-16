@@ -83,3 +83,17 @@ export {
   type ScrollShadowState,
 } from "./data-table";
 
+export { SearchInput, type SearchInputProps } from "./search-input";
+
+export {
+  Dialog,
+  DialogTrigger,
+  DialogPortal,
+  DialogOverlay,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "./dialog";
+
