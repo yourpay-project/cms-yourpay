@@ -74,7 +74,7 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
               <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground" aria-hidden />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-[min(320px,100vw)] max-h-[70vh] overflow-hidden flex flex-col p-3" sideOffset={4}>
+          <DropdownMenuContent align="start" sideOffset={4} className="w-[min(360px,100vw)] p-3">
             <DateRangePickerDropdownContent
               customFrom={customFrom}
               customTo={customTo}

@@ -62,7 +62,7 @@ export const DateRangePickerDropdownContent: FC<DateRangePickerDropdownContentPr
   };
 
   return (
-    <div className="max-h-[65vh] space-y-3 overflow-y-auto pr-1">
+    <div className="space-y-3 pr-1">
       <p className="text-xs font-medium text-muted-foreground">Presets</p>
       <div className="grid grid-cols-2 gap-1">
         {PRESETS.map((p) => (
