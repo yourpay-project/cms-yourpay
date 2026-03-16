@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { z } from "zod";
 
 import type { Country } from "@/entities/country";
 import {
@@ -28,12 +29,23 @@ interface UseCountryFormOptions {
  * @param options Optional {@link UseCountryFormOptions} to hook into lifecycle events.
  * @returns Stable state and action handlers for the countries form modal.
  */
+const countryFormSchema = z.object({
+  code: z.string().min(1, "Code is required"),
+  name: z.string().min(1, "Name is required"),
+});
+
+type CountryFormErrors = {
+  code?: string;
+  name?: string;
+};
+
 export function useCountryForm(options?: UseCountryFormOptions) {
   const [editing, setEditing] = useState<Country | null>(null);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [errors, setErrors] = useState<CountryFormErrors>({});
 
   const createMutation = useCreateCountryMutation();
   const updateMutation = useUpdateCountryMutation();
@@ -46,6 +58,7 @@ export function useCountryForm(options?: UseCountryFormOptions) {
     setCode("");
     setName("");
     setIsActive(true);
+    setErrors({});
   }, []);
 
   const openForCreate = useCallback(() => {
@@ -67,7 +80,24 @@ export function useCountryForm(options?: UseCountryFormOptions) {
   }, [resetForm]);
 
   const submit = useCallback(async () => {
-    if (!code.trim() || !name.trim()) return;
+    const parsed = countryFormSchema.safeParse({
+      code: code.trim(),
+      name: name.trim(),
+    });
+
+    if (!parsed.success) {
+      const fieldErrors: CountryFormErrors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0];
+        if (field === "code" || field === "name") {
+          fieldErrors[field] = issue.message;
+        }
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
 
     if (editing) {
       await updateMutation.mutateAsync({
@@ -103,6 +133,7 @@ export function useCountryForm(options?: UseCountryFormOptions) {
     isActive,
     isDialogOpen,
     isSubmitting,
+    errors,
     // setters
     setCode,
     setName,

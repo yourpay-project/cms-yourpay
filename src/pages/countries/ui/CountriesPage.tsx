@@ -21,6 +21,7 @@ const CountriesPage: FC = () => {
     isActive,
     isDialogOpen,
     isSubmitting,
+    errors,
     setCode,
     setName,
     setIsActive,
@@ -76,23 +77,25 @@ const CountriesPage: FC = () => {
           >
             <div className="mt-4 flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs font-medium text-muted-foreground">Country Code</span>
                   <Input
+                    label="Country Code"
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="e.g. ID"
                     disabled={!!editing}
+                    status={errors.code ? "error" : undefined}
+                    helperText={
+                      errors.code ??
+                      "Letters and numbers allowed (will be converted to uppercase)"
+                    }
                   />
-                  <span className="text-[11px] text-muted-foreground">
-                    Letters and numbers allowed (will be converted to uppercase)
-                  </span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs font-medium text-muted-foreground">Country Name</span>
                   <Input
+                    label="Country Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Indonesia"
+                    status={errors.name ? "error" : undefined}
+                    helperText={errors.name}
                   />
                 </div>
                 <div className="flex flex-col gap-2">

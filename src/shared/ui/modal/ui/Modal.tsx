@@ -100,7 +100,11 @@ export const Modal: React.FC<ModalProps> = ({
             centered ? "items-center" : "items-start"
           )}
         >
-          <Dialog.Content asChild>
+          <Dialog.Content
+            asChild
+            // Prevent automatic focus on first focusable element (e.g. inputs)
+            onOpenAutoFocus={(event) => event.preventDefault()}
+          >
             <animated.div
               style={{ ...contentStyles, width: contentWidth }}
               className={cn(
