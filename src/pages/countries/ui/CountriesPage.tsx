@@ -24,7 +24,6 @@ const CountriesPage: FC = () => {
     setCode,
     setName,
     setIsActive,
-    setIsDialogOpen,
     openForCreate,
     openForEdit,
     closeDialog,
@@ -68,13 +67,13 @@ const CountriesPage: FC = () => {
             onOk={submit}
             confirmLoading={isSubmitting}
             title={editing ? "Edit Country" : "Create Country (API)"}
+            description={
+              editing
+                ? "Update country code, name, or status."
+                : "Create a new country record for operator APIs."
+            }
             centered
           >
-            <p className="mt-1 px-px text-sm text-muted-foreground">
-              {editing
-                ? "Update country code, name, or status."
-                : "Create a new country record for operator APIs."}
-            </p>
             <div className="mt-4 flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs font-medium text-muted-foreground">Country Code</span>

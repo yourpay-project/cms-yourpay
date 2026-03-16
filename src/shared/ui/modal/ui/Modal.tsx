@@ -22,6 +22,10 @@ export interface ModalProps extends ModalFooterProps {
    */
   title?: React.ReactNode;
   /**
+   * Short description rendered below the title and wired to aria-describedby.
+   */
+  description?: React.ReactNode;
+  /**
    * Custom footer node. Use `null` to hide the footer entirely.
    * When `undefined`, a default Cancel / OK footer is rendered.
    */
@@ -58,6 +62,7 @@ export const Modal: React.FC<ModalProps> = ({
   onOk,
   confirmLoading,
   title,
+  description,
   footer,
   okText,
   cancelText,
@@ -99,15 +104,18 @@ export const Modal: React.FC<ModalProps> = ({
             <animated.div
               style={{ ...contentStyles, width: contentWidth }}
               className={cn(
-                "relative max-h-[80vh] rounded-xl bg-background text-foreground shadow-xl shadow-black/15",
+                "relative max-h-[80vh] rounded-xl bg-card text-foreground shadow-xl shadow-black/15",
                 "flex flex-col overflow-hidden",
                 className
               )}
             >
               <div className="pt-5 px-6 pb-4">
-                <Dialog.Title className="text-base font-semibold">
-                  {title}
-                </Dialog.Title>
+                <Dialog.Title className="text-base font-semibold">{title}</Dialog.Title>
+                {description && (
+                  <Dialog.Description className="mt-1 text-sm text-muted-foreground">
+                    {description}
+                  </Dialog.Description>
+                )}
               </div>
 
               <div className="px-6 py-2">{children}</div>

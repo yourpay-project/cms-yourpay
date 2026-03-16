@@ -40,7 +40,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
   onOk,
 }) => {
   return (
-    <div className="flex items-center justify-end gap-2 border-t border-border/60 bg-muted/40 px-6 pb-5 pt-4">
+    <div className="flex items-center justify-end gap-2 border-t border-border/60 bg-card px-6 pb-5 pt-4">
       <Button variant="outline" onClick={onCancel}>
         {cancelText}
       </Button>

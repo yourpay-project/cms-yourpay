@@ -8,6 +8,11 @@ export type ApiClientConfig = {
 
 export interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: Record<string, unknown> | FormData;
+  /**
+   * Optional path parameters used by generated API clients to interpolate
+   * placeholders such as `{countryCode}` in endpoint URLs.
+   */
+  pathParams?: Record<string, string | number>;
   skipAuth?: boolean;
   skipRefresh?: boolean;
 }

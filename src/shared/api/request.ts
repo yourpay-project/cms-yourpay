@@ -27,27 +27,36 @@ async function requestWithRefresh<T>(
   options: RequestOptions,
   retried = false
 ): Promise<ApiResponse<T>> {
-  const url = path.startsWith("http")
+  const resolvedPath =
+    options.pathParams != null
+      ? Object.entries(options.pathParams).reduce((acc, [key, value]) => {
+          return acc.replace(`{${key}}`, encodeURIComponent(String(value)));
+        }, path)
+      : path;
+
+  const { pathParams, ...requestOptions } = options;
+
+  const url = resolvedPath.startsWith("http")
     ? path
-    : `${config.baseUrl.replace(/\/$/, "")}/${path.replace(/^\/+/, "")}`;
+    : `${config.baseUrl.replace(/\/$/, "")}/${resolvedPath.replace(/^\/+/, "")}`;
   const access = config.getAccessToken();
   const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string>),
+    ...(requestOptions.headers as Record<string, string>),
   };
-  if (!options.skipAuth && access) {
+  if (!requestOptions.skipAuth && access) {
     headers.Authorization = `Bearer ${access}`;
   }
-  if (options.body && !(options.body instanceof FormData)) {
+  if (requestOptions.body && !(requestOptions.body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
   }
   const res = await fetch(url, {
-    ...options,
+    ...requestOptions,
     headers,
     body:
-      options.body instanceof FormData
-        ? options.body
-        : options.body
-          ? JSON.stringify(options.body)
+      requestOptions.body instanceof FormData
+        ? requestOptions.body
+        : requestOptions.body
+          ? JSON.stringify(requestOptions.body)
           : undefined,
   });
 
