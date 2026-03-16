@@ -54,6 +54,12 @@ const KycSubmissionRoutePage = lazyRouteComponent(
   'default',
 );
 
+/** Lazy-loaded route for Countries (Master Data) page. */
+const CountriesRoutePage = lazyRouteComponent(
+  () => import('@/pages/countries').then((m) => ({ default: m.CountriesRoutePage })),
+  'default',
+);
+
 /**
  * Static route for the main dashboard.
  */
@@ -91,6 +97,7 @@ const sectionRoutes = createSectionRoutes({
   sectionComponent: SectionRoutePage,
   sectionOverrides: {
     '/kyc-submission': KycSubmissionRoutePage,
+    '/countries': CountriesRoutePage,
   },
 });
 

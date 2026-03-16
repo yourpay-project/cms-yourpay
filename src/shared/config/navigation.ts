@@ -154,7 +154,7 @@ export const navGroups: NavigationGroupConfig[] = [
     items: [
       {
         to: '/countries',
-        label: 'Countries (API)',
+        label: 'Countries',
         iconKey: 'dashboard',
         permission: 'view_any_countries_api_resource',
       },

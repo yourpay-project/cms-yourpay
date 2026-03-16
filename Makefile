@@ -27,7 +27,8 @@ GENERATED_DIR := src/shared/api/generated
 SCRIPT_DIR := scripts/generate-api
 
 # Default generation settings (override by passing env vars to `make`).
-API_TAGS ?= Operators / Auth,Operators / Report,Files,Master Data,Operator / Biller,Operator / Fees,Operators / Action Approval,Operators / Customer,Operators / DTVA,Operators / Dynamic Link,Operators / Exchange Rate,Operators / Identity Access,Operators / Partner,Operators / Scratch Card,Operators / Verification Submission,Operators / Voucher,Operators / transactions,User,User / Authentication,Address Detail,Deprecated
+# Includes Operator Countries so that /v1/operators/countries endpoints are generated.
+API_TAGS ?= Operators / Auth,Operators / Report,Files,Master Data,Operator / Biller,Operator / Fees,Operators / Action Approval,Operators / Customer,Operators / DTVA,Operators / Dynamic Link,Operators / Exchange Rate,Operators / Identity Access,Operators / Partner,Operators / Scratch Card,Operators / Verification Submission,Operators / Voucher,Operators / transactions,User,User / Authentication,Address Detail,Deprecated,Operator Countries
 
 generate-api:
 	@rm -rf $(GENERATED_DIR)
