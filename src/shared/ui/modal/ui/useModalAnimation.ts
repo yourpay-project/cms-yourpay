@@ -20,10 +20,7 @@ interface UseModalAnimationResult {
 }
 
 /**
- * Provides animated mounting/unmounting behavior for {@link Modal}.
- *
- * This hook keeps dialog contents mounted while close animations play,
- * then calls the optional `onAfterClose` callback once the overlay has fully faded out.
+ * Hook to control animated mounting and unmounting for {@link Modal}.
  *
  * @param params.open Whether the modal is logically open.
  * @param params.onAfterClose Optional callback fired after the close animation completes.

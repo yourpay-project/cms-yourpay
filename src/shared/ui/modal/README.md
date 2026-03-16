@@ -1,7 +1,7 @@
-# Modal (AntD‑style)
+# Modal
 
-Lightweight enterprise modal component that mimics Ant Design's `Modal` API, but is
-built on top of Radix UI Dialog, Tailwind CSS, and `@react-spring/web`.
+Lightweight enterprise modal component built on top of Radix UI Dialog,
+Tailwind CSS, and `@react-spring/web`.
 
 ## Public API
 
@@ -50,9 +50,9 @@ const [open, setOpen] = useState(false);
 ## Implementation notes
 
 - Uses Radix `Dialog.Root` for accessibility and focus trapping.
-- `@react-spring/web` drives scale/opacity animations for a premium open/close
-  experience.
-- Layout and spacing follow an Ant Design–inspired visual anatomy:
+- `@react-spring/web` drives scale/opacity animations for the overlay and
+  content scale/opacity.
+- Layout and spacing:
   - Header padding: `pt-5 px-6 pb-4`
   - Body padding: `px-6 py-2`
   - Footer padding: `pt-4 px-6 pb-5`

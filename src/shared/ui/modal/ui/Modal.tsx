@@ -22,8 +22,8 @@ export interface ModalProps extends ModalFooterProps {
    */
   title?: React.ReactNode;
   /**
-   * Custom footer node. Use `null` to hide footer entirely.
-   * When `undefined`, a default AntD-like footer is rendered.
+   * Custom footer node. Use `null` to hide the footer entirely.
+   * When `undefined`, a default Cancel / OK footer is rendered.
    */
   footer?: React.ReactNode | null;
   /**
@@ -47,11 +47,7 @@ export interface ModalProps extends ModalFooterProps {
 }
 
 /**
- * Controlled Ant Design–style modal built on top of Radix Dialog.
- *
- * This component mimics the core `Modal` API from AntD (open, onCancel, onOk,
- * footer, centered, width, confirmLoading) while using Tailwind CSS and
- * `@react-spring/web` for smooth open/close animations.
+ * Controlled, accessible modal dialog component.
  *
  * @param props {@link ModalProps} controlling visibility, content, and actions.
  * @returns A portal-based modal dialog with header, body, and footer sections.

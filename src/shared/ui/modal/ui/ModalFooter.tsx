@@ -27,7 +27,7 @@ export interface ModalFooterProps {
 }
 
 /**
- * Renders the default Ant Design–style footer for {@link Modal}.
+ * Footer section for {@link Modal} with Cancel and OK actions.
  *
  * @param props {@link ModalFooterProps} configuring labels, loading state, and callbacks.
  * @returns JSX element with Cancel and OK buttons.
