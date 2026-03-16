@@ -50,9 +50,13 @@ src/
 │   ├── login-callback/
 │   │   ├── ui/LoginCallbackPage.tsx
 │   │   └── index.ts
-│   └── user-list/
-│       ├── ui/UserListPage.tsx
-│       └── index.ts
+│   ├── user-list/
+│   │   ├── ui/UserListPage.tsx
+│   │   └── index.ts
+│   └── countries/           # Master Data → Countries (API)
+│       ├── ui/CountriesRoutePage.tsx
+│       ├── ui/CountriesPage.tsx
+│       └── model/           # useCountriesFilters, useCountryForm
 ├── widgets/                 # Large, reusable page sections
 │   ├── app-layout/
 │   │   ├── ui/AppLayout.tsx
@@ -80,9 +84,13 @@ src/
 │   │   ├── model/types.ts   # AuthUser, Role, Permission, JwtPayload
 │   │   ├── model/auth-store.ts
 │   │   └── index.ts
-│   └── user/
-│       ├── model/types.ts   # User
-│       ├── api/use-users-query.ts
+│   ├── user/
+│   │   ├── model/types.ts   # User
+│   │   ├── api/use-users-query.ts
+│   │   └── index.ts
+│   └── country/
+│       ├── model/model.ts   # Country schema + CountriesResponse
+│       ├── api/use-countries-query.ts  # GET v1/operators/countries (Operator Countries tag)
 │       └── index.ts
 └── shared/                  # Purely reusable, non‑domain modules
     ├── config/              # UI-agnostic app configuration
@@ -108,6 +116,7 @@ src/
         │   └── index.ts
         ├── dropdown-menu.tsx
         ├── input.tsx
+        ├── search-input.tsx # Generic SearchInput used across list pages
         ├── skeleton.tsx
         ├── page-skeleton.tsx
         ├── theme-toggle.tsx
