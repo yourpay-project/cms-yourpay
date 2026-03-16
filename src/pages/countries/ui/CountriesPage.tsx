@@ -6,14 +6,8 @@ import {
   SearchInput,
   Button,
   Input,
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
 } from "@/shared/ui";
+import { Modal } from "@/shared/ui/modal";
 import type { Country } from "@/entities/country";
 import { CountriesTable } from "@/widgets/countries-table";
 import { useCountriesFilters, useCountryForm } from "../model";
@@ -65,25 +59,23 @@ const CountriesPage: FC = () => {
             }}
             containerClassName="w-full max-w-xs"
           />
-          <Dialog open={isDialogOpen} onOpenChange={(open) => (open ? setIsDialogOpen(true) : closeDialog())}>
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                onClick={openForCreate}
-              >
-                Add country
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editing ? "Edit Country" : "Create Country (API)"}</DialogTitle>
-                <DialogDescription>
-                  {editing
-                    ? "Update country code, name, or status."
-                    : "Create a new country record for operator APIs."}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="mt-4 flex flex-col gap-4">
+          <Button size="sm" onClick={openForCreate}>
+            Add country
+          </Button>
+          <Modal
+            open={isDialogOpen}
+            onCancel={closeDialog}
+            onOk={submit}
+            confirmLoading={isSubmitting}
+            title={editing ? "Edit Country" : "Create Country (API)"}
+            centered
+          >
+            <p className="mt-1 px-px text-sm text-muted-foreground">
+              {editing
+                ? "Update country code, name, or status."
+                : "Create a new country record for operator APIs."}
+            </p>
+            <div className="mt-4 flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs font-medium text-muted-foreground">Country Code</span>
                   <Input
@@ -134,22 +126,7 @@ const CountriesPage: FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-6 flex items-center justify-end gap-2">
-                <DialogClose asChild>
-                  <Button variant="ghost" size="sm" onClick={closeDialog}>
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button
-                  size="sm"
-                  disabled={isSubmitting || !code.trim() || !name.trim()}
-                  onClick={submit}
-                >
-                  {editing ? "Save changes" : "Create"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          </Modal>
         </div>
       </div>
 
