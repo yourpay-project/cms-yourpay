@@ -53,10 +53,14 @@ src/
 │   ├── user-list/
 │   │   ├── ui/UserListPage.tsx
 │   │   └── index.ts
-│   └── countries/           # Master Data → Countries (API)
+│   ├── countries/           # Master Data → Countries (API)
 │       ├── ui/CountriesRoutePage.tsx
 │       ├── ui/CountriesPage.tsx
 │       └── model/           # useCountriesFilters, useCountryForm
+│   └── fee-config/          # Exchange & Fee Management → Fee Config (API-backed)
+│       ├── ui/FeeConfigRoutePage.tsx
+│       ├── ui/FeeConfigPage.tsx
+│       └── model/           # useFeeConfigFilters, feeConfigFormSchema
 ├── widgets/                 # Large, reusable page sections
 │   ├── app-layout/
 │   │   ├── ui/AppLayout.tsx

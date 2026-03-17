@@ -169,6 +169,12 @@ export const navGroups: NavigationGroupConfig[] = [
         iconKey: 'chart',
         permission: 'view_any_exchange_rates_resource',
       },
+      {
+        to: '/fee-config',
+        label: 'Fee Config',
+        iconKey: 'settings',
+        permission: 'view_any_fee_config_resource',
+      },
     ],
   },
   {

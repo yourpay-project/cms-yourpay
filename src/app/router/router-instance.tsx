@@ -60,6 +60,12 @@ const CountriesRoutePage = lazyRouteComponent(
   'default',
 );
 
+/** Lazy-loaded route for Fee Config (Exchange & Fee Management) page. */
+const FeeConfigRoutePage = lazyRouteComponent(
+  () => import('@/pages/fee-config').then((m) => ({ default: m.FeeConfigRoutePage })),
+  'default',
+);
+
 /**
  * Static route for the main dashboard.
  */
@@ -98,6 +104,7 @@ const sectionRoutes = createSectionRoutes({
   sectionOverrides: {
     '/kyc-submission': KycSubmissionRoutePage,
     '/countries': CountriesRoutePage,
+    '/fee-config': FeeConfigRoutePage,
   },
 });
 
