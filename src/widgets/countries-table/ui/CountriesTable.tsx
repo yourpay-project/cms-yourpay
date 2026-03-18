@@ -93,7 +93,7 @@ export const CountriesTable: FC<CountriesTableProps> = (props) => {
         },
       },
     ],
-    [],
+    [onDelete, onEdit],
   );
 
   const pageCount = total === 0 ? 1 : Math.ceil(total / pageSize);

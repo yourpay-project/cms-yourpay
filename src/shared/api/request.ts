@@ -34,7 +34,8 @@ async function requestWithRefresh<T>(
         }, path)
       : path;
 
-  const { pathParams, ...requestOptions } = options;
+  const requestOptions = { ...options };
+  delete requestOptions.pathParams;
 
   const url = resolvedPath.startsWith("http")
     ? path
