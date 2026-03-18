@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { Button, Card, CardContent } from "@/shared/ui";
+import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
 import { getFilterBadgeClassName } from "@/shared/lib";
 import type { FilterBadge } from "..";
 import { KycSubmissionFiltersGrid } from "./KycSubmissionFiltersGrid";
@@ -51,19 +51,19 @@ export const KycSubmissionFiltersCard: FC<KycSubmissionFiltersCardProps> = (prop
     <Card className="border-border bg-card">
       <CardContent className="p-4">
         <div className="flex w-full flex-wrap items-center justify-between gap-2">
-          <button
-            type="button"
-            className="flex shrink-0 items-center gap-2 text-left text-sm font-medium text-foreground hover:opacity-80"
+          <DropdownFieldTrigger
+            label="Filters"
+            className="h-auto w-auto shrink-0 rounded-none px-0 py-0 text-sm font-medium hover:bg-transparent hover:opacity-80 focus:ring-0 focus:ring-offset-0"
             onClick={() => setFiltersOpen((v) => !v)}
             aria-expanded={filtersOpen}
-          >
-            Filters
-            {filtersOpen ? (
-              <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-            ) : (
-              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-            )}
-          </button>
+            trailing={
+              filtersOpen ? (
+                <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              ) : (
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              )
+            }
+          />
           <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
             <div className="hidden flex-wrap items-center gap-1.5 sm:flex">
               {badges.map((b) => (
