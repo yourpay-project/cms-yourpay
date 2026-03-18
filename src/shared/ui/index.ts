@@ -43,6 +43,14 @@ export {
   type FilterSelectOption,
   type FilterSelectWithClearProps,
 } from "./filter-select-with-clear";
+export {
+  FilterControlButtons,
+  FilterOptionsGrid,
+  type FilterField,
+  type FilterType,
+  type FilterControlButtonsProps,
+  type FilterOptionsGridProps,
+} from "./filter-controls";
 export { ThemeToggle } from "./theme-toggle";
 export {
   Table,
