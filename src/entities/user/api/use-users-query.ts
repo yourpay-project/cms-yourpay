@@ -2,7 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { apiClient, type ApiResponse } from "@/shared/api";
-import { usersResponseSchema, type UsersResponse } from "../model";
+import {
+  usersFilterDefinitionSchema,
+  usersFiltersSchema,
+  usersResponseSchema,
+  type UsersFilterDefinition,
+  type UsersFilterOption,
+  type UsersFilters,
+  type UsersFilterType,
+  type UsersResponse,
+} from "../model";
 
 /**
  * Parameters for the customers list query (pagination + filters).
@@ -12,12 +21,8 @@ export interface UseUsersQueryParams {
   pageSize: number;
   /** Debounced search keyword (name, phone, etc.). */
   search?: string;
-  /** User status filter (e.g. active, inactive, blocked, all). */
-  status?: string;
-  /** Gender filter (M / F / all). */
-  gender?: string;
-  /** Country of registration filter (e.g. ID, HK, SG, ALL). */
-  country?: string;
+  /** Dynamic filter values keyed by backend query param name. */
+  filters?: Record<string, string>;
 }
 
 /**
@@ -49,6 +54,7 @@ const apiPaginationSchema = z.object({
   limit: z.number().int().optional(),
   total_items: z.number().int().optional(),
   total_page: z.number().int().optional(),
+  filters: z.unknown().optional(),
 });
 
 const apiCustomersResponseSchema = z.object({
@@ -56,14 +62,232 @@ const apiCustomersResponseSchema = z.object({
   req_id: z.string().optional(),
 });
 
+interface NormalizedUsersFiltersResult {
+  filters: UsersFilters;
+  filterDefinitions: UsersFilterDefinition[];
+}
+
+function normalizeControlListOption(rawValue: string): UsersFilterOption {
+  const normalized = String(rawValue ?? "").trim();
+  if (normalized.toLowerCase() === "all") {
+    return { label: "All", value: "" };
+  }
+  const upper = normalized.toUpperCase();
+  return { label: upper, value: upper };
+}
+
+function normalizeOptionRecord(option: unknown): UsersFilterOption | null {
+  if (typeof option === "string") {
+    return {
+      label: option,
+      value: option,
+    };
+  }
+
+  if (option && typeof option === "object") {
+    const record = option as Record<string, unknown>;
+    const labelCandidate =
+      record.label ?? record.text ?? record.name ?? record.title ?? record.display_value;
+    const valueCandidate = record.value ?? record.id ?? record.code ?? record.key ?? record.identifier;
+    const hasUsableLabelOrValue = labelCandidate != null || valueCandidate != null;
+    if (!hasUsableLabelOrValue) {
+      return null;
+    }
+    return {
+      label: String(labelCandidate ?? valueCandidate ?? ""),
+      value: String(valueCandidate ?? ""),
+    };
+  }
+
+  return null;
+}
+
+function normalizeUsersFilters(input: unknown): NormalizedUsersFiltersResult | undefined {
+  if (!input || typeof input !== "object") {
+    return undefined;
+  }
+
+  if (Array.isArray(input)) {
+    const map: Record<string, UsersFilterOption[]> = {};
+    const definitions: UsersFilterDefinition[] = [];
+
+    for (const item of input) {
+      if (!item || typeof item !== "object") {
+        continue;
+      }
+      const record = item as Record<string, unknown>;
+      const key = typeof record.key === "string" ? record.key : "";
+      if (!key) {
+        continue;
+      }
+
+      const rawType = typeof record.type === "string" ? record.type : "options";
+      const type: UsersFilterType =
+        rawType === "control" || rawType === "date_range" ? rawType : "options";
+      const rawOptions = Array.isArray(record.options) ? record.options : [];
+      const rawList = Array.isArray(record.list) ? record.list : [];
+
+      const mappedOptions: UsersFilterOption[] =
+        type === "control"
+          ? rawList
+              .map((item): UsersFilterOption | null =>
+                typeof item === "string" ? normalizeControlListOption(item) : null
+              )
+              .filter((option): option is UsersFilterOption => option !== null)
+          : rawOptions
+              .map((option) => normalizeOptionRecord(option))
+              .filter((option): option is UsersFilterOption => option !== null);
+
+      if (type !== "date_range" && mappedOptions.length === 0) {
+        continue;
+      }
+
+      if (mappedOptions.length > 0) {
+        map[key] = mappedOptions;
+      }
+      const definition = usersFilterDefinitionSchema.safeParse({
+        key,
+        name: typeof record.name === "string" ? record.name : key,
+        type,
+        options: mappedOptions,
+      });
+      if (definition.success) {
+        definitions.push(definition.data);
+      }
+    }
+
+    const parsedMap = usersFiltersSchema.safeParse(map);
+    if (!parsedMap.success || definitions.length === 0) {
+      return undefined;
+    }
+
+    return {
+      filters: parsedMap.data,
+      filterDefinitions: definitions,
+    };
+  }
+
+  const direct = usersFiltersSchema.safeParse(input);
+  if (direct.success) {
+    return {
+      filters: direct.data,
+      filterDefinitions: Object.entries(direct.data).map(([key, options]) => ({
+        key,
+        name: key,
+        type: "options",
+        options,
+      })),
+    };
+  }
+
+  const normalized: Record<string, UsersFilterOption[]> = {};
+  for (const [key, options] of Object.entries(input)) {
+    if (!Array.isArray(options)) {
+      continue;
+    }
+
+    const mappedOptions: UsersFilterOption[] = options
+      .map((option) => normalizeOptionRecord(option))
+      .filter((option): option is UsersFilterOption => option !== null);
+
+    if (mappedOptions.length > 0) {
+      normalized[key] = mappedOptions;
+    }
+  }
+
+  const parsedNormalized = usersFiltersSchema.safeParse(normalized);
+  if (!parsedNormalized.success) {
+    return undefined;
+  }
+
+  return {
+    filters: parsedNormalized.data,
+    filterDefinitions: Object.entries(parsedNormalized.data).map(([key, options]) => ({
+      key,
+      name: key,
+      type: "options",
+      options,
+    })),
+  };
+}
+
+function extractUsersFilters(payload: unknown): NormalizedUsersFiltersResult | undefined {
+  if (!payload || typeof payload !== "object") {
+    return undefined;
+  }
+
+  const root = payload as Record<string, unknown>;
+  const data = root.data;
+  const dataRecord = data && typeof data === "object" ? (data as Record<string, unknown>) : undefined;
+  const nestedData = dataRecord?.data;
+  const nestedDataRecord =
+    nestedData && typeof nestedData === "object" ? (nestedData as Record<string, unknown>) : undefined;
+  const pagination = dataRecord?.pagination;
+  const paginationRecord =
+    pagination && typeof pagination === "object" ? (pagination as Record<string, unknown>) : undefined;
+  const meta = dataRecord?.meta;
+  const metaRecord = meta && typeof meta === "object" ? (meta as Record<string, unknown>) : undefined;
+
+  const candidates: unknown[] = [
+    dataRecord?.filters,
+    dataRecord?.filter,
+    dataRecord?.available_filters,
+    nestedDataRecord?.filters,
+    nestedDataRecord?.filter,
+    nestedDataRecord?.available_filters,
+    paginationRecord?.filters,
+    paginationRecord?.filter,
+    metaRecord?.filters,
+    root.filters,
+    root.filter,
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeUsersFilters(candidate);
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  const visited = new WeakSet<object>();
+  const queue: unknown[] = [payload];
+  const maxIterations = 60;
+  let iterations = 0;
+
+  while (queue.length > 0 && iterations < maxIterations) {
+    iterations += 1;
+    const current = queue.shift();
+    if (!current || typeof current !== "object") {
+      continue;
+    }
+
+    if (visited.has(current)) {
+      continue;
+    }
+    visited.add(current);
+
+    const normalized = normalizeUsersFilters(current);
+    if (normalized) {
+      return normalized;
+    }
+
+    const record = current as Record<string, unknown>;
+    for (const value of Object.values(record)) {
+      if (value && typeof value === "object") {
+        queue.push(value);
+      }
+    }
+  }
+
+  return undefined;
+}
+
 /**
  * TanStack Query hook for fetching a paginated list of YourPay customers.
  *
  * Uses `GET v1/operators/customers` with query params:
  * - `page`, `limit`
- * - `country_of_registration`
- * - `gender`
- * - `status`
+ * - dynamic filter keys from `filters` metadata (e.g. `country_of_registration`, `gender`, `status`)
  * - `keyword`
  *
  * The raw response is validated with Zod and then mapped into the
@@ -73,24 +297,19 @@ export function useUsersQuery({
   pageIndex,
   pageSize,
   search,
-  status,
-  gender,
-  country,
+  filters,
 }: UseUsersQueryParams) {
   const searchParams = new URLSearchParams();
   searchParams.set("page", String(pageIndex + 1));
   searchParams.set("limit", String(pageSize));
 
-  if (country && country !== "ALL") {
-    searchParams.set("country_of_registration", country);
-  }
-
-  if (status && status !== "all") {
-    searchParams.set("status", status);
-  }
-
-  if (gender && gender !== "all") {
-    searchParams.set("gender", gender);
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      if (!value || value.trim() === "") {
+        continue;
+      }
+      searchParams.set(key, value);
+    }
   }
 
   if (search && search.trim() !== "") {
@@ -100,7 +319,7 @@ export function useUsersQuery({
   const path = `v1/operators/customers?${searchParams.toString()}`;
 
   return useQuery<ApiResponse<unknown>, Error, UsersResponse>({
-    queryKey: ["operators-customers", pageIndex, pageSize, search, status, gender, country],
+    queryKey: ["operators-customers", pageIndex, pageSize, search, filters],
     queryFn: async ({ signal }): Promise<ApiResponse<unknown>> =>
       apiClient.get<unknown>(path, { signal }),
     // Keep showing previous page data while new filters/pagination are loading
@@ -132,9 +351,13 @@ export function useUsersQuery({
         };
       });
 
+      const normalizedFilters = normalizeUsersFilters(page?.filters) ?? extractUsersFilters(res.data);
+
       return usersResponseSchema.parse({
         data: mapped,
         total,
+        filters: normalizedFilters?.filters,
+        filterDefinitions: normalizedFilters?.filterDefinitions,
       });
     },
   });

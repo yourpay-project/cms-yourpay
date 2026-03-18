@@ -44,11 +44,45 @@ export const userSchema = z.object({
 export type User = z.infer<typeof userSchema>;
 
 /**
- * Zod schema for the paginated customers list response used by the page.
+ * Zod schema for a single filter option returned by backend metadata.
+ */
+export const usersFilterOptionSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+});
+
+export type UsersFilterOption = z.infer<typeof usersFilterOptionSchema>;
+export const usersFilterTypeSchema = z.enum(["control", "options", "date_range"]);
+export type UsersFilterType = z.infer<typeof usersFilterTypeSchema>;
+
+/**
+ * Zod schema for a backend filter descriptor used by dynamic filter rendering.
+ */
+export const usersFilterDefinitionSchema = z.object({
+  key: z.string(),
+  name: z.string().optional(),
+  type: usersFilterTypeSchema,
+  options: z.array(usersFilterOptionSchema),
+});
+
+export type UsersFilterDefinition = z.infer<typeof usersFilterDefinitionSchema>;
+
+/**
+ * Normalized map representation for quick lookup by filter key.
+ */
+export const usersFiltersSchema = z.record(z.array(usersFilterOptionSchema));
+
+export type UsersFilters = z.infer<typeof usersFiltersSchema>;
+
+/**
+ * Zod schema for the paginated customers list response used by the page,
+ * including filter metadata when available.
  */
 export const usersResponseSchema = z.object({
   data: z.array(userSchema),
   total: z.number(),
+  filters: usersFiltersSchema.optional(),
+  filterDefinitions: z.array(usersFilterDefinitionSchema).optional(),
 });
 
 /**
