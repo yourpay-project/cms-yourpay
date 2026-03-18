@@ -313,7 +313,7 @@ For navigation inside components, use **TanStack Router hooks**:
 
 **Page-level persisted filter state (separate localStorage keys):**
 
-- **`pages/user-list/model/user-list-store.ts`** – `useUserListStore` persisted as `cms-user-yourpay`. Holds filters (country, status, gender), search, pagination, and filters card open state. Isolated from KYC state.
+- **`pages/user-list/model/user-list-store.ts`** – `useUserListStore` persisted as `cms-user-yourpay`. Holds generic backend-driven `filterValues` (`Record<string,string>`), search, pagination, and filters card open state. Isolated from KYC state.
 - **`pages/kyc-submission/model/kyc-submission-store.ts`** – `useKycSubmissionStore` persisted as `cms-kyc-submission`. Holds filters (status, document type, country, reverify, KYC/Last update date ranges), search, pagination, and filters card open state. Isolated from User Yourpay state.
 
 ### 5.4 Shared Layer
@@ -357,7 +357,7 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, server-side pagination, and `scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}`; used by the user-list page at `/customers`.
 - **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
 - **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
-- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` backed by `useUserListStore` (persisted as `cms-user-yourpay`), collapsible filters card (status, gender), country buttons, search, badges via `shared/lib/filter-badge-colors`, and `UserTable`.
+- **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` backed by `useUserListStore` (persisted as `cms-user-yourpay`), dynamic filter mapping from backend `filters` metadata (`control`, `options`, `date_range`), collapsible options filter card, control buttons row (e.g. country), search, badges via `shared/lib/filter-badge-colors`, and `UserTable`.
 - **`pages/kyc-submission`** – KYC Submissions page: `useKycSubmissionFilters` backed by `useKycSubmissionStore` (persisted as `cms-kyc-submission`), collapsible filters card including status, document type, **country**, reverify, KYC and Last update date ranges; search and `KycSubmissionTable`. Country filter lives inside the filter card and appears as a badge when set.
 
 **Filter badges and shared filter UI:**
@@ -365,6 +365,7 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`shared/lib/filter-badge-colors.ts`** – `getFilterBadgeClassName(key)` returns distinct Tailwind classes per filter key (status, country, documentType, kyc, gender, etc.) for consistent badge styling across KYC and User Yourpay.
 - **`shared/ui/dropdown-field-trigger.tsx`** – Generic field trigger wrapper (leading/trailing slots, default chevron) used by dropdown and select-like controls so label and chevron stay in one clickable button area.
 - **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select with `DropdownFieldTrigger` visual wrapper plus clear (X) behavior; used inside KYC and User Yourpay filter cards.
+- **`shared/ui/filter-controls.tsx`** – Generic backend-driven filter renderer primitives: `FilterControlButtons` (button/tabs style controls) and `FilterOptionsGrid` (select-with-clear grid for options filters).
 
 **Calendar and date picker:**
 
