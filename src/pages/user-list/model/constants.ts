@@ -19,6 +19,6 @@ export const USER_STATUS_OPTIONS: readonly FilterSelectOption[] = [
 
 export const USER_GENDER_OPTIONS: readonly FilterSelectOption[] = [
   { value: "all", label: "All" },
-  { value: "M", label: "Male" },
-  { value: "F", label: "Female" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
 ] as const;
