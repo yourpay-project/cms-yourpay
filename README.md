@@ -363,7 +363,8 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 **Filter badges and shared filter UI:**
 
 - **`shared/lib/filter-badge-colors.ts`** – `getFilterBadgeClassName(key)` returns distinct Tailwind classes per filter key (status, country, documentType, kyc, gender, etc.) for consistent badge styling across KYC and User Yourpay.
-- **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select plus clear (X) or open (chevron) button; used inside KYC and User Yourpay filter cards.
+- **`shared/ui/dropdown-field-trigger.tsx`** – Generic field trigger wrapper (leading/trailing slots, default chevron) used by dropdown and select-like controls so label and chevron stay in one clickable button area.
+- **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select with `DropdownFieldTrigger` visual wrapper plus clear (X) behavior; used inside KYC and User Yourpay filter cards.
 
 **Calendar and date picker:**
 
