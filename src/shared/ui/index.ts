@@ -29,6 +29,10 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+export {
+  DropdownFieldTrigger,
+  type DropdownFieldTriggerProps,
+} from "./dropdown-field-trigger";
 export { Input, type InputProps } from "./input";
 export { Skeleton } from "./skeleton";
 export { PageSkeleton } from "./page-skeleton";

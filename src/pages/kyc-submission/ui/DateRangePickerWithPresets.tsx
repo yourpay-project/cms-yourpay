@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useState, useEffect } from "react";
-import { Calendar, ChevronDown, X } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui";
+import { Calendar, X } from "lucide-react";
+import { DropdownFieldTrigger, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 import { DateRangePickerDropdownContent } from "./DateRangePickerDropdownContent";
 
@@ -65,14 +65,15 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
       <div className="flex w-full items-center gap-0 rounded-md border border-border bg-background">
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="flex h-9 flex-1 items-center gap-2 rounded-l-md px-3 text-left text-sm font-normal text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-            >
-              <Calendar className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground" aria-hidden />
-              <span className="truncate">{displayText}</span>
-              <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground" aria-hidden />
-            </button>
+            <DropdownFieldTrigger
+              leading={
+                <Calendar
+                  className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
+                  aria-hidden
+                />
+              }
+              label={displayText}
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={4} className="w-[min(360px,100vw)] p-3">
             <DateRangePickerDropdownContent

@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
+import { DropdownFieldTrigger } from "./dropdown-field-trigger";
 
 /** Option for the native select inside {@link FilterSelectWithClear}. */
 export interface FilterSelectOption {
@@ -36,41 +37,65 @@ export const FilterSelectWithClear: FC<FilterSelectWithClearProps> = ({
   allValue = "all",
 }) => {
   const showClear = value !== allValue;
+  const selectedOption = options.find((option) => option.value === value);
+  const selectedLabel = selectedOption?.label ?? options[0]?.label ?? "";
 
   return (
     <div>
       <label className="mb-1 block text-xs text-muted-foreground">{label}</label>
-      <div className="relative flex rounded-md border border-border bg-background">
-        <select
-          ref={selectRef}
-          className="w-full flex-1 appearance-none rounded-md border-0 bg-transparent px-3 py-2 pr-9 text-sm text-foreground [&>option]:bg-background [&>option]:text-foreground"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        >
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+      <div className="relative">
         {showClear ? (
-          <button
-            type="button"
-            onClick={onClear}
-            className="flex w-9 shrink-0 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label={`Clear ${label}`}
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex w-full items-center gap-0 rounded-md border border-border bg-background">
+            <div className="relative min-w-0 flex-1">
+              <DropdownFieldTrigger
+                label={selectedLabel}
+                className="pointer-events-none rounded-r-none border-0"
+                aria-label={`Open ${label}`}
+              />
+              <select
+                ref={selectRef}
+                className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                aria-label={label}
+              >
+                {options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={onClear}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+              aria-label={`Clear ${label}`}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => selectRef.current?.click()}
-            className="flex w-9 shrink-0 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label={`Open ${label}`}
-          >
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          <div className="relative rounded-md border border-border bg-background">
+            <DropdownFieldTrigger
+              label={selectedLabel}
+              className="pointer-events-none border-0"
+              aria-label={`Open ${label}`}
+            />
+            <select
+              ref={selectRef}
+              className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              aria-label={label}
+            >
+              {options.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
       </div>
     </div>
