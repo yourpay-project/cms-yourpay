@@ -148,7 +148,7 @@ export const UserTable: FC<UserTableProps> = ({
         <DataTable<User>
           columns={columns}
           data={data}
-          getRowId={(row) => row.id}
+          getRowId={(row, index) => `${row.id || "row"}-${index}`}
           scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}
           enableVerticalShadow
           isLoading={isRefetching}

@@ -10,16 +10,12 @@ const DEFAULT_PAGE_SIZE = 10;
 export interface UserListStoreState {
   pageIndex: number;
   pageSize: number;
-  country: string;
-  status: string;
-  gender: string;
+  filterValues: Record<string, string>;
   searchInput: string;
   filtersOpen: boolean;
   setPageIndex: (v: number) => void;
   setPageSize: (v: number) => void;
-  setCountry: (v: string) => void;
-  setStatus: (v: string) => void;
-  setGender: (v: string) => void;
+  setFilterValue: (key: string, value: string) => void;
   setSearchInput: (v: string) => void;
   setFiltersOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
   resetFilters: () => void;
@@ -37,16 +33,19 @@ export const useUserListStore = create<UserListStoreState>()(
     (set) => ({
       pageIndex: 0,
       pageSize: DEFAULT_PAGE_SIZE,
-      country: "ALL",
-      status: "all",
-      gender: "all",
+      filterValues: {},
       searchInput: "",
       filtersOpen: false,
       setPageIndex: (v) => set({ pageIndex: v }),
       setPageSize: (v) => set({ pageSize: v }),
-      setCountry: (v) => set({ country: v, pageIndex: 0 }),
-      setStatus: (v) => set({ status: v, pageIndex: 0 }),
-      setGender: (v) => set({ gender: v, pageIndex: 0 }),
+      setFilterValue: (key, value) =>
+        set((state) => ({
+          filterValues: {
+            ...state.filterValues,
+            [key]: value,
+          },
+          pageIndex: 0,
+        })),
       setSearchInput: (v) => set({ searchInput: v }),
       setFiltersOpen: (v) =>
         set((s) => ({
@@ -54,9 +53,7 @@ export const useUserListStore = create<UserListStoreState>()(
         })),
       resetFilters: () =>
         set({
-          country: "ALL",
-          status: "all",
-          gender: "all",
+          filterValues: {},
           searchInput: "",
           pageIndex: 0,
         }),

@@ -5,9 +5,7 @@ export interface UseUserListQueryParams {
   pageIndex: number;
   pageSize: number;
   search?: string;
-  status?: string;
-  gender?: string;
-  country?: string;
+  filters?: Record<string, string>;
 }
 
 /**
@@ -20,17 +18,13 @@ export function useUserListQuery({
   pageIndex,
   pageSize,
   search,
-  status,
-  gender,
-  country,
+  filters,
 }: UseUserListQueryParams) {
   const query = useUsersQuery({
     pageIndex,
     pageSize,
     search,
-    status,
-    gender,
-    country,
+    filters,
   });
 
   useSyncGlobalLoading(query.isLoading);

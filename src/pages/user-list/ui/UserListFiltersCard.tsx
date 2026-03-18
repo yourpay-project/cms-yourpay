@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
 import { getFilterBadgeClassName } from "@/shared/lib";
-import type { UserListFilterBadge } from "../model";
+import type { UserListDynamicFilterField, UserListFilterBadge } from "..";
 import { UserListFiltersGrid } from "./UserListFiltersGrid";
 
 export interface UserListFiltersCardProps {
@@ -10,18 +10,14 @@ export interface UserListFiltersCardProps {
   setFiltersOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
   badges: UserListFilterBadge[];
   handleResetFilters: () => void;
-  status: string;
-  setStatus: (v: string) => void;
-  statusSelectRef: React.RefObject<HTMLSelectElement>;
-  gender: string;
-  setGender: (v: string) => void;
-  genderSelectRef: React.RefObject<HTMLSelectElement>;
-  resetPageIndex: () => void;
+  optionFilterFields: readonly UserListDynamicFilterField[];
+  selectedFilterValues: Record<string, string>;
+  onChangeFilter: (key: string, value: string) => void;
 }
 
 /**
- * Collapsible filters card for User Yourpay: header (Filters toggle, badges, Reset) and filter grid when open.
- * Badge colors from {@link getFilterBadgeClassName}; grid uses {@link FilterSelectWithClear} for status/gender.
+ * Collapsible filters card for User Yourpay: header (Filters toggle, badges, Reset)
+ * and dynamic filter grid when open.
  *
  * @param props - {@link UserListFiltersCardProps}
  * @returns Card with toggle, badges, reset, and optional grid
@@ -48,8 +44,8 @@ export const UserListFiltersCard: FC<UserListFiltersCardProps> = (props) => {
           />
           <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
             {badges.map((b) => (
-              <span key={b.key} className={getFilterBadgeClassName(b.key)}>
-                {b.label}
+              <span key={b.id} className={getFilterBadgeClassName(b.name)}>
+                {b.name}: {b.valueLabel}
                 <button
                   type="button"
                   className="rounded p-0.5 hover:bg-muted hover:text-foreground"
@@ -57,7 +53,7 @@ export const UserListFiltersCard: FC<UserListFiltersCardProps> = (props) => {
                     e.stopPropagation();
                     b.onClear();
                   }}
-                  aria-label={`Remove ${b.label}`}
+                  aria-label={`Remove ${b.name}`}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -74,7 +70,13 @@ export const UserListFiltersCard: FC<UserListFiltersCardProps> = (props) => {
             </Button>
           </div>
         </div>
-        {filtersOpen && <UserListFiltersGrid {...props} />}
+        {filtersOpen && (
+          <UserListFiltersGrid
+            filterFields={props.optionFilterFields}
+            selectedFilterValues={props.selectedFilterValues}
+            onChangeFilter={props.onChangeFilter}
+          />
+        )}
       </CardContent>
     </Card>
   );

@@ -1,14 +1,14 @@
 import type { FC } from "react";
 import { ApiClientError } from "@/shared/api";
-import { Button, PageSkeleton } from "@/shared/ui";
+import { FilterControlButtons, PageSkeleton } from "@/shared/ui";
 import { UserTable } from "@/widgets/user-table";
-import { useUserListFilters, USER_COUNTRY_OPTIONS } from "..";
+import { useUserListFilters } from "..";
 import { UserListFiltersCard } from "./UserListFiltersCard";
 import { UserListSearchBar } from "./UserListSearchBar";
 
 /**
- * User Yourpay (customers) page at `/customers`. Renders filters card, country buttons, search, and UserTable.
- * Uses {@link useUserListFilters} for state and server-side pagination.
+ * User Yourpay (customers) page at `/customers`.
+ * Renders dynamic backend-driven filters, search, and paginated user table.
  */
 const UserListPage: FC = () => {
   const filters = useUserListFilters();
@@ -37,37 +37,27 @@ const UserListPage: FC = () => {
         setFiltersOpen={filters.setFiltersOpen}
         badges={filters.badges}
         handleResetFilters={filters.handleResetFilters}
-        status={filters.status}
-        setStatus={filters.setStatus}
-        statusSelectRef={filters.statusSelectRef}
-        gender={filters.gender}
-        setGender={filters.setGender}
-        genderSelectRef={filters.genderSelectRef}
-        resetPageIndex={filters.resetPageIndex}
+        optionFilterFields={filters.optionsFilterFields}
+        selectedFilterValues={filters.selectedFilterValues}
+        onChangeFilter={filters.handleChangeFilter}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex shrink-0 flex-wrap items-center gap-1">
-          {USER_COUNTRY_OPTIONS.map((o) => (
-            <Button
-              key={o.value}
-              type="button"
-              size="sm"
-              variant={filters.country === o.value ? "default" : "outline"}
-              onClick={() => {
-                filters.setCountry(o.value);
-                filters.resetPageIndex();
-              }}
-            >
-              {o.label}
-            </Button>
-          ))}
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="flex w-full justify-center md:w-auto md:justify-start">
+          <FilterControlButtons
+            fields={filters.controlFilterFields}
+            values={filters.selectedFilterValues}
+            onChange={filters.handleChangeFilter}
+            uppercaseLabels
+          />
         </div>
-        <UserListSearchBar
-          value={filters.searchInput}
-          onChange={filters.setSearchInput}
-          onSearchChangeResetPage={filters.resetPageIndex}
-        />
+        <div className="flex w-full justify-end md:w-auto">
+          <UserListSearchBar
+            value={filters.searchInput}
+            onChange={filters.setSearchInput}
+            onSearchChangeResetPage={filters.resetPageIndex}
+          />
+        </div>
       </div>
 
       <div className="min-h-0 flex-none">

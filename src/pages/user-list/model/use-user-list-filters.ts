@@ -1,44 +1,55 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { useDebouncedValue } from "@/shared/lib";
+import type { FilterSelectOption, FilterType } from "@/shared/ui";
 import { useUserListStore } from "./user-list-store";
 import { useUserListQuery } from "./use-user-list-query";
-import { USER_STATUS_OPTIONS, USER_GENDER_OPTIONS } from "./constants";
 
-export interface UserListFilterBadge {
+/** UI-ready dynamic filter descriptor for the User Yourpay page. */
+export interface UserListDynamicFilterField {
   key: string;
   label: string;
+  type: FilterType;
+  options: readonly FilterSelectOption[];
+  allValue: string;
+}
+
+/** Active filter badge model rendered in the filters card header. */
+export interface UserListFilterBadge {
+  id: string;
+  name: string;
+  valueLabel: string;
   onClear: () => void;
+}
+
+function formatFilterKeyLabel(key: string): string {
+  return key
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 /**
  * Encapsulates filter state, query, and derived values for the User Yourpay list page.
  * State is persisted via {@link useUserListStore} (localStorage key: cms-user-yourpay).
- * Country is rendered as buttons (All, BN, HK, …) outside the filters card; status/gender live in the card.
+ * Filter controls are dynamically derived from backend-provided `filters` metadata.
  *
- * @returns Filter state, handlers, badges, query result (users, total, isLoading, isError), and refs for selects
+ * @returns Filter state, dynamic filter descriptors, badges, and users query state
  */
 export function useUserListFilters() {
   const {
     pageIndex,
     pageSize,
-    country,
-    status,
-    gender,
+    filterValues,
     searchInput,
     filtersOpen,
     setPageIndex,
     setPageSize,
-    setCountry,
-    setStatus,
-    setGender,
+    setFilterValue,
     setSearchInput,
     setFiltersOpen,
     resetFilters,
   } = useUserListStore();
-
-  const countrySelectRef = useRef<HTMLSelectElement>(null);
-  const statusSelectRef = useRef<HTMLSelectElement>(null);
-  const genderSelectRef = useRef<HTMLSelectElement>(null);
 
   const debouncedSearch = useDebouncedValue(searchInput, 400);
 
@@ -46,41 +57,105 @@ export function useUserListFilters() {
     pageIndex,
     pageSize,
     search: debouncedSearch || undefined,
-    status: status !== "all" ? status : undefined,
-    gender: gender !== "all" ? gender : undefined,
-    country: country !== "ALL" ? country : undefined,
+    filters: filterValues,
   });
 
   const handleResetFilters = useCallback(() => {
     resetFilters();
   }, [resetFilters]);
 
+  const filterFields = useMemo((): UserListDynamicFilterField[] => {
+    const filterDefinitions = query.data?.filterDefinitions;
+    if (filterDefinitions && filterDefinitions.length > 0) {
+      return filterDefinitions.map((definition) => {
+        const normalizedOptions: FilterSelectOption[] = definition.options.map((option) => ({
+          value: option.value,
+          label: option.label,
+        }));
+
+        const allValue =
+          normalizedOptions.find((option) => option.label.toLowerCase() === "all")?.value ?? "";
+
+        return {
+          key: definition.key,
+          label: definition.name?.trim() ? definition.name : formatFilterKeyLabel(definition.key),
+          type: definition.type,
+          options: normalizedOptions,
+          allValue,
+        };
+      });
+    }
+
+    const filtersMeta = query.data?.filters;
+    if (!filtersMeta || Object.keys(filtersMeta).length === 0) {
+      return [];
+    }
+
+    return Object.entries(filtersMeta).map(([key, options]) => {
+      const normalizedOptions: FilterSelectOption[] = options.map((option) => ({
+        value: option.value,
+        label: option.label,
+      }));
+
+      const allValue =
+        normalizedOptions.find((option) => option.label.toLowerCase() === "all")?.value ?? "";
+
+      return {
+        key,
+        label: formatFilterKeyLabel(key),
+        type: "options",
+        options: normalizedOptions,
+        allValue,
+      };
+    });
+  }, [query.data?.filterDefinitions, query.data?.filters]);
+
+  const controlFilterFields = useMemo(
+    () => filterFields.filter((field) => field.type === "control"),
+    [filterFields]
+  );
+
+  const optionsFilterFields = useMemo(
+    () => filterFields.filter((field) => field.type === "options"),
+    [filterFields]
+  );
+
+  const selectedFilterValues = useMemo((): Record<string, string> => {
+    return filterFields.reduce<Record<string, string>>((accumulator, field) => {
+      accumulator[field.key] = filterValues[field.key] ?? field.allValue;
+      return accumulator;
+    }, {});
+  }, [filterFields, filterValues]);
+
   const badges = useMemo((): UserListFilterBadge[] => {
     const list: UserListFilterBadge[] = [];
-    if (status !== "all") {
-      const label = USER_STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
+
+    for (const field of filterFields) {
+      const selectedValue = selectedFilterValues[field.key];
+      if (selectedValue === field.allValue) {
+        continue;
+      }
+
+      const selectedOption = field.options.find((option) => option.value === selectedValue);
       list.push({
-        key: "status",
-        label: `Status: ${label}`,
+        id: `${field.key}:${selectedValue}`,
+        name: field.label,
+        valueLabel: selectedOption?.label ?? selectedValue,
         onClear: () => {
-          setStatus("all");
-          setPageIndex(0);
+          setFilterValue(field.key, field.allValue);
         },
       });
     }
-    if (gender !== "all") {
-      const label = USER_GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? gender;
-      list.push({
-        key: "gender",
-        label: `Gender: ${label}`,
-        onClear: () => {
-          setGender("all");
-          setPageIndex(0);
-        },
-      });
-    }
+
     return list;
-  }, [status, gender, setStatus, setGender, setPageIndex]);
+  }, [filterFields, selectedFilterValues, setFilterValue]);
+
+  const handleChangeFilter = useCallback(
+    (key: string, value: string) => {
+      setFilterValue(key, value);
+    },
+    [setFilterValue]
+  );
 
   const resetPageIndex = useCallback(() => setPageIndex(0), [setPageIndex]);
 
@@ -95,19 +170,16 @@ export function useUserListFilters() {
     pageSize,
     setPageIndex,
     setPageSize,
-    country,
-    setCountry,
-    status,
-    setStatus,
-    gender,
-    setGender,
+    filterFields,
+    controlFilterFields,
+    optionsFilterFields,
+    selectedFilterValues,
+    setFilterValue,
+    handleChangeFilter,
     searchInput,
     setSearchInput,
     filtersOpen,
     setFiltersOpen,
-    countrySelectRef,
-    statusSelectRef,
-    genderSelectRef,
     badges,
     handleResetFilters,
     resetPageIndex,
