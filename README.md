@@ -53,6 +53,9 @@ src/
 │   ├── user-list/
 │   │   ├── ui/UserListPage.tsx
 │   │   └── index.ts
+│   ├── user-detail/
+│   │   ├── ui/UserDetailPage.tsx
+│   │   └── index.ts
 │   ├── countries/           # Master Data → Countries (API)
 │       ├── ui/CountriesRoutePage.tsx
 │       ├── ui/CountriesPage.tsx
@@ -242,6 +245,7 @@ File: `app/App.tsx`
   - `/login` → `LoginRoutePage`.
   - `/login/callback` → `LoginCallbackRoutePage` (Google OAuth callback).
   - `/customers` → `UserListRoutePage`.
+  - `/customers/$customerId` → `UserDetailRoutePage`.
   - Other sidebar routes (e.g. `/identity-access`) use `SectionRoutePage` placeholder.
 
 For navigation inside components, use **TanStack Router hooks**:
@@ -355,6 +359,7 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
   - **Exports:** `DataTable`, `useDataTable`, `DataTablePagination`, `DataTableToolbar`, `DataTableSummary`, `DataTableEmpty`, `DataTableLoadingOverlay`, `DataTableHeaderCell`, `createSelectionColumn`, `getPinningStyles`, `useScrollShadow`, `TABLE_BODY_VIEWPORT_HEIGHT`, and types from `@/shared/ui` or `@/shared/ui/data-table`.
   - **Selection column:** `createSelectionColumn` and `SELECTION_COLUMN_ID` are in `lib/selection-column.ts`; header/cell UI in `ui/selection-column-components.tsx` (split for fast refresh).
 - **`widgets/user-table`** – `UserTable` uses the shared `DataTable` with customer columns, name pinned left, actions pinned right, server-side pagination, and `scroll={{ y: TABLE_BODY_VIEWPORT_HEIGHT }}`; used by the user-list page at `/customers`.
+- **`pages/user-detail`** – Customer detail page at `/customers/$customerId`: fetches `GET v1/operators/customers/{customer_id}`, renders top action buttons and collapsible cards; includes lazy-loaded modals for **Edit Identity Access** (`GET v1/operators/identity-accesses`), **View Devices** (`GET v1/operators/customers/{customer_id}/devices`), **View Wallets** (`GET v1/operators/customers/{customer_id}/wallets`), **Block/Unblock User** (`POST v1/operators/customers/{customer_id}/status`), and **Close User** (confirmation form modal). Modal loading uses a lightweight Lucide spinner fallback and `useLazyModal` strategy (lazy load on first open, keep mounted afterwards) so animation remains smooth while still reducing initial route payload.
 - **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
 - **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
 - **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` backed by `useUserListStore` (persisted as `cms-user-yourpay`), dynamic filter mapping from backend `filters` metadata (`control`, `options`, `date_range`), collapsible options filter card, control buttons row (e.g. country), search, badges via `shared/lib/filter-badge-colors`, and `UserTable`.

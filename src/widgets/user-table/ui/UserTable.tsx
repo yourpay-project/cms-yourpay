@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Link } from "@tanstack/react-router";
 import { DataTable, Button, ErrorBoundary, TABLE_BODY_VIEWPORT_HEIGHT } from "@/shared/ui";
 import type { User } from "@/entities/user";
 
@@ -128,13 +129,23 @@ export const UserTable: FC<UserTableProps> = ({
         id: "actions",
         header: "",
         meta: { align: "center" },
-        cell: () => (
-          <div className="flex justify-center">
-            <Button variant="default" size="sm" type="button">
-              View
-            </Button>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const customerId = row.original.id;
+
+          if (!customerId) {
+            return <span className="text-muted-foreground">-</span>;
+          }
+
+          return (
+            <div className="flex justify-center">
+              <Button asChild variant="default" size="sm" type="button">
+                <Link to="/customers/$customerId" params={{ customerId }}>
+                  View
+                </Link>
+              </Button>
+            </div>
+          );
+        },
       },
     ],
     []

@@ -43,6 +43,10 @@ const UserListRoutePage = lazyRouteComponent(
   () => import('@/pages/user-list'),
   'UserListRoutePage',
 );
+const UserDetailRoutePage = lazyRouteComponent(
+  () => import('@/pages/user-detail'),
+  'UserDetailRoutePage',
+);
 /** Lazy-loaded route for generic sections. */
 const SectionRoutePage = lazyRouteComponent(
   () => import('@/pages/section'),
@@ -93,6 +97,12 @@ const loginCallbackRoute = createRoute({
   component: LoginCallbackRoutePage,
 });
 
+const userDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/customers/$customerId',
+  component: UserDetailRoutePage,
+});
+
 /**
  * Dynamic routes generated from shared navigation configuration.
  */
@@ -115,6 +125,7 @@ const routeTree = rootRoute.addChildren([
   dashboardRoute,
   loginRoute,
   loginCallbackRoute,
+  userDetailRoute,
   ...sectionRoutes,
 ]);
 
