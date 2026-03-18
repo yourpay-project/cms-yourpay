@@ -87,6 +87,33 @@
 .sidebar-scroll {
   scrollbar-gutter: stable;
 }
+
+/* Global scrollbar styling (all scroll containers) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.6);
+}
+
 @media (width >= 768px) {
   .sidebar-scroll::-webkit-scrollbar {
     width: 6px;
@@ -103,23 +130,9 @@
   }
 }
 
-/* DataTable scrollbar (horizontal + vertical) */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: var(--radius);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
+/* Back-compat: old custom scrollbar class */
+.custom-scrollbar {
+  scrollbar-gutter: stable;
 }
 
 /* DataTable: theme-aware shadows for pinned columns (scroll indicator) */
