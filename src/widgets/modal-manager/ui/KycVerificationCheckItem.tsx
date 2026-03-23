@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { AlertCircle, CheckCircle2, HelpCircle } from "lucide-react";
 import { cn } from "@/shared/lib";
 
-import type { CheckItemProps } from "./types";
+import type { CheckItemProps } from "./KycVerificationCheckModal.type";
 
 /**
  * Renders a single verification check item with status tone + optional score/reason.

@@ -29,7 +29,13 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 export const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, "aria-describedby": ariaDescribedBy, ...props }, ref) => {
+  // If consumer doesn't provide `aria-describedby`, Radix should compute it from <DialogDescription />.
+  // Passing `aria-describedby={undefined}` forces Radix to think it's missing.
+  const ariaDescribedByProps =
+    ariaDescribedBy != null ? ({ "aria-describedby": ariaDescribedBy } as const) : {};
+
+  return (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
@@ -38,12 +44,14 @@ export const DialogContent = React.forwardRef<
         "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border border-border bg-card p-6 shadow-xl transition-all duration-200 data-[state=closed]:scale-95 data-[state=closed]:opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100",
         className,
       )}
+      {...ariaDescribedByProps}
       {...props}
     >
       {children}
     </DialogPrimitive.Content>
   </DialogPortal>
-));
+  );
+});
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 export const DialogHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({

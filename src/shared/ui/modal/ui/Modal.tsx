@@ -4,51 +4,9 @@ import { X } from "lucide-react";
 import { animated } from "@react-spring/web";
 
 import { cn } from "@/shared/lib/utils";
-import { ModalFooter, ModalFooterProps } from "./ModalFooter";
+import { ModalFooter } from "./ModalFooter";
 import { useModalAnimation } from "./useModalAnimation";
-
-export interface ModalProps extends ModalFooterProps {
-  /**
-   * Controls whether the modal is visible.
-   */
-  open: boolean;
-  /**
-   * Called when the user attempts to close the modal
-   * via mask click, close icon, or Cancel button.
-   */
-  onCancel?: () => void;
-  /**
-   * Modal title content rendered in the header.
-   */
-  title?: React.ReactNode;
-  /**
-   * Short description rendered below the title and wired to aria-describedby.
-   */
-  description?: React.ReactNode;
-  /**
-   * Custom footer node. Use `null` to hide the footer entirely.
-   * When `undefined`, a default Cancel / OK footer is rendered.
-   */
-  footer?: React.ReactNode | null;
-  /**
-   * Content of the modal body.
-   */
-  children?: React.ReactNode;
-  /**
-   * Explicit width (e.g. "520px" or 520).
-   * If you prefer Tailwind width classes, pass them
-   * through `className` instead.
-   */
-  width?: string | number;
-  /**
-   * Whether the modal should be vertically centered.
-   */
-  centered?: boolean;
-  /**
-   * Additional className for the modal content container.
-   */
-  className?: string;
-}
+import type { ModalProps } from "./Modal.type";
 
 /**
  * Controlled, accessible modal dialog component.
@@ -102,8 +60,6 @@ export const Modal: React.FC<ModalProps> = ({
         >
           <Dialog.Content
             asChild
-            // Prevent automatic focus on first focusable element (e.g. inputs)
-            onOpenAutoFocus={(event) => event.preventDefault()}
           >
             <animated.div
               style={{ ...contentStyles, width: contentWidth }}
@@ -113,14 +69,23 @@ export const Modal: React.FC<ModalProps> = ({
                 className
               )}
             >
-              <div className="pt-5 px-6 pb-4">
-                <Dialog.Title className="text-base font-semibold">{title}</Dialog.Title>
-                {description && (
-                  <Dialog.Description className="mt-1 text-sm text-muted-foreground">
-                    {description}
-                  </Dialog.Description>
-                )}
-              </div>
+              {/* 
+               * Keep Radix DialogTitle/DialogDescription as direct children for reliable
+               * accessibility detection in Radix internals.
+               */}
+              <Dialog.Title className="sr-only">{title ?? "Dialog"}</Dialog.Title>
+              <Dialog.Description className="sr-only">
+                {description ?? "Dialog description"}
+              </Dialog.Description>
+
+              {title != null || description != null ? (
+                <div className="pt-5 px-6 pb-4">
+                  {title != null ? <h2 className="text-base font-semibold">{title}</h2> : null}
+                  {description != null ? (
+                    <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+                  ) : null}
+                </div>
+              ) : null}
 
               <div className="px-6 py-2">{children}</div>
 

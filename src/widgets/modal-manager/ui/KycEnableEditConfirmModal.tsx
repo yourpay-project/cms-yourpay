@@ -1,25 +1,30 @@
 import type { FC } from "react";
-import { Modal } from "@/shared/ui/modal";
+import { Button } from "@/shared/ui";
 
-import type { KycEnableEditConfirmModalProps } from "./types";
+import type { KycEnableEditConfirmModalProps } from "./KycEnableEditConfirmModal.type";
 
 /**
  * Confirmation modal for enabling KYC editing mode.
  */
-export const KycEnableEditConfirmModal: FC<KycEnableEditConfirmModalProps> = ({ onClose, onConfirm }) => {
+export const KycEnableEditConfirmModal: FC<KycEnableEditConfirmModalProps> = ({ open, onClose, onConfirm }) => {
+  // `open` is controlled by ModalContainer; this content only renders actions.
+  void open;
+
   return (
-    <Modal
-      open
-      onCancel={onClose}
-      onOk={() => {
-        onConfirm?.();
-        onClose();
-      }}
-      okText="Yes, Enable Editing"
-      cancelText="Cancel"
-      title="Update User Data"
-      description="Are you sure you want to enable editing mode to update this user's KYC documents?"
-      centered
-    />
+    <div className="flex items-center justify-end gap-2 pb-5 pt-4">
+      <Button type="button" variant="outline" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button
+        type="button"
+        variant="default"
+        onClick={() => {
+          onConfirm?.();
+          onClose();
+        }}
+      >
+        Yes, Enable Editing
+      </Button>
+    </div>
   );
 };

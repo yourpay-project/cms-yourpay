@@ -2,7 +2,8 @@ import type { FC } from "react";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { useModalStore } from "@/shared/lib/modal";
-import { MODAL_COMPONENT_REGISTRY } from "../model/modal-registry";
+import { Modal } from "@/shared/ui/modal";
+import { MODAL_COMPONENT_REGISTRY, MODAL_SHELL_CONFIG } from "../model/modal-registry";
 import { ModalGlobalLoadingOverlay } from "./ModalGlobalLoadingOverlay";
 import type { ModalKey } from "../model/modal-contract";
 
@@ -18,12 +19,16 @@ export const ModalContainer: FC = () => {
   const close = useModalStore((state) => state.close);
   const closeAll = useModalStore((state) => state.closeAll);
 
-  if (!isOpen || !modalType) {
+  if (!modalType) {
     return null;
   }
 
-  const ResolvedModal = MODAL_COMPONENT_REGISTRY[modalType as ModalKey];
-  const resolvedProps = modalData ?? {};
+  const shellConfig = MODAL_SHELL_CONFIG[modalType as ModalKey];
+
+  const ResolvedModal = MODAL_COMPONENT_REGISTRY[modalType as ModalKey] as FC<
+    Record<string, unknown> & { open: boolean; onClose: () => void; onCloseAll: () => void }
+  >;
+  const resolvedProps = (modalData ?? {}) as Record<string, unknown>;
 
   return (
     <>
@@ -34,11 +39,23 @@ export const ModalContainer: FC = () => {
           </div>
         }
       >
-        <ResolvedModal
-          {...resolvedProps}
-          onClose={close}
-          onCloseAll={closeAll}
-        />
+        <Modal
+          open={isOpen}
+          onCancel={close}
+          footer={null}
+          title={shellConfig.title ?? null}
+          description={shellConfig.description}
+          centered={shellConfig.centered}
+          width={shellConfig.width}
+          className={shellConfig.className}
+        >
+          <ResolvedModal
+            {...(resolvedProps as Record<string, unknown>)}
+            open={isOpen}
+            onClose={close}
+            onCloseAll={closeAll}
+          />
+        </Modal>
       </Suspense>
       <ModalGlobalLoadingOverlay enabled={isOpen} />
     </>

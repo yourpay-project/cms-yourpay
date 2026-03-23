@@ -1,9 +1,9 @@
 import type { FC } from "react";
 import { useMemo } from "react";
-import { Card, CardContent } from "@/shared/ui";
+import { Loader2 } from "lucide-react";
+import { Button, Card, CardContent } from "@/shared/ui";
 import { KycVerificationCheckItem } from "./KycVerificationCheckItem";
-import type { KycVerificationCheckModalProps } from "./types";
-import { Modal } from "@/shared/ui/modal";
+import type { KycVerificationCheckModalProps } from "./KycVerificationCheckModal.type";
 
 const VERIFICATION_CHECK_LABELS: Record<string, string> = {
   aml: "AML",
@@ -20,6 +20,7 @@ const VERIFICATION_CHECK_LABELS: Record<string, string> = {
  * KYC verification preview modal for documents and check results.
  */
 export const KycVerificationCheckModal: FC<KycVerificationCheckModalProps> = ({
+  open,
   onClose,
   onRunChecks,
   isRunning,
@@ -52,22 +53,11 @@ export const KycVerificationCheckModal: FC<KycVerificationCheckModalProps> = ({
       }));
   }, [verification]);
 
+  // `open` is controlled by ModalContainer; this content renders body + actions.
+  void open;
+
   return (
-    <Modal
-      open
-      onCancel={onClose}
-      onOk={() => {
-        void onRunChecks?.();
-      }}
-      confirmLoading={Boolean(isRunning)}
-      okText={isRunning ? "Running..." : "Run Verification Checks"}
-      cancelText="Close"
-      title="Document Verification Checks"
-      description="Preview the documents and trigger verification checks."
-      width={860}
-      className="max-h-[80vh]"
-    >
-      <div className="space-y-5">
+    <div className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="overflow-hidden border-border/80">
             <CardContent className="p-4">
@@ -117,7 +107,21 @@ export const KycVerificationCheckModal: FC<KycVerificationCheckModalProps> = ({
             </ul>
           )}
         </div>
-      </div>
-    </Modal>
+        <div className="flex items-center justify-end gap-2 pb-5 pt-4">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              void onRunChecks?.();
+            }}
+            disabled={Boolean(isRunning)}
+          >
+            {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {isRunning ? "Running..." : "Run Verification Checks"}
+          </Button>
+        </div>
+    </div>
   );
 };

@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { Loader2 } from "lucide-react";
 import { useLoadingStore } from "@/shared/lib";
 
-import type { ModalGlobalLoadingOverlayProps } from "./types";
+import type { ModalGlobalLoadingOverlayProps } from "./ModalGlobalLoadingOverlay.type";
 
 /**
  * Shows a global centered loader whenever modal global loading state is enabled.

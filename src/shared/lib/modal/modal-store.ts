@@ -24,11 +24,11 @@ export const useModalStore = create<ModalStoreState>((set, get) => ({
     const resolvedData =
       typeof typeOrArgs === "object" && typeOrArgs != null && "key" in typeOrArgs ? typeOrArgs.data : data;
 
+    // If a modal is already open, close it first (but keep modalType/modalData)
+    // so modal components remain mounted long enough to run exit animations.
     if (get().isOpen) {
       set({
         isOpen: false,
-        modalType: null,
-        modalData: null,
       });
     }
 
@@ -41,15 +41,11 @@ export const useModalStore = create<ModalStoreState>((set, get) => ({
   close: () => {
     set({
       isOpen: false,
-      modalType: null,
-      modalData: null,
     });
   },
   closeAll: () => {
     set({
       isOpen: false,
-      modalType: null,
-      modalData: null,
     });
   },
 }));

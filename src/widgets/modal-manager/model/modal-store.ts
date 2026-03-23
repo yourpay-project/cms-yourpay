@@ -1,5 +1,4 @@
 import { useModalStore as useGlobalModalStore } from "@/shared/lib/modal";
-import { MODAL_DATA_ASSERTION_MAP } from "./modal-contract";
 import type { ModalDataByKey, ModalKey } from "./modal-contract";
 
 export function useModalStore() {
@@ -19,8 +18,6 @@ export function useModalStore() {
       typeof keyOrArgs === "object" && keyOrArgs != null && "key" in keyOrArgs ? keyOrArgs.data : data;
 
     if (resolvedData !== undefined) {
-      const validate = MODAL_DATA_ASSERTION_MAP[key] as (d: unknown) => asserts d is ModalDataByKey<K>;
-      validate(resolvedData as unknown);
       openUntyped({ key, data: resolvedData });
       return;
     }
