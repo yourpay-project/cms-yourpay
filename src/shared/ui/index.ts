@@ -100,6 +100,8 @@ export { SearchInput, type SearchInputProps } from "./search-input";
 export { SelectDropdown } from "./select-dropdown";
 export type { SelectDropdownOption, SelectDropdownProps } from "./select-dropdown.type";
 export { LabeledSelectField, type LabeledSelectFieldProps } from "./labeled-select-field";
+export { DatePicker, type DatePickerProps } from "./date-picker";
+export { DateRangePicker, type DateRangePickerProps, type DateRangePickerPreset } from "./date-range-picker";
 
 export {
   Dialog,
