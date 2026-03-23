@@ -1,20 +1,10 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback } from "react";
 import { useDebouncedValue } from "@/shared/lib";
 import { toCreatedAtFrom, toCreatedAtTo } from "../lib/date-api-format";
 import { useKycSubmissionStore } from "./kyc-submission-store";
 import { useKycSubmissionQuery } from "./use-kyc-submission-query";
-import {
-  KYC_STATUS_OPTIONS,
-  KYC_DOCUMENT_TYPE_OPTIONS,
-  KYC_COUNTRY_OPTIONS,
-  REVERIFY_OPTIONS,
-} from "./constants";
-
-export interface FilterBadge {
-  key: string;
-  label: string;
-  onClear: () => void;
-}
+import { buildKycSubmissionBadges } from "./kyc-submission-filters-badges";
+import type { FilterBadge } from "./kyc-submission-filters-badges.type";
 
 /**
  * Encapsulates filter state, query, and derived values for the KYC submission list page.
@@ -55,11 +45,6 @@ export function useKycSubmissionFilters() {
     resetFilters,
   } = store;
 
-  const statusSelectRef = useRef<HTMLSelectElement>(null);
-  const documentTypeSelectRef = useRef<HTMLSelectElement>(null);
-  const countrySelectRef = useRef<HTMLSelectElement>(null);
-  const reverifySelectRef = useRef<HTMLSelectElement>(null);
-
   const debouncedSearch = useDebouncedValue(searchInput, 400);
 
   const query = useKycSubmissionQuery({
@@ -76,116 +61,44 @@ export function useKycSubmissionFilters() {
     isReverification: reverifyStatus !== "all" ? reverifyStatus : undefined,
   });
 
-  const pageTitleSuffix = useMemo(() => {
-    if (kycPresetLabel) return ` [${kycPresetLabel}]`;
-    if (kycFrom && kycTo) return ` [From: ${kycFrom}, To: ${kycTo}]`;
-    if (kycFrom) return ` [From: ${kycFrom}]`;
-    if (kycTo) return ` [To: ${kycTo}]`;
-    return "";
-  }, [kycPresetLabel, kycFrom, kycTo]);
+  const pageTitleSuffix =
+    kycPresetLabel
+      ? ` [${kycPresetLabel}]`
+      : kycFrom && kycTo
+        ? ` [From: ${kycFrom}, To: ${kycTo}]`
+        : kycFrom
+          ? ` [From: ${kycFrom}]`
+          : kycTo
+            ? ` [To: ${kycTo}]`
+            : "";
 
   const handleResetFilters = useCallback(() => {
     resetFilters();
   }, [resetFilters]);
 
-  const badges = useMemo((): FilterBadge[] => {
-    const list: FilterBadge[] = [];
-    if (status !== "all") {
-      const label = KYC_STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
-      list.push({
-        key: "status",
-        label: `Status: ${label}`,
-        onClear: () => {
-          setStatus("all");
-          setPageIndex(0);
-        },
-      });
-    }
-    if (documentType !== "all") {
-      const label = KYC_DOCUMENT_TYPE_OPTIONS.find((o) => o.value === documentType)?.label ?? documentType;
-      list.push({
-        key: "documentType",
-        label: `Document: ${label}`,
-        onClear: () => {
-          setDocumentType("all");
-          setPageIndex(0);
-        },
-      });
-    }
-    if (country !== "all") {
-      const label = KYC_COUNTRY_OPTIONS.find((o) => o.value === country)?.label ?? country;
-      list.push({
-        key: "country",
-        label: `Country: ${label}`,
-        onClear: () => {
-          setCountry("all");
-          setPageIndex(0);
-        },
-      });
-    }
-    if (reverifyStatus !== "all") {
-      const label = REVERIFY_OPTIONS.find((o) => o.value === reverifyStatus)?.label ?? reverifyStatus;
-      list.push({
-        key: "reverify",
-        label: `Reverify: ${label}`,
-        onClear: () => {
-          setReverifyStatus("all");
-          setPageIndex(0);
-        },
-      });
-    }
-    if (kycFrom && kycTo) {
-      const label = kycPresetLabel ?? `${kycFrom} – ${kycTo}`;
-      list.push({
-        key: "kyc",
-        label: `KYC: ${label}`,
-        onClear: () => {
-          setKycFrom("");
-          setKycTo("");
-          setKycPresetLabel(null);
-          setPageIndex(0);
-        },
-      });
-    }
-    if (lastUpdateFrom && lastUpdateTo) {
-      const label = lastUpdatePresetLabel ?? `${lastUpdateFrom} – ${lastUpdateTo}`;
-      list.push({
-        key: "lastUpdate",
-        label: `Last update: ${label}`,
-        onClear: () => {
-          setLastUpdateFrom("");
-          setLastUpdateTo("");
-          setLastUpdatePresetLabel(null);
-          setPageIndex(0);
-        },
-      });
-    }
-    return list;
-  }, [
+  const resetPageIndex = useCallback(() => setPageIndex(0), [setPageIndex]);
+
+  const badges: FilterBadge[] = buildKycSubmissionBadges({
     status,
-    documentType,
-    country,
-    reverifyStatus,
-    kycFrom,
-    kycTo,
-    kycPresetLabel,
-    lastUpdateFrom,
-    lastUpdateTo,
-    lastUpdatePresetLabel,
     setStatus,
+    documentType,
     setDocumentType,
+    country,
     setCountry,
+    reverifyStatus,
     setReverifyStatus,
+    kycFromTo: { kycFrom, kycTo },
     setKycFrom,
     setKycTo,
+    kycPresetLabel,
+    setKycPresetLabel,
+    lastUpdateFromTo: { lastUpdateFrom, lastUpdateTo },
     setLastUpdateFrom,
     setLastUpdateTo,
-    setKycPresetLabel,
+    lastUpdatePresetLabel,
     setLastUpdatePresetLabel,
-    setPageIndex,
-  ]);
-
-  const resetPageIndex = useCallback(() => setPageIndex(0), [setPageIndex]);
+    resetPageIndex,
+  });
 
   return {
     ...query,
@@ -219,10 +132,6 @@ export function useKycSubmissionFilters() {
     setSearchInput,
     filtersOpen,
     setFiltersOpen,
-    statusSelectRef,
-    documentTypeSelectRef,
-    countrySelectRef,
-    reverifySelectRef,
     pageTitleSuffix,
     badges,
     handleResetFilters,
