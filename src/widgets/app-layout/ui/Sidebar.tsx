@@ -41,7 +41,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   return (
     <aside
       className={cn(
-        "flex shrink-0 flex-col border-r border-border bg-background/80 backdrop-blur-md text-card-foreground transition-[width] duration-200 ease-in-out",
+        "flex shrink-0 flex-col border-r border-border bg-card/95 backdrop-blur-md text-card-foreground transition-[width] duration-200 ease-in-out",
         collapsed ? "w-16" : "w-64",
         className
       )}

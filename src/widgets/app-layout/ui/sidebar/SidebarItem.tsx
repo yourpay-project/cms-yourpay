@@ -34,7 +34,11 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         ),
       }}
       activeProps={{
-        className: cn(baseItemClass, "bg-accent text-accent-foreground"),
+        className: cn(
+          baseItemClass,
+          "border-l-2 border-primary bg-primary/10 text-foreground",
+          collapsed ? "border-l-0" : ""
+        ),
       }}
       title={item.label}
     >

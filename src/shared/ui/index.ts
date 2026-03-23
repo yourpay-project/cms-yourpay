@@ -13,6 +13,7 @@ export {
   CardHeader,
   CardTitle,
 } from "./card";
+export { Badge, type BadgeProps } from "./badge";
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,

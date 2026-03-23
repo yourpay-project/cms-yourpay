@@ -8,7 +8,7 @@
 /* Theme: comfortable contrast, semantic colors (success/warning) for readability. */
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 98%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -74,44 +74,41 @@
   }
 }
 
-@layer base {
+@layer utilities {
+  .sidebar-scroll {
+    scrollbar-gutter: stable;
+  }
+
+  /* Global scrollbar styling */
   * {
-    @apply border-border;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
-}
 
-/* Sidebar scroll: reserve space for scrollbar so it doesn't overlap text */
-.sidebar-scroll {
-  scrollbar-gutter: stable;
-}
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-/* Global scrollbar styling (all scroll containers) */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border)) transparent;
-}
+  *::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
 
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.6);
+  }
 
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--border));
-  border-radius: var(--radius);
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--muted-foreground) / 0.6);
+  /* Back-compat: old custom scrollbar class */
+  .custom-scrollbar {
+    scrollbar-gutter: stable;
+  }
 }
 
 @media (width >= 768px) {
@@ -130,41 +127,36 @@
   }
 }
 
-/* Back-compat: old custom scrollbar class */
-.custom-scrollbar {
-  scrollbar-gutter: stable;
-}
+@layer utilities {
+  .data-table-shadow-left {
+    box-shadow: 4px 0 12px -4px hsl(var(--foreground) / 0.08);
+  }
 
-/* DataTable: theme-aware shadows for pinned columns (scroll indicator) */
-.data-table-shadow-left {
-  box-shadow: 4px 0 12px -4px hsl(var(--foreground) / 0.08);
-}
+  .data-table-shadow-right {
+    box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.08);
+  }
 
-.data-table-shadow-right {
-  box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.08);
-}
+  .dark .data-table-shadow-left {
+    box-shadow: 4px 0 12px -4px hsl(var(--foreground) / 0.15);
+  }
 
-.dark .data-table-shadow-left {
-  box-shadow: 4px 0 12px -4px hsl(var(--foreground) / 0.15);
-}
+  .dark .data-table-shadow-right {
+    box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.15);
+  }
 
-.dark .data-table-shadow-right {
-  box-shadow: -4px 0 12px -4px hsl(var(--foreground) / 0.15);
-}
+  .data-table-shadow-top {
+    box-shadow: 0 6px 12px -4px hsl(var(--foreground) / 0.08);
+  }
 
-/* DataTable: vertical scroll shadows for sticky header/footer */
-.data-table-shadow-top {
-  box-shadow: 0 6px 12px -4px hsl(var(--foreground) / 0.08);
-}
+  .data-table-shadow-bottom {
+    box-shadow: 0 -6px 12px -4px hsl(var(--foreground) / 0.08);
+  }
 
-.data-table-shadow-bottom {
-  box-shadow: 0 -6px 12px -4px hsl(var(--foreground) / 0.08);
-}
+  .dark .data-table-shadow-top {
+    box-shadow: 0 6px 12px -4px hsl(var(--foreground) / 0.15);
+  }
 
-.dark .data-table-shadow-top {
-  box-shadow: 0 6px 12px -4px hsl(var(--foreground) / 0.15);
-}
-
-.dark .data-table-shadow-bottom {
-  box-shadow: 0 -6px 12px -4px hsl(var(--foreground) / 0.15);
+  .dark .data-table-shadow-bottom {
+    box-shadow: 0 -6px 12px -4px hsl(var(--foreground) / 0.15);
+  }
 }
