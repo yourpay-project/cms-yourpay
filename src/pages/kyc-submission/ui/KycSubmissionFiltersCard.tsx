@@ -12,16 +12,12 @@ export interface KycSubmissionFiltersCardProps {
   handleResetFilters: () => void;
   status: string;
   setStatus: (v: string) => void;
-  statusSelectRef: React.RefObject<HTMLSelectElement>;
   documentType: string;
   setDocumentType: (v: string) => void;
-  documentTypeSelectRef: React.RefObject<HTMLSelectElement>;
   country: string;
   setCountry: (v: string) => void;
-  countrySelectRef: React.RefObject<HTMLSelectElement>;
   reverifyStatus: string;
   setReverifyStatus: (v: string) => void;
-  reverifySelectRef: React.RefObject<HTMLSelectElement>;
   kycFrom: string;
   kycTo: string;
   kycPresetLabel: string | null;

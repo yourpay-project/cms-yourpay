@@ -5,22 +5,18 @@ import {
   KYC_COUNTRY_OPTIONS,
   REVERIFY_OPTIONS,
 } from "..";
-import { FilterSelectWithClear } from "@/shared/ui";
-import { DateRangePickerWithPresets } from "./DateRangePickerWithPresets";
+import { DateRangePicker, FilterSelectWithClear } from "@/shared/ui";
+import { PRESETS } from "../lib/date-range-presets";
 
 export interface KycSubmissionFiltersGridProps {
   status: string;
   setStatus: (v: string) => void;
-  statusSelectRef: React.RefObject<HTMLSelectElement>;
   documentType: string;
   setDocumentType: (v: string) => void;
-  documentTypeSelectRef: React.RefObject<HTMLSelectElement>;
   country: string;
   setCountry: (v: string) => void;
-  countrySelectRef: React.RefObject<HTMLSelectElement>;
   reverifyStatus: string;
   setReverifyStatus: (v: string) => void;
-  reverifySelectRef: React.RefObject<HTMLSelectElement>;
   kycFrom: string;
   kycTo: string;
   kycPresetLabel: string | null;
@@ -47,7 +43,6 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
         label="Status"
         value={props.status}
         options={KYC_STATUS_OPTIONS}
-        selectRef={props.statusSelectRef}
         onChange={(v) => {
           props.setStatus(v);
           resetPageIndex();
@@ -61,7 +56,6 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
         label="Document Type"
         value={props.documentType}
         options={KYC_DOCUMENT_TYPE_OPTIONS}
-        selectRef={props.documentTypeSelectRef}
         onChange={(v) => {
           props.setDocumentType(v);
           resetPageIndex();
@@ -75,7 +69,6 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
         label="Country"
         value={props.country}
         options={KYC_COUNTRY_OPTIONS}
-        selectRef={props.countrySelectRef}
         onChange={(v) => {
           props.setCountry(v);
           resetPageIndex();
@@ -85,11 +78,12 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
           resetPageIndex();
         }}
       />
-      <DateRangePickerWithPresets
+      <DateRangePicker
         label="KYC Submission"
         from={props.kycFrom}
         to={props.kycTo}
         presetLabel={props.kycPresetLabel}
+        presets={PRESETS}
         onRangeChange={(from, to, label) => {
           props.setKycFrom(from);
           props.setKycTo(to);
@@ -97,11 +91,12 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
           resetPageIndex();
         }}
       />
-      <DateRangePickerWithPresets
+      <DateRangePicker
         label="Last Update"
         from={props.lastUpdateFrom}
         to={props.lastUpdateTo}
         presetLabel={props.lastUpdatePresetLabel}
+        presets={PRESETS}
         onRangeChange={(from, to, label) => {
           props.setLastUpdateFrom(from);
           props.setLastUpdateTo(to);
@@ -113,7 +108,6 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
         label="Reverify Status"
         value={props.reverifyStatus}
         options={REVERIFY_OPTIONS}
-        selectRef={props.reverifySelectRef}
         onChange={(v) => {
           props.setReverifyStatus(v);
           resetPageIndex();

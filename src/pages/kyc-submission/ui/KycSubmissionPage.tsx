@@ -38,16 +38,12 @@ const KycSubmissionPage: FC = () => {
         handleResetFilters={filters.handleResetFilters}
         status={filters.status}
         setStatus={filters.setStatus}
-        statusSelectRef={filters.statusSelectRef}
         documentType={filters.documentType}
         setDocumentType={filters.setDocumentType}
-        documentTypeSelectRef={filters.documentTypeSelectRef}
         country={filters.country}
         setCountry={filters.setCountry}
-        countrySelectRef={filters.countrySelectRef}
         reverifyStatus={filters.reverifyStatus}
         setReverifyStatus={filters.setReverifyStatus}
-        reverifySelectRef={filters.reverifySelectRef}
         kycFrom={filters.kycFrom}
         kycTo={filters.kycTo}
         kycPresetLabel={filters.kycPresetLabel}
