@@ -102,7 +102,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               disabled && "cursor-not-allowed opacity-50",
               readOnly && "cursor-default",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0",
-              "bg-background"
+              readOnly ? "bg-muted/20" : "bg-background"
             )}
           >
             {startIcon && (
@@ -155,7 +155,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     "peer-focus:-top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-primary peer-focus:font-medium",
                     "peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs",
                     status === "error" && "peer-focus:text-destructive",
-                    size === "sm" && "text-sm peer-focus:hidden peer-[:not(:placeholder-shown)]:hidden"
+                    size === "sm" && "text-sm peer-focus:hidden peer-[:not(:placeholder-shown)]:hidden",
+                    readOnly && "bg-muted/20",
                   )}
                 >
                   {label}

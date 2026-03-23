@@ -82,15 +82,19 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
 
   const displayText = selected?.label ?? (isLoading ? "Loading..." : placeholder);
   const isDisabled = disabled || isLoading;
+  const handleOpenChange = (next: boolean) => {
+    if (isDisabled) return;
+    setOpen(next);
+  };
 
   return (
     <div
       className={cn(
         "flex w-full min-w-0 max-w-full overflow-hidden rounded-md border border-input bg-background",
-        isDisabled && "opacity-60",
+        isDisabled && "bg-muted/20",
       )}
     >
-      <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenu open={open} onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
           <button
             id={id}
@@ -101,7 +105,7 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
             className={cn(
               "flex h-12 min-w-0 flex-1 items-center justify-between gap-2 border-0 bg-transparent px-3 text-left text-sm text-foreground",
               "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
-              isDisabled && "cursor-not-allowed",
+              isDisabled && "cursor-default text-muted-foreground",
             )}
           >
             <span className="truncate">{displayText}</span>
@@ -135,6 +139,7 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
                   key={option.value}
                   className="cursor-pointer items-start gap-2 py-2"
                   onSelect={() => {
+                    if (isDisabled) return;
                     onChange(option.value);
                     setOpen(false);
                   }}
