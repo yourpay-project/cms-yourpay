@@ -1,5 +1,5 @@
 import type { FC, MouseEvent as ReactMouseEvent } from "react";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Calendar as CalendarIcon, X } from "lucide-react";
 import { parseISO } from "date-fns";
 
@@ -13,6 +13,8 @@ import { DateRangePickerDropdownContent } from "./date-range-picker-dropdown-con
 
 /**
  * Generic date range picker (optional presets + custom apply).
+ * Disabled state mirrors single DatePicker behavior:
+ * no interaction, muted background, and no sticky focus ring after close.
  */
 export const DateRangePicker: FC<DateRangePickerProps> = ({
   label,
@@ -27,6 +29,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
   disabled = false,
 }) => {
   const triggerId = useId().replace(/:/g, "");
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [customFrom, setCustomFrom] = useState(from);
   const [customTo, setCustomTo] = useState(to);
@@ -37,13 +40,14 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
     setCustomTo(to);
   }, [open, from, to]);
 
+  useEffect(() => {
+    if (disabled) {
+      setOpen(false);
+    }
+  }, [disabled]);
+
   const selectedPresetLabel = presetLabel != null && presetLabel !== "" ? presetLabel : undefined;
-  const displayText =
-    selectedPresetLabel != null
-      ? selectedPresetLabel
-      : from && to
-        ? `${from} – ${to}`
-        : placeholder;
+  const displayText = selectedPresetLabel != null ? selectedPresetLabel : from && to ? `${from} – ${to}` : placeholder;
 
   const hasValue = Boolean(from && to);
 
@@ -96,10 +100,18 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
         {label}
       </label>
 
-      <div className="flex w-full items-center gap-0 rounded-md border border-border bg-background">
-        <DropdownMenu open={open} onOpenChange={setOpen}>
+      <div className={cn("flex w-full items-center gap-0 rounded-md border border-border bg-background", disabled && "bg-muted/35")}>
+        <DropdownMenu
+          open={open}
+          onOpenChange={(nextOpen) => {
+            if (disabled) return;
+            setOpen(nextOpen);
+            if (!nextOpen) triggerRef.current?.blur();
+          }}
+        >
           <DropdownMenuTrigger asChild>
             <DropdownFieldTrigger
+              ref={triggerRef}
               id={triggerId}
               leading={
                 <CalendarIcon
@@ -114,7 +126,10 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
             />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="start" sideOffset={4} className="w-[min(360px,100vw)] p-3">
+          <DropdownMenuContent align="start" sideOffset={4} className="w-[min(360px,100vw)] p-3" onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            triggerRef.current?.blur();
+          }}>
             <DateRangePickerDropdownContent
               presets={presets}
               disabled={disabled}
@@ -135,8 +150,9 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
           <button
             type="button"
             onClick={handleClearOutside}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
             aria-label={`Clear ${label}`}
+            disabled={disabled}
           >
             <X className="h-4 w-4" />
           </button>

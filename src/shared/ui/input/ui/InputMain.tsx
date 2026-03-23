@@ -59,8 +59,9 @@ export const InputMain: FC<InputMainProps> = ({
           !addonAfter && "rounded-r-md",
           status ? statusBorderClass[status] : undefined,
           disabled && "cursor-not-allowed opacity-50",
-          readOnly && "cursor-default",
-          "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0",
+          readOnly && "cursor-not-allowed",
+          !readOnly && "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0",
+          !readOnly && !disabled && "hover:bg-muted/50",
           readOnly ? "bg-muted/20" : "bg-background",
         )}
       >
@@ -94,7 +95,7 @@ export const InputMain: FC<InputMainProps> = ({
             className={cn(
               "peer h-full w-full bg-transparent text-sm text-foreground placeholder-transparent",
               "border-none p-0 outline-none focus:ring-0",
-              readOnly && "cursor-default",
+              readOnly && "cursor-default pointer-events-none",
               size !== "sm" && label && "pt-4",
               className,
               "[&:-webkit-autofill]:shadow-[0_0_0_1000px_hsl(var(--background))_inset]",

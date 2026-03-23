@@ -38,6 +38,12 @@ export function useSelectDropdownLogic(params: UseSelectDropdownLogicParams): Us
 
   const isDisabled = disabled || isLoading;
 
+  useEffect(() => {
+    if (isDisabled && open) {
+      setOpen(false);
+    }
+  }, [isDisabled, open]);
+
   const selected = useMemo(() => options.find((option) => option.value === value), [options, value]);
 
   const filteredOptions = useMemo(() => {

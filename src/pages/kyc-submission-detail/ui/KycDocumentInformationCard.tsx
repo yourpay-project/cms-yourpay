@@ -27,15 +27,17 @@ export const KycDocumentInformationCard: FC<KycDocumentInformationCardProps> = (
       </CardHeader>
       <CardContent className="min-w-0 max-w-full">
         <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
-          <KycIdentityDocumentTypeSection
-            draft={draft}
-            setDraft={setDraft}
-            isEditable={isEditable}
-            locked={locked}
-            documentTypeOptions={documentTypeOptions}
-            onDocumentTypeChange={onDocumentTypeChange}
-            isPassport={isPassport}
-          />
+          <div className="md:col-span-2">
+            <KycIdentityDocumentTypeSection
+              draft={draft}
+              setDraft={setDraft}
+              isEditable={isEditable}
+              locked={locked}
+              documentTypeOptions={documentTypeOptions}
+              onDocumentTypeChange={onDocumentTypeChange}
+              isPassport={isPassport}
+            />
+          </div>
 
           {isPassport ? (
             <KycPassportDatesSection

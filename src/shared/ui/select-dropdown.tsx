@@ -10,6 +10,8 @@ import { useSelectDropdownLogic } from "./use-select-dropdown-logic";
 
 /**
  * Generic dropdown selector with optional searchable mode.
+ * Uses consistent hover/focus background for editable state and
+ * keeps disabled/read-only style visually static.
  */
 export const SelectDropdown: FC<SelectDropdownProps> = ({
   value,
@@ -37,7 +39,7 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
     <div
       className={cn(
         "flex w-full min-w-0 max-w-full overflow-hidden rounded-md border border-input bg-background",
-        logic.isDisabled && "bg-muted/20",
+        logic.isDisabled && "bg-muted/35",
       )}
     >
       <DropdownMenu open={logic.open} onOpenChange={logic.handleOpenChange}>
@@ -51,8 +53,9 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
             className={cn(
               "flex min-w-0 flex-1 items-center justify-between gap-2 border-0 bg-transparent px-3 text-left text-sm text-foreground",
               size === "sm" ? "h-8" : "h-12",
-              "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
-              logic.isDisabled && "cursor-default text-muted-foreground",
+              "outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50",
+              logic.isDisabled && "cursor-not-allowed text-muted-foreground",
+              logic.isDisabled && "hover:bg-transparent focus-visible:bg-transparent",
             )}
           >
             <span className="truncate">{logic.displayText}</span>
@@ -121,6 +124,7 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
           className={cn(
             "flex shrink-0 items-center justify-center border-l border-input bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
             size === "sm" ? "h-8 w-7" : "h-12 w-11",
+            logic.isDisabled && "cursor-not-allowed hover:bg-transparent hover:text-muted-foreground",
           )}
           disabled={logic.isDisabled}
           onClick={() => onChange("")}
