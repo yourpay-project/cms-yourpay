@@ -1,0 +1,44 @@
+import type { FC } from "react";
+import { FileText } from "lucide-react";
+
+import type { KycUserDataCardsHeaderProps } from "./KycUserDataCardsHeader.type";
+import { Button } from "@/shared/ui";
+import { CardHeader, CardTitle } from "@/shared/ui";
+
+/**
+ * Header actions for `KycUserDataCards`.
+ */
+export const KycUserDataCardsHeader: FC<KycUserDataCardsHeaderProps> = ({
+  countryLabel,
+  isEditable,
+  onUpdateDataFromOcr,
+  onOpenEnableEditConfirm,
+}) => {
+  return (
+    <CardHeader className="py-4">
+      <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-3">
+        <CardTitle className="min-w-0 break-words text-base leading-snug md:text-lg">
+          {`User Verification Submission ${countryLabel} Details`}
+        </CardTitle>
+        <div className="flex min-w-0 w-full flex-wrap justify-end gap-2 md:w-auto md:justify-start">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 shrink-0 gap-1.5"
+            onClick={onUpdateDataFromOcr}
+          >
+            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">Update data from OCR</span>
+          </Button>
+          {!isEditable ? (
+            <Button type="button" variant="default" size="sm" className="h-8 shrink-0" onClick={onOpenEnableEditConfirm}>
+              Enable Edit
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </CardHeader>
+  );
+};
+

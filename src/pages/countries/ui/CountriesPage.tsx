@@ -5,30 +5,16 @@ import {
   PageSkeleton,
   SearchInput,
   Button,
-  Input,
 } from "@/shared/ui";
-import { Modal } from "@/shared/ui/modal";
 import type { Country } from "@/entities/country";
 import { CountriesTable } from "@/widgets/countries-table";
+import { useModalStore } from "@/widgets/modal-manager";
 import { useCountriesFilters, useCountryForm } from "../model";
 
 const CountriesPage: FC = () => {
   const filters = useCountriesFilters();
+  const openModal = useModalStore().open;
   const {
-    editing,
-    code,
-    name,
-    isActive,
-    isDialogOpen,
-    isSubmitting,
-    errors,
-    setCode,
-    setName,
-    setIsActive,
-    openForCreate,
-    openForEdit,
-    closeDialog,
-    submit,
     remove,
   } = useCountryForm();
 
@@ -59,76 +45,12 @@ const CountriesPage: FC = () => {
             }}
             containerClassName="w-full max-w-xs"
           />
-          <Button size="sm" onClick={openForCreate}>
+          <Button
+            size="sm"
+            onClick={() => openModal("COUNTRIES_CREATE_EDIT_MODAL", { mode: "create" })}
+          >
             Add country
           </Button>
-          <Modal
-            open={isDialogOpen}
-            onCancel={closeDialog}
-            onOk={submit}
-            confirmLoading={isSubmitting}
-            title={editing ? "Edit Country" : "Create Country (API)"}
-            description={
-              editing
-                ? "Update country code, name, or status."
-                : "Create a new country record for operator APIs."
-            }
-            centered
-          >
-            <div className="mt-4 flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <Input
-                    label="Country Code"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    disabled={!!editing}
-                    status={errors.code ? "error" : undefined}
-                    helperText={
-                      errors.code ??
-                      "Letters and numbers allowed (will be converted to uppercase)"
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Input
-                    label="Country Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    status={errors.name ? "error" : undefined}
-                    helperText={errors.name}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-medium text-muted-foreground">Status</span>
-                  <div className="inline-flex gap-2 rounded-md bg-muted/40 p-1 text-xs">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      aria-pressed={isActive}
-                      className={`h-7 px-3 text-xs rounded ${
-                        isActive ? "bg-success text-success-foreground" : "bg-transparent"
-                      }`}
-                      onClick={() => setIsActive(true)}
-                    >
-                      Active
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      aria-pressed={!isActive}
-                      className={`h-7 px-3 text-xs rounded ${
-                        !isActive ? "bg-destructive text-destructive-foreground" : "bg-transparent"
-                      }`}
-                      onClick={() => setIsActive(false)}
-                    >
-                      Inactive
-                    </Button>
-                  </div>
-                </div>
-              </div>
-          </Modal>
         </div>
       </div>
 
@@ -143,7 +65,9 @@ const CountriesPage: FC = () => {
             filters.setPageIndex(nextPageIndex);
             filters.setPageSize(nextPageSize);
           }}
-          onEdit={openForEdit as (country: Country) => void}
+          onEdit={(country: Country) => {
+            openModal("COUNTRIES_CREATE_EDIT_MODAL", { mode: "edit", row: country });
+          }}
           onDelete={remove}
         />
       </div>

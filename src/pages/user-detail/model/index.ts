@@ -11,6 +11,7 @@ export {
   useCustomerWalletsQuery,
   type CustomerWalletItem,
 } from "./use-customer-wallets-query";
+export { getUserDetailFieldItems } from "./get-user-detail-field-items";
 export {
   useLazyModal,
   type UseLazyModalResult,

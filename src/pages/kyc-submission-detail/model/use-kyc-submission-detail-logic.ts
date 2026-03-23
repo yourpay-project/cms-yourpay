@@ -12,16 +12,12 @@ import {
 } from "./use-kyc-submission-detail-query";
 
 import {
-  useRejectReasonsQuery,
   useTriggerVerificationChecksMutation,
   useUpdateVerificationSubmissionMutation,
-  useUpdateVerificationStatusMutation,
 } from "@/features/kyc-submission-verification";
-import type { RejectReasonOption } from "@/features/kyc-submission-verification";
 import type {
   UpdateVerificationRequest,
   TriggerVerificationDocCheckRequest,
-  UpdateStatusVerifSubmissionRequest,
   verificationdocument_VerificationDocument,
   customer_Religion,
   gender_Gender,
@@ -54,19 +50,7 @@ export interface UseKycSubmissionDetailPageLogicReturn {
   setLeftDraft: (next: KycLeftEditDraft | ((prev: KycLeftEditDraft) => KycLeftEditDraft)) => void;
 
   currentStatus: EplStatusValue;
-  eplStatusDraft: EplStatusValue;
-  hasEplStatusChanged: boolean;
-  setEplStatusDraft: (next: EplStatusValue) => void;
-  isStatusModalOpen: boolean;
-  setIsStatusModalOpen: (next: boolean) => void;
   isStatusEditable: boolean;
-  rejectReasons: RejectReasonOption[];
-  isRejectReasonsLoading: boolean;
-  selectedRejectReasonCode: string;
-  setSelectedRejectReasonCode: (next: string) => void;
-
-  isSavingEplStatus: boolean;
-  onSaveEplStatus: () => void;
   onConfirmGenerateFromOcr: () => void;
   onEditDocument: (docType?: string) => void;
 
@@ -307,71 +291,10 @@ export function useKycSubmissionDetailPageLogic({
     : "pending") as EplStatusValue;
   const isStatusEditable = currentStatus !== "approved";
 
-  const [eplStatusDraft, setEplStatusDraft] = useState<EplStatusValue>(currentStatus);
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedRejectReasonCode, setSelectedRejectReasonCode] = useState("");
-  const rejectReasonsQuery = useRejectReasonsQuery(detail?.countryCode);
-
-  useEffect(() => {
-    setEplStatusDraft(currentStatus);
-  }, [currentStatus]);
-
-  useEffect(() => {
-    setSelectedRejectReasonCode("");
-  }, [detail?.id]);
-
-  useEffect(() => {
-    if (eplStatusDraft !== "rejected") {
-      setSelectedRejectReasonCode("");
-    }
-  }, [eplStatusDraft]);
-
-  useEffect(() => {
-    if (isStatusModalOpen && detail?.countryCode) {
-      void rejectReasonsQuery.refetch();
-    }
-  }, [detail?.countryCode, isStatusModalOpen, rejectReasonsQuery]);
-
-  const hasEplStatusChanged = eplStatusDraft !== currentStatus;
-
-  const updateStatusMutation = useUpdateVerificationStatusMutation();
   const checkMutation = useTriggerVerificationChecksMutation();
 
   const idDocumentPreview = detail?.idDocument;
   const selfieDocumentPreview = detail?.selfieDocument;
-
-  const onSaveEplStatus = useCallback(() => {
-    if (!detail) {
-      return;
-    }
-    if (!hasEplStatusChanged) {
-      return;
-    }
-
-    const body: UpdateStatusVerifSubmissionRequest = {};
-    if (eplStatusDraft === "rejected") {
-      const selectedReason = rejectReasonsQuery.data?.find((item) => item.code === selectedRejectReasonCode);
-      if (!selectedReason) {
-        toast.error("Please select a rejection reason.");
-        return;
-      }
-      body.rejection_code = selectedReason.code;
-      body.rejection_notes = selectedReason.description || selectedReason.title;
-    }
-
-    updateStatusMutation.mutate({
-      id: detail.id,
-      status: eplStatusDraft,
-      body,
-    });
-  }, [
-    detail,
-    eplStatusDraft,
-    hasEplStatusChanged,
-    rejectReasonsQuery.data,
-    selectedRejectReasonCode,
-    updateStatusMutation,
-  ]);
 
   const verificationCheckRequest = useMemo<TriggerVerificationDocCheckRequest | null>(() => {
     if (!detail) return null;
@@ -428,18 +351,7 @@ export function useKycSubmissionDetailPageLogic({
     leftDraft,
     setLeftDraft,
     currentStatus,
-    eplStatusDraft,
-    hasEplStatusChanged,
-    setEplStatusDraft,
-    isStatusModalOpen,
-    setIsStatusModalOpen,
     isStatusEditable,
-    rejectReasons: rejectReasonsQuery.data ?? [],
-    isRejectReasonsLoading: rejectReasonsQuery.isLoading,
-    selectedRejectReasonCode,
-    setSelectedRejectReasonCode,
-    isSavingEplStatus: updateStatusMutation.isPending,
-    onSaveEplStatus,
 
     isRunningVerificationChecks: checkMutation.isPending,
     onRunVerificationChecks,

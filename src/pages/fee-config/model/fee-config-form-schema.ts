@@ -5,7 +5,7 @@ export const feeConfigFormSchema = z.object({
   service: z.string().min(1, "Service is required"),
   provider: z.literal("Yourpay"),
   currency: z.string().min(1, "Currency is required"),
-  feeType: z.enum(["fixed", "percentage"], {
+  feeType: z.enum(["fixed", "percentage", "tiered"], {
     required_error: "Fee type is required",
   }),
   feeMode: z.enum(["exclusive", "inclusive"], {
