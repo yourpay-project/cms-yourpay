@@ -11,21 +11,21 @@ export type ModalShellConfig = {
 };
 
 export const MODAL_LOADERS: Record<ModalKey, () => Promise<unknown>> = {
-  KYC_ENABLE_EDIT_CONFIRM_MODAL: () => import("../ui/KycEnableEditConfirmModal"),
-  KYC_GENERATE_OCR_CONFIRM_MODAL: () => import("../ui/KycGenerateOcrConfirmModal"),
-  KYC_VERIFICATION_CHECK_MODAL: () => import("../ui/KycVerificationCheckModal"),
-  USER_BLOCK_CONFIRM_MODAL: () => import("../ui/UserBlockConfirmModal"),
-  USER_CLOSE_CONFIRM_MODAL: () => import("../ui/UserCloseConfirmModal"),
-  USER_VIEW_DEVICES_MODAL: () => import("../ui/UserViewDevicesModal"),
-  USER_VIEW_WALLETS_MODAL: () => import("../ui/UserViewWalletsModal"),
-  USER_EDIT_IDENTITY_ACCESS_MODAL: () => import("../ui/UserEditIdentityAccessModal"),
-  FEE_CONFIG_CREATE_EDIT_MODAL: () => import("../ui/FeeConfigCreateEditModal"),
-  KYC_EPL_STATUS_MODAL: () => import("../ui/KycEplStatusModal"),
-  COUNTRIES_CREATE_EDIT_MODAL: () => import("../ui/CountriesCreateEditModal"),
-  KYC_DOCUMENT_IMAGES_PROGRESS_MODAL: () => import("../ui/KycDocumentImagesProgressModal"),
+  KYC_ENABLE_EDIT_CONFIRM_MODAL: () => import("../ui/KycEnableEditConfirm"),
+  KYC_GENERATE_OCR_CONFIRM_MODAL: () => import("../ui/KycGenerateOcrConfirm"),
+  KYC_VERIFICATION_CHECK_MODAL: () => import("../ui/KycVerificationCheck"),
+  USER_BLOCK_CONFIRM_MODAL: () => import("../ui/UserBlockConfirm"),
+  USER_CLOSE_CONFIRM_MODAL: () => import("../ui/UserCloseConfirm"),
+  USER_VIEW_DEVICES_MODAL: () => import("../ui/UserViewDevices"),
+  USER_VIEW_WALLETS_MODAL: () => import("../ui/UserViewWallets"),
+  USER_EDIT_IDENTITY_ACCESS_MODAL: () => import("../ui/UserEditIdentityAccess"),
+  FEE_CONFIG_CREATE_EDIT_MODAL: () => import("../ui/FeeConfigCreateEdit"),
+  KYC_EPL_STATUS_MODAL: () => import("../ui/KycEplStatus"),
+  COUNTRIES_CREATE_EDIT_MODAL: () => import("../ui/CountriesCreateEdit"),
+  KYC_DOCUMENT_IMAGES_PROGRESS_MODAL: () => import("../ui/KycDocumentImagesProgress"),
   KYC_DOCUMENT_IMAGES_SINGLE_PREVIEW_MODAL: () =>
-    import("../ui/KycDocumentImagesSinglePreviewModal"),
-  KYC_DOCUMENT_IMAGES_COMPARE_MODAL: () => import("../ui/KycDocumentImagesCompareModal"),
+    import("../ui/KycDocumentImagesSinglePreview"),
+  KYC_DOCUMENT_IMAGES_COMPARE_MODAL: () => import("../ui/KycDocumentImagesCompare"),
 };
 
 export const MODAL_SHELL_CONFIG: Record<ModalKey, ModalShellConfig> = {
@@ -114,59 +114,59 @@ export const MODAL_SHELL_CONFIG: Record<ModalKey, ModalShellConfig> = {
 
 export const MODAL_COMPONENT_REGISTRY = {
   KYC_ENABLE_EDIT_CONFIRM_MODAL: lazy(() =>
-    import("../ui/KycEnableEditConfirmModal").then((module) => ({
-      default: module.KycEnableEditConfirmModal,
+    import("../ui/KycEnableEditConfirm").then((module) => ({
+      default: module.KycEnableEditConfirm,
     }))),
   KYC_GENERATE_OCR_CONFIRM_MODAL: lazy(() =>
-    import("../ui/KycGenerateOcrConfirmModal").then((module) => ({
-      default: module.KycGenerateOcrConfirmModal,
+    import("../ui/KycGenerateOcrConfirm").then((module) => ({
+      default: module.KycGenerateOcrConfirm,
     }))),
   KYC_VERIFICATION_CHECK_MODAL: lazy(() =>
-    import("../ui/KycVerificationCheckModal").then((module) => ({
-      default: module.KycVerificationCheckModal,
+    import("../ui/KycVerificationCheck").then((module) => ({
+      default: module.KycVerificationCheck,
     }))),
   USER_BLOCK_CONFIRM_MODAL: lazy(() =>
-    import("../ui/UserBlockConfirmModal").then((module) => ({
-      default: module.UserBlockConfirmModal,
+    import("../ui/UserBlockConfirm").then((module) => ({
+      default: module.UserBlockConfirm,
     }))),
   USER_CLOSE_CONFIRM_MODAL: lazy(() =>
-    import("../ui/UserCloseConfirmModal").then((module) => ({
-      default: module.UserCloseConfirmModal,
+    import("../ui/UserCloseConfirm").then((module) => ({
+      default: module.UserCloseConfirm,
     }))),
   USER_VIEW_DEVICES_MODAL: lazy(() =>
-    import("../ui/UserViewDevicesModal").then((module) => ({
-      default: module.UserViewDevicesModal,
+    import("../ui/UserViewDevices").then((module) => ({
+      default: module.UserViewDevices,
     }))),
   USER_VIEW_WALLETS_MODAL: lazy(() =>
-    import("../ui/UserViewWalletsModal").then((module) => ({
-      default: module.UserViewWalletsModal,
+    import("../ui/UserViewWallets").then((module) => ({
+      default: module.UserViewWallets,
     }))),
   USER_EDIT_IDENTITY_ACCESS_MODAL: lazy(() =>
-    import("../ui/UserEditIdentityAccessModal").then((module) => ({
-      default: module.UserEditIdentityAccessModal,
+    import("../ui/UserEditIdentityAccess").then((module) => ({
+      default: module.UserEditIdentityAccess,
     }))),
   FEE_CONFIG_CREATE_EDIT_MODAL: lazy(() =>
-    import("../ui/FeeConfigCreateEditModal").then((module) => ({
-      default: module.FeeConfigCreateEditModal,
+    import("../ui/FeeConfigCreateEdit").then((module) => ({
+      default: module.FeeConfigCreateEdit,
     }))),
   KYC_EPL_STATUS_MODAL: lazy(() =>
-    import("../ui/KycEplStatusModal").then((module) => ({
-      default: module.KycEplStatusModal,
+    import("../ui/KycEplStatus").then((module) => ({
+      default: module.KycEplStatus,
     }))),
   COUNTRIES_CREATE_EDIT_MODAL: lazy(() =>
-    import("../ui/CountriesCreateEditModal").then((module) => ({
-      default: module.CountriesCreateEditModal,
+    import("../ui/CountriesCreateEdit").then((module) => ({
+      default: module.CountriesCreateEdit,
     }))),
   KYC_DOCUMENT_IMAGES_PROGRESS_MODAL: lazy(() =>
-    import("../ui/KycDocumentImagesProgressModal").then((module) => ({
-      default: module.KycDocumentImagesProgressModal,
+    import("../ui/KycDocumentImagesProgress").then((module) => ({
+      default: module.KycDocumentImagesProgress,
     }))),
   KYC_DOCUMENT_IMAGES_SINGLE_PREVIEW_MODAL: lazy(() =>
-    import("../ui/KycDocumentImagesSinglePreviewModal").then((module) => ({
-      default: module.KycDocumentImagesSinglePreviewModal,
+    import("../ui/KycDocumentImagesSinglePreview").then((module) => ({
+      default: module.KycDocumentImagesSinglePreview,
     }))),
   KYC_DOCUMENT_IMAGES_COMPARE_MODAL: lazy(() =>
-    import("../ui/KycDocumentImagesCompareModal").then((module) => ({
-      default: module.KycDocumentImagesCompareModal,
+    import("../ui/KycDocumentImagesCompare").then((module) => ({
+      default: module.KycDocumentImagesCompare,
     }))),
 } as const;
