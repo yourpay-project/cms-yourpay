@@ -46,16 +46,18 @@ export const KycDocumentInformationCard: FC<KycDocumentInformationCardProps> = (
             />
           ) : null}
 
-          <KycOccupationAndArcSection
-            draft={draft}
-            setDraft={setDraft}
-            isEditable={isEditable}
-            locked={locked}
-            isIndonesia={isIndonesia}
-            occupationOptions={occupationOptions}
-            occupationsLoading={occupationsLoading}
-            onOccupationChange={onOccupationChange}
-          />
+          <div className="md:col-span-2">
+            <KycOccupationAndArcSection
+              draft={draft}
+              setDraft={setDraft}
+              isEditable={isEditable}
+              locked={locked}
+              isIndonesia={isIndonesia}
+              occupationOptions={occupationOptions}
+              occupationsLoading={occupationsLoading}
+              onOccupationChange={onOccupationChange}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
