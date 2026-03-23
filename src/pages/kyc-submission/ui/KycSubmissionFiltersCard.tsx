@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
+import type { FilterField } from "@/shared/ui";
 import { getFilterBadgeClassName } from "@/shared/lib";
 import type { FilterBadge } from "..";
 import { KycSubmissionFiltersGrid } from "./KycSubmissionFiltersGrid";
@@ -10,14 +11,11 @@ export interface KycSubmissionFiltersCardProps {
   setFiltersOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
   badges: FilterBadge[];
   handleResetFilters: () => void;
-  status: string;
-  setStatus: (v: string) => void;
-  documentType: string;
-  setDocumentType: (v: string) => void;
-  country: string;
-  setCountry: (v: string) => void;
-  reverifyStatus: string;
-  setReverifyStatus: (v: string) => void;
+  optionsFilterFields: readonly FilterField[];
+  selectedOptionFilterValues: Record<string, string>;
+  handleChangeOptionFilter: (key: string, value: string) => void;
+  createdAtLabel: string;
+  updatedAtLabel: string;
   kycFrom: string;
   kycTo: string;
   kycPresetLabel: string | null;

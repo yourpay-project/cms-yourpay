@@ -1,10 +1,17 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useDebouncedValue } from "@/shared/lib";
+import type { FilterField } from "@/shared/ui";
 import { toCreatedAtFrom, toCreatedAtTo } from "../lib/date-api-format";
 import { useKycSubmissionStore } from "./kyc-submission-store";
 import { useKycSubmissionQuery } from "./use-kyc-submission-query";
 import { buildKycSubmissionBadges } from "./kyc-submission-filters-badges";
 import type { FilterBadge } from "./kyc-submission-filters-badges.type";
+import {
+  KYC_COUNTRY_OPTIONS,
+  KYC_DOCUMENT_TYPE_OPTIONS,
+  KYC_STATUS_OPTIONS,
+  REVERIFY_OPTIONS,
+} from "./constants";
 
 /**
  * Encapsulates filter state, query, and derived values for the KYC submission list page.
@@ -51,15 +58,127 @@ export function useKycSubmissionFilters() {
     pageIndex,
     pageSize,
     keyword: debouncedSearch,
-    status: status !== "all" ? status : undefined,
-    country: country !== "all" ? country : undefined,
-    documentType: documentType !== "all" ? documentType : undefined,
+    status: status && status !== "all" ? status : undefined,
+    country: country && country !== "all" ? country : undefined,
+    documentType: documentType && documentType !== "all" ? documentType : undefined,
     createdAtFrom: kycFrom ? toCreatedAtFrom(kycFrom) : undefined,
     createdAtTo: kycTo ? toCreatedAtTo(kycTo) : undefined,
     updatedAtFrom: lastUpdateFrom ? toCreatedAtFrom(lastUpdateFrom) : undefined,
     updatedAtTo: lastUpdateTo ? toCreatedAtTo(lastUpdateTo) : undefined,
-    isReverification: reverifyStatus !== "all" ? reverifyStatus : undefined,
+    isReverification:
+      reverifyStatus && reverifyStatus !== "all" ? reverifyStatus : undefined,
   });
+
+  const filterDefinitions = useMemo(
+    () => query.data?.filterDefinitions ?? [],
+    [query.data?.filterDefinitions]
+  );
+  const optionsFilterFields = useMemo((): FilterField[] => {
+    const optionDefinitions = filterDefinitions.filter(
+      (definition) => definition.type === "options"
+    );
+    if (optionDefinitions.length > 0) {
+      return optionDefinitions.map((definition) => ({
+        key: definition.key,
+        label: definition.name?.trim() ? definition.name : definition.key,
+        type: "options",
+        options: definition.options,
+        allValue:
+          definition.options.find((option) => option.label.toLowerCase() === "all")?.value ?? "",
+      }));
+    }
+
+    return [
+      {
+        key: "status",
+        label: "Status",
+        type: "options",
+        options: KYC_STATUS_OPTIONS,
+        allValue: "all",
+      },
+      {
+        key: "document_type",
+        label: "Document Type",
+        type: "options",
+        options: KYC_DOCUMENT_TYPE_OPTIONS,
+        allValue: "all",
+      },
+      {
+        key: "country",
+        label: "Country",
+        type: "options",
+        options: KYC_COUNTRY_OPTIONS,
+        allValue: "all",
+      },
+      {
+        key: "is_reverification",
+        label: "Reverify Status",
+        type: "options",
+        options: REVERIFY_OPTIONS,
+        allValue: "all",
+      },
+    ];
+  }, [filterDefinitions]);
+
+  const createdAtLabel =
+    filterDefinitions.find(
+      (definition) => definition.type === "date_range" && definition.key === "created_at"
+    )?.name ?? "KYC Submission";
+  const updatedAtLabel =
+    filterDefinitions.find(
+      (definition) => definition.type === "date_range" && definition.key === "updated_at"
+    )?.name ?? "Last Update";
+
+  const getOptionAllValue = useCallback(
+    (key: string, fallback: string) =>
+      optionsFilterFields.find((field) => field.key === key)?.allValue ?? fallback,
+    [optionsFilterFields]
+  );
+
+  const statusLabelsByValue = Object.fromEntries(
+    (optionsFilterFields.find((field) => field.key === "status")?.options ?? []).map((option) => [
+      option.value,
+      option.label,
+    ])
+  );
+  const documentTypeLabelsByValue = Object.fromEntries(
+    (optionsFilterFields.find((field) => field.key === "document_type")?.options ?? []).map((option) => [
+      option.value,
+      option.label,
+    ])
+  );
+  const countryLabelsByValue = Object.fromEntries(
+    (optionsFilterFields.find((field) => field.key === "country")?.options ?? []).map((option) => [
+      option.value,
+      option.label,
+    ])
+  );
+  const reverifyLabelsByValue = Object.fromEntries(
+    (optionsFilterFields.find((field) => field.key === "is_reverification")?.options ?? []).map(
+      (option) => [option.value, option.label]
+    )
+  );
+
+  const handleChangeOptionFilter = useCallback(
+    (key: string, value: string) => {
+      if (key === "status") {
+        setStatus(value);
+        return;
+      }
+      if (key === "document_type") {
+        setDocumentType(value);
+        return;
+      }
+      if (key === "country") {
+        setCountry(value);
+        return;
+      }
+      if (key === "is_reverification") {
+        setReverifyStatus(value);
+      }
+    },
+    [setCountry, setDocumentType, setReverifyStatus, setStatus]
+  );
 
   const pageTitleSuffix =
     kycPresetLabel
@@ -80,12 +199,16 @@ export function useKycSubmissionFilters() {
 
   const badges: FilterBadge[] = buildKycSubmissionBadges({
     status,
+    statusLabelsByValue,
     setStatus,
     documentType,
+    documentTypeLabelsByValue,
     setDocumentType,
     country,
+    countryLabelsByValue,
     setCountry,
     reverifyStatus,
+    reverifyLabelsByValue,
     setReverifyStatus,
     kycFromTo: { kycFrom, kycTo },
     setKycFrom,
@@ -99,6 +222,13 @@ export function useKycSubmissionFilters() {
     setLastUpdatePresetLabel,
     resetPageIndex,
   });
+
+  const selectedOptionFilterValues: Record<string, string> = {
+    status: status || getOptionAllValue("status", "all"),
+    document_type: documentType || getOptionAllValue("document_type", "all"),
+    country: country || getOptionAllValue("country", "all"),
+    is_reverification: reverifyStatus || getOptionAllValue("is_reverification", "all"),
+  };
 
   return {
     ...query,
@@ -128,6 +258,12 @@ export function useKycSubmissionFilters() {
     setLastUpdateTo,
     lastUpdatePresetLabel,
     setLastUpdatePresetLabel,
+    optionsFilterFields,
+    selectedOptionFilterValues,
+    handleChangeOptionFilter,
+    createdAtLabel,
+    updatedAtLabel,
+    getOptionAllValue,
     searchInput,
     setSearchInput,
     filtersOpen,

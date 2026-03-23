@@ -1,7 +1,4 @@
 import type { FilterBadge as FilterBadgeType } from "./kyc-submission-filters-badges.type";
-
-import { KYC_STATUS_OPTIONS, KYC_DOCUMENT_TYPE_OPTIONS, KYC_COUNTRY_OPTIONS, REVERIFY_OPTIONS } from "./constants";
-
 import type {
   KycFilterValue,
   KycPresetLabel,
@@ -17,12 +14,16 @@ import type {
  */
 export function buildKycSubmissionBadges(params: {
   status: KycFilterValue;
+  statusLabelsByValue: Record<string, string>;
   setStatus: (v: KycFilterValue) => void;
   documentType: KycFilterValue;
+  documentTypeLabelsByValue: Record<string, string>;
   setDocumentType: (v: KycFilterValue) => void;
   country: KycFilterValue;
+  countryLabelsByValue: Record<string, string>;
   setCountry: (v: KycFilterValue) => void;
   reverifyStatus: KycFilterValue;
+  reverifyLabelsByValue: Record<string, string>;
   setReverifyStatus: (v: KycFilterValue) => void;
   kycFromTo: KycFromToValues;
   setKycFrom: (v: string) => void;
@@ -38,12 +39,16 @@ export function buildKycSubmissionBadges(params: {
 }): FilterBadgeType[] {
   const {
     status,
+    statusLabelsByValue,
     setStatus,
     documentType,
+    documentTypeLabelsByValue,
     setDocumentType,
     country,
+    countryLabelsByValue,
     setCountry,
     reverifyStatus,
+    reverifyLabelsByValue,
     setReverifyStatus,
     kycFromTo,
     setKycFrom,
@@ -60,49 +65,49 @@ export function buildKycSubmissionBadges(params: {
 
   const list: FilterBadgeType[] = [];
 
-  if (status !== "all") {
-    const label = KYC_STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
+  if (status && status !== "all") {
+    const label = statusLabelsByValue[status] ?? status;
     list.push({
       key: "status",
       label: `Status: ${label}`,
       onClear: () => {
-        setStatus("all");
+          setStatus("");
         resetPageIndex();
       },
     });
   }
 
-  if (documentType !== "all") {
-    const label = KYC_DOCUMENT_TYPE_OPTIONS.find((o) => o.value === documentType)?.label ?? documentType;
+  if (documentType && documentType !== "all") {
+    const label = documentTypeLabelsByValue[documentType] ?? documentType;
     list.push({
       key: "documentType",
       label: `Document: ${label}`,
       onClear: () => {
-        setDocumentType("all");
+          setDocumentType("");
         resetPageIndex();
       },
     });
   }
 
-  if (country !== "all") {
-    const label = KYC_COUNTRY_OPTIONS.find((o) => o.value === country)?.label ?? country;
+  if (country && country !== "all") {
+    const label = countryLabelsByValue[country] ?? country;
     list.push({
       key: "country",
       label: `Country: ${label}`,
       onClear: () => {
-        setCountry("all");
+          setCountry("");
         resetPageIndex();
       },
     });
   }
 
-  if (reverifyStatus !== "all") {
-    const label = REVERIFY_OPTIONS.find((o) => o.value === reverifyStatus)?.label ?? reverifyStatus;
+  if (reverifyStatus && reverifyStatus !== "all") {
+    const label = reverifyLabelsByValue[reverifyStatus] ?? reverifyStatus;
     list.push({
       key: "reverify",
       label: `Reverify: ${label}`,
       onClear: () => {
-        setReverifyStatus("all");
+          setReverifyStatus("");
         resetPageIndex();
       },
     });

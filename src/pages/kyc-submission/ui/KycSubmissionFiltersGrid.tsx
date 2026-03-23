@@ -1,22 +1,14 @@
 import type { FC } from "react";
-import {
-  KYC_STATUS_OPTIONS,
-  KYC_DOCUMENT_TYPE_OPTIONS,
-  KYC_COUNTRY_OPTIONS,
-  REVERIFY_OPTIONS,
-} from "..";
-import { DateRangePicker, FilterSelectWithClear } from "@/shared/ui";
+import type { FilterField } from "@/shared/ui";
+import { DateRangePicker, FilterOptionsGrid } from "@/shared/ui";
 import { PRESETS } from "../lib/date-range-presets";
 
 export interface KycSubmissionFiltersGridProps {
-  status: string;
-  setStatus: (v: string) => void;
-  documentType: string;
-  setDocumentType: (v: string) => void;
-  country: string;
-  setCountry: (v: string) => void;
-  reverifyStatus: string;
-  setReverifyStatus: (v: string) => void;
+  optionsFilterFields: readonly FilterField[];
+  selectedOptionFilterValues: Record<string, string>;
+  handleChangeOptionFilter: (key: string, value: string) => void;
+  createdAtLabel: string;
+  updatedAtLabel: string;
   kycFrom: string;
   kycTo: string;
   kycPresetLabel: string | null;
@@ -38,48 +30,18 @@ export interface KycSubmissionFiltersGridProps {
 export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (props) => {
   const { resetPageIndex } = props;
   return (
-    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-      <FilterSelectWithClear
-        label="Status"
-        value={props.status}
-        options={KYC_STATUS_OPTIONS}
-        onChange={(v) => {
-          props.setStatus(v);
-          resetPageIndex();
-        }}
-        onClear={() => {
-          props.setStatus("all");
+    <div>
+      <FilterOptionsGrid
+        fields={props.optionsFilterFields}
+        values={props.selectedOptionFilterValues}
+        onChange={(key, value) => {
+          props.handleChangeOptionFilter(key, value);
           resetPageIndex();
         }}
       />
-      <FilterSelectWithClear
-        label="Document Type"
-        value={props.documentType}
-        options={KYC_DOCUMENT_TYPE_OPTIONS}
-        onChange={(v) => {
-          props.setDocumentType(v);
-          resetPageIndex();
-        }}
-        onClear={() => {
-          props.setDocumentType("all");
-          resetPageIndex();
-        }}
-      />
-      <FilterSelectWithClear
-        label="Country"
-        value={props.country}
-        options={KYC_COUNTRY_OPTIONS}
-        onChange={(v) => {
-          props.setCountry(v);
-          resetPageIndex();
-        }}
-        onClear={() => {
-          props.setCountry("all");
-          resetPageIndex();
-        }}
-      />
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
       <DateRangePicker
-        label="KYC Submission"
+        label={props.createdAtLabel}
         from={props.kycFrom}
         to={props.kycTo}
         presetLabel={props.kycPresetLabel}
@@ -92,7 +54,7 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
         }}
       />
       <DateRangePicker
-        label="Last Update"
+        label={props.updatedAtLabel}
         from={props.lastUpdateFrom}
         to={props.lastUpdateTo}
         presetLabel={props.lastUpdatePresetLabel}
@@ -104,19 +66,7 @@ export const KycSubmissionFiltersGrid: FC<KycSubmissionFiltersGridProps> = (prop
           resetPageIndex();
         }}
       />
-      <FilterSelectWithClear
-        label="Reverify Status"
-        value={props.reverifyStatus}
-        options={REVERIFY_OPTIONS}
-        onChange={(v) => {
-          props.setReverifyStatus(v);
-          resetPageIndex();
-        }}
-        onClear={() => {
-          props.setReverifyStatus("all");
-          resetPageIndex();
-        }}
-      />
+      </div>
     </div>
   );
 };
