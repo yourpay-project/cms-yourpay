@@ -2,7 +2,8 @@ import type { FC } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-import { SelectDropdown, type SelectDropdownProps } from "./select-dropdown";
+import { SelectDropdown } from "./select-dropdown";
+import type { SelectDropdownProps } from "./select-dropdown.type";
 
 export interface LabeledSelectFieldProps extends SelectDropdownProps {
   /** Label text rendered above the select trigger. */

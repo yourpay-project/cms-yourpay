@@ -97,11 +97,8 @@ export {
 } from "./data-table";
 
 export { SearchInput, type SearchInputProps } from "./search-input";
-export {
-  SelectDropdown,
-  type SelectDropdownOption,
-  type SelectDropdownProps,
-} from "./select-dropdown";
+export { SelectDropdown } from "./select-dropdown";
+export type { SelectDropdownOption, SelectDropdownProps } from "./select-dropdown.type";
 export { LabeledSelectField, type LabeledSelectFieldProps } from "./labeled-select-field";
 
 export {

@@ -1,20 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { useCan } from "@/features/auth";
 import { cn } from "@/shared/lib";
-import { navGroups, useSidebarStore } from "../model";
+import { useSidebarNavigationLogic, useSidebarStore } from "../model";
 import { SidebarItem } from "./sidebar/SidebarItem";
 import { SidebarPinnedSection } from "./sidebar/SidebarPinnedSection";
 import { SidebarSearch } from "./sidebar/SidebarSearch";
-
-interface SidebarProps {
-  className?: string;
-  /**
-   * When true, sidebar is forced expanded (labels visible, full width),
-   * ignoring the persisted `collapsed` state. Used for the mobile overlay
-   * so navigation is always readable even if desktop sidebar is collapsed.
-   */
-  forceExpanded?: boolean;
-}
+import type { SidebarProps } from "./Sidebar.type";
 
 /**
  * Permission‑aware navigation sidebar driven by `navGroups` configuration.
@@ -23,7 +15,7 @@ interface SidebarProps {
  * - Hides items the current user does not have permission to view.
  * - Supports pinning up to 5 frequently used items to a fixed section at the top.
  */
-export const Sidebar = ({ className, forceExpanded }: SidebarProps) => {
+export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   const { can } = useCan();
   const collapsedState = useSidebarStore((s) => s.collapsed);
   const collapsed = forceExpanded ? false : collapsedState;
@@ -31,63 +23,20 @@ export const Sidebar = ({ className, forceExpanded }: SidebarProps) => {
   const togglePinned = useSidebarStore((s) => s.togglePinned);
   const [search, setSearch] = useState("");
 
-  const isDashboard = useCallback((path: string) => path === "/", []);
-  const sectionInsetClass = collapsed ? "px-2" : "px-0";
-  const dividerInsetClass = collapsed ? "mx-2" : "mx-3";
-
-  const isPinned = useCallback(
-    (path: string): boolean => !isDashboard(path) && pinned.includes(path),
-    [pinned, isDashboard]
-  );
-  const canPinMore = pinned.length < 5;
-  const searchTerm = search.trim().toLowerCase();
-
-  const flatItems = useMemo(
-    () => navGroups.flatMap((group) => group.items),
-    []
-  );
-
-  const dashboardItem = useMemo(
-    () => flatItems.find((item) => isDashboard(item.to)),
-    [flatItems, isDashboard]
-  );
-
-  const pinnedItems = useMemo(
-    () =>
-      flatItems.filter(
-        (item) =>
-          !isDashboard(item.to) &&
-          isPinned(item.to) &&
-          (!item.permission || can(item.permission))
-      ),
-    [flatItems, isPinned, can, isDashboard]
-  );
-
-  const filteredGroups = useMemo(
-    () =>
-      navGroups
-        .map((group) => {
-          const items = group.items.filter(
-            (item) =>
-              !isDashboard(item.to) &&
-              !isPinned(item.to) &&
-              (!item.permission || can(item.permission)) &&
-              (!searchTerm ||
-                item.label.toLowerCase().includes(searchTerm))
-          );
-          return { ...group, items };
-        })
-        .filter((group) => group.items.length > 0),
-    [isPinned, can, searchTerm, isDashboard]
-  );
-
-  const canShowPinForItem = useCallback(
-    (path: string) => {
-      if (isDashboard(path)) return false;
-      return isPinned(path) || canPinMore;
-    },
-    [canPinMore, isDashboard, isPinned]
-  );
+  const {
+    dashboardItem,
+    pinnedItems,
+    filteredGroups,
+    canShowPinForItem,
+    isPinned,
+    sectionInsetClass,
+    dividerInsetClass,
+  } = useSidebarNavigationLogic({
+    collapsed,
+    pinned,
+    can,
+    search,
+  });
 
   return (
     <aside

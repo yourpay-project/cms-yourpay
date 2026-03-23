@@ -1,54 +1,10 @@
 import * as React from "react";
-import type { Row, Table } from "@tanstack/react-table";
 import { Table as TablePrimitive, TableCell, TableRow } from "@/shared/ui/table";
 import { DataTableHeader } from "./data-table-header";
 import { DataTableBody } from "./data-table-body";
 import { DataTableSummary } from "./data-table-summary";
-import type { ScrollShadowState } from "../lib/table-utils";
-import type {
-  DataTableSummaryConfig,
-  TableCellProps,
-  TableRowProps,
-} from "../lib/data-table-types";
 import { cn } from "@/shared/lib/utils";
-
-/**
- * Props for {@link DataTableScrollArea}.
- */
-export interface DataTableScrollAreaProps<TData> {
-  table: Table<TData>;
-  scrollRef: React.RefObject<HTMLDivElement | null> | React.LegacyRef<HTMLDivElement>;
-  scrollStyle: React.CSSProperties;
-  /**
-   * Max height of the scroll viewport (e.g. "480px"). Body content scrolls inside when it exceeds this;
-   * when empty or few rows, the area is content-sized. Pass {@link TABLE_BODY_VIEWPORT_HEIGHT} for ~10 rows.
-   */
-  scrollHeight: string;
-  bordered: boolean;
-  tableLayout?: "auto" | "fixed";
-  showHeader: boolean;
-  sizeHeaderClass: string;
-  sizeCellClass: string;
-  shadow: ScrollShadowState;
-  enableVerticalShadow?: boolean;
-  visibleColumns: number;
-  footerNode: React.ReactNode;
-  summary?: DataTableSummaryConfig | null;
-  onCell?: (row: Row<TData>, columnId: string) => TableCellProps | undefined;
-  onRow?: (row: Row<TData>) => TableRowProps | undefined;
-  expandedRowRender?: (row: Row<TData>) => React.ReactNode;
-  isLoading?: boolean;
-  emptyMsg: string;
-  emptyComponent?: React.ReactNode;
-  rowClassName?: (row: Row<TData>) => string;
-  rowHoverable: boolean;
-  LoadingComponent: React.ComponentType<{ colSpan: number }>;
-  EmptyComponent: React.ComponentType<{
-    colSpan: number;
-    emptyComponent?: React.ReactNode;
-    emptyMessage?: string;
-  }>;
-}
+import type { DataTableScrollAreaProps } from "./data-table-scroll-area.type";
 
 /**
  * Scrollable table container: scroll wrapper, table with header/body/footers,
