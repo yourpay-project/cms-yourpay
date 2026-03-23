@@ -3,7 +3,7 @@ import type { FieldErrors, UseFormRegister } from "react-hook-form";
 
 import { Input } from "@/shared/ui";
 
-import type { FeeConfigFormValues } from "@/pages/fee-config/model";
+import type { FeeConfigFormValues } from "@/features/fee-config";
 
 export interface FeeConfigCreateEditModalFormProps {
   register: UseFormRegister<FeeConfigFormValues>;

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { updateFeeConfigById } from "@/shared/api/fee-config";
 import { postV1OperatorsFee, type NewFeeConfigRequest } from "@/shared/api/generated";
-import { feeConfigFormSchema, type FeeConfigFormValues } from "@/pages/fee-config/model";
+import { feeConfigFormSchema, type FeeConfigFormValues } from "@/features/fee-config";
 import { Button } from "@/shared/ui";
 
 import type { FeeConfigCreateEditModalProps } from "./FeeConfigCreateEditModal.type";
