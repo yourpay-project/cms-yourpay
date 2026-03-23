@@ -388,6 +388,7 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 **Calendar and date picker:**
 
 - **`shared/ui/calendar.tsx`** – shadcn-style Calendar (react-day-picker) with optional month/year dropdown (`captionLayout="dropdown"`). Used by KYC date range picker in `pages/kyc-submission` and the single-date birth field on `pages/kyc-submission-detail`.
+- **`shared/ui/date-picker.tsx`** and **`shared/ui/date-range-picker.tsx`** – generic dropdown-calendar pickers used by KYC filters and KYC detail fields (Birth Date + date ranges). These keep the filter UI consistent across the app and centralize date formatting/clearing behavior.
 
 Example – use the shared DataTable (recommended):
 
