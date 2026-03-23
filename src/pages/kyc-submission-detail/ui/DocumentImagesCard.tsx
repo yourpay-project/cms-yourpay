@@ -21,98 +21,75 @@ import {
   DialogTitle,
   FileDropzone,
 } from "@/shared/ui";
-import { cn } from "@/shared/lib/utils";
-import type { PointerEvent as ReactPointerEvent } from "react";
 
-interface ImageOffset {
-  x: number;
-  y: number;
-}
-
-interface PannableImageProps {
-  imageUrl: string;
-  title: string;
+interface DraggableScrollViewportProps {
   scale: number;
-  rotation: number;
-  offset: ImageOffset;
-  onOffsetChange: (next: ImageOffset) => void;
   className?: string;
-  imageClassName?: string;
+  children: React.ReactNode;
 }
 
-const PannableImage: FC<PannableImageProps> = ({
-  imageUrl,
-  title,
-  scale,
-  rotation,
-  offset,
-  onOffsetChange,
-  className,
-  imageClassName,
-}) => {
-  const dragStateRef = useRef<{
+/**
+ * Lightweight drag-to-scroll wrapper.
+ *
+ * Keeps native scrolling behavior while allowing pointer drag when zoomed.
+ */
+const DraggableScrollViewport: FC<DraggableScrollViewportProps> = ({ scale, className, children }) => {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
     pointerId: number | null;
     startX: number;
     startY: number;
-    originX: number;
-    originY: number;
+    startScrollLeft: number;
+    startScrollTop: number;
   }>({
     pointerId: null,
     startX: 0,
     startY: 0,
-    originX: 0,
-    originY: 0,
+    startScrollLeft: 0,
+    startScrollTop: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
 
-  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (scale <= 1) return;
-    dragStateRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      originX: offset.x,
-      originY: offset.y,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (scale <= 1 || !viewportRef.current) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("[data-no-drag='true']")) return;
+    dragRef.current.pointerId = event.pointerId;
+    dragRef.current.startX = event.clientX;
+    dragRef.current.startY = event.clientY;
+    dragRef.current.startScrollLeft = viewportRef.current.scrollLeft;
+    dragRef.current.startScrollTop = viewportRef.current.scrollTop;
+    viewportRef.current.setPointerCapture(event.pointerId);
     setIsDragging(true);
   };
 
-  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (dragStateRef.current.pointerId !== event.pointerId) return;
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!viewportRef.current || dragRef.current.pointerId !== event.pointerId) return;
     event.preventDefault();
-    const nextX = dragStateRef.current.originX + (event.clientX - dragStateRef.current.startX);
-    const nextY = dragStateRef.current.originY + (event.clientY - dragStateRef.current.startY);
-    onOffsetChange({ x: nextX, y: nextY });
+    const deltaX = event.clientX - dragRef.current.startX;
+    const deltaY = event.clientY - dragRef.current.startY;
+    viewportRef.current.scrollLeft = dragRef.current.startScrollLeft - deltaX;
+    viewportRef.current.scrollTop = dragRef.current.startScrollTop - deltaY;
   };
 
-  const onPointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (dragStateRef.current.pointerId !== event.pointerId) return;
-    dragStateRef.current.pointerId = null;
+  const onPointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!viewportRef.current || dragRef.current.pointerId !== event.pointerId) return;
+    dragRef.current.pointerId = null;
+    viewportRef.current.releasePointerCapture(event.pointerId);
     setIsDragging(false);
-    event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
   return (
     <div
-      className={cn(
-        "relative flex h-full min-h-0 w-full min-w-0 items-center justify-center overflow-hidden",
-        scale > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default",
-        className,
-      )}
+      ref={viewportRef}
+      className={`${className ?? ""} ${scale > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""}`.trim()}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerEnd}
       onPointerCancel={onPointerEnd}
       style={{ touchAction: scale > 1 ? "none" : "auto" }}
     >
-      <img
-        src={imageUrl}
-        alt={title}
-        className={cn("mx-auto h-full w-auto max-w-full object-contain transition-transform duration-150", imageClassName)}
-        style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale}) rotate(${rotation}deg)` }}
-        draggable={false}
-      />
+      {children}
     </div>
   );
 };
@@ -281,8 +258,6 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
   const [idRotation, setIdRotation] = useState(0);
   const [selfieScale, setSelfieScale] = useState(1);
   const [selfieRotation, setSelfieRotation] = useState(0);
-  const [idOffset, setIdOffset] = useState<ImageOffset>({ x: 0, y: 0 });
-  const [selfieOffset, setSelfieOffset] = useState<ImageOffset>({ x: 0, y: 0 });
 
   const canCompare = Boolean(idDocument?.imageUrl && selfieDocument?.imageUrl);
   const canEdit = !uploadsDisabled;
@@ -291,7 +266,6 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
   const activeTitle = activeDocKey === "id" ? "ID Document" : "Selfie Photo";
   const activeScale = activeDocKey === "id" ? idScale : selfieScale;
   const activeRotation = activeDocKey === "id" ? idRotation : selfieRotation;
-  const activeOffset = activeDocKey === "id" ? idOffset : selfieOffset;
 
   const changeScale = (docKey: "id" | "selfie", delta: number) => {
     if (docKey === "id") {
@@ -313,20 +287,10 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
     if (docKey === "id") {
       setIdScale(1);
       setIdRotation(0);
-      setIdOffset({ x: 0, y: 0 });
       return;
     }
     setSelfieScale(1);
     setSelfieRotation(0);
-    setSelfieOffset({ x: 0, y: 0 });
-  };
-
-  const setOffset = (docKey: "id" | "selfie", next: ImageOffset) => {
-    if (docKey === "id") {
-      setIdOffset(next);
-      return;
-    }
-    setSelfieOffset(next);
   };
 
   const onOpenSinglePreview = (docKey: "id" | "selfie") => {
@@ -342,7 +306,6 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
         imageUrl: idDocument?.imageUrl,
         scale: idScale,
         rotation: idRotation,
-        offset: idOffset,
       },
       {
         docKey: "selfie" as const,
@@ -350,10 +313,9 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
         imageUrl: selfieDocument?.imageUrl,
         scale: selfieScale,
         rotation: selfieRotation,
-        offset: selfieOffset,
       },
     ],
-    [idDocument?.imageUrl, idOffset, idRotation, idScale, selfieDocument?.imageUrl, selfieOffset, selfieRotation, selfieScale],
+    [idDocument?.imageUrl, idRotation, idScale, selfieDocument?.imageUrl, selfieRotation, selfieScale],
   );
 
   return (
@@ -422,22 +384,32 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
           <DialogHeader className="space-y-1">
             <DialogTitle>{activeTitle}</DialogTitle>
           </DialogHeader>
-          <div className="relative max-h-[60vh] min-h-[40vh] overflow-hidden rounded-md border border-border bg-muted/20 p-3">
-            {activeDocument?.imageUrl ? (
-              <PannableImage
-                imageUrl={activeDocument.imageUrl}
-                title={activeTitle}
-                scale={activeScale}
-                rotation={activeRotation}
-                offset={activeOffset}
-                onOffsetChange={(next) => setOffset(activeDocKey, next)}
-                imageClassName="max-h-[56vh]"
-              />
-            ) : (
-              <div className="flex h-[40vh] items-center justify-center text-sm text-muted-foreground">Image unavailable</div>
-            )}
-            <div className="absolute bottom-3 left-3 z-10">
-              <div className="flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm">
+          <div className="relative max-h-[60vh] min-h-[40vh] rounded-md border border-border bg-muted/20 p-3">
+            <DraggableScrollViewport
+              scale={activeScale}
+              className="h-full overflow-auto"
+            >
+              {activeDocument?.imageUrl ? (
+                <img
+                  src={activeDocument.imageUrl}
+                  alt={activeTitle}
+                  className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
+                  style={{
+                    width: `${Math.max(25, Math.round(activeScale * 100))}%`,
+                    transform: `rotate(${activeRotation}deg)`,
+                    transformOrigin: "center center",
+                  }}
+                  draggable={false}
+                />
+              ) : (
+                <div className="flex h-[40vh] items-center justify-center text-sm text-muted-foreground">Image unavailable</div>
+              )}
+            </DraggableScrollViewport>
+            <div className="pointer-events-none absolute bottom-3 left-3 z-10">
+              <div
+                className="pointer-events-auto flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm"
+                data-no-drag="true"
+              >
                 <button
                   type="button"
                   className="rounded p-2 text-foreground transition-colors hover:bg-muted"
@@ -493,24 +465,34 @@ export const DocumentImagesCard: FC<DocumentImagesCardProps> = ({
             {compareItems.map((item) => (
               <div key={item.docKey} className="space-y-2">
                 <div className="text-sm font-medium text-foreground">{item.title}</div>
-                <div className="relative max-h-[40vh] min-h-[18rem] overflow-hidden rounded-md border border-border bg-muted/20 p-2">
-                  {item.imageUrl ? (
-                    <PannableImage
-                      imageUrl={item.imageUrl}
-                      title={item.title}
-                      scale={item.scale}
-                      rotation={item.rotation}
-                      offset={item.offset}
-                      onOffsetChange={(next) => setOffset(item.docKey, next)}
-                      imageClassName="max-h-[36vh]"
-                    />
-                  ) : (
-                    <div className="flex h-[18rem] items-center justify-center text-sm text-muted-foreground">
-                      Image unavailable
-                    </div>
-                  )}
-                  <div className="absolute bottom-3 left-3 z-10">
-                    <div className="flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm">
+                <div className="relative max-h-[40vh] min-h-[18rem] rounded-md border border-border bg-muted/20 p-2">
+                  <DraggableScrollViewport
+                    scale={item.scale}
+                    className="h-full overflow-auto"
+                  >
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                      className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
+                        style={{
+                          width: `${Math.max(25, Math.round(item.scale * 100))}%`,
+                          transform: `rotate(${item.rotation}deg)`,
+                        transformOrigin: "center center",
+                        }}
+                        draggable={false}
+                      />
+                    ) : (
+                      <div className="flex h-[18rem] items-center justify-center text-sm text-muted-foreground">
+                        Image unavailable
+                      </div>
+                    )}
+                  </DraggableScrollViewport>
+                  <div className="pointer-events-none absolute bottom-3 left-3 z-10">
+                    <div
+                      className="pointer-events-auto flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm"
+                      data-no-drag="true"
+                    >
                       <button
                         type="button"
                         className="rounded p-2 text-foreground transition-colors hover:bg-muted"
