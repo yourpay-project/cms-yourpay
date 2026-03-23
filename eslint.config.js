@@ -9,6 +9,7 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // General rules for all JS/TS files
     files: ["**/*.{ts,tsx,js,jsx}"],
     languageOptions: {
       ecmaVersion: 2020,
@@ -39,4 +40,3 @@ export default tseslint.config(
     },
   }
 );
-

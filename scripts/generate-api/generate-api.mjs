@@ -227,10 +227,6 @@ function getRequestBodySchema(operation) {
   return operation.parameters?.find((p) => p.in === "body")?.schema || null;
 }
 
-function getDefinitions(spec) {
-  return spec.definitions || spec.components?.schemas || {};
-}
-
 function isBaseResponseWrapperName(name) {
   return /^BaseResponseDTO_/.test(name);
 }
@@ -367,12 +363,12 @@ function computeSharedTypeNames(spec, refsByBucket, alwaysSharedNames) {
 }
 
 function generateTypesForRefs(spec, refs, includeTypeNames) {
-  const definitions = getDefinitions(spec);
   const refList = [...refs].filter((r) => {
-    const key = r.replace("#/definitions/", "").replace("#/components/schemas/", "");
-    if (definitions[key] === undefined) return false;
     const name = refToTypeName(r);
-    return includeTypeNames.has(name);
+    if (!includeTypeNames.has(name)) return false;
+    // Rely on resolveRef so we don't depend on how the swagger spec keys are named.
+    // This avoids missing exports when $ref contains prefixes like `model.`.
+    return Boolean(resolveRef(spec, r));
   });
 
   const defsMap = new Map();
@@ -513,7 +509,7 @@ function generateApiFunctions(spec, operations) {
   return lines.join("\n\n");
 }
 
-function generateImports(spec, operations) {
+function generateImports(spec, operations, bucketSlug, sharedTypeNames) {
   const typeRefs = new Set();
   for (const op of operations) {
     const resSchema = getResponseSchema(op.operation);
@@ -529,7 +525,15 @@ function generateImports(spec, operations) {
     }
   }
   if (typeRefs.size === 0) return "";
-  return `import type { ${[...typeRefs].sort().join(", ")} } from './types';`;
+
+  const all = [...typeRefs].sort();
+  const sharedRefs = all.filter((n) => sharedTypeNames.has(n));
+  const bucketRefs = all.filter((n) => !sharedTypeNames.has(n));
+
+  const imports = [];
+  if (sharedRefs.length) imports.push(`import type { ${sharedRefs.join(", ")} } from '../${TYPES_SUBDIR}/shared';`);
+  if (bucketRefs.length) imports.push(`import type { ${bucketRefs.join(", ")} } from '../${TYPES_SUBDIR}/${bucketSlug}';`);
+  return imports.join("\n");
 }
 
 async function main() {
@@ -565,6 +569,17 @@ async function main() {
           if (!refsByBucket[g.key]) refsByBucket[g.key] = new Set();
           collectRefs(spec, op, refsAll);
           collectRefs(spec, op, refsByBucket[g.key]);
+          // Ensure we capture refs from extracted schemas too (some swagger shapes
+          // are not reliably discovered by generic traversal).
+          const resSchema = getResponseSchema(op);
+          if (resSchema?.$ref) refsAll.add(resSchema.$ref);
+          if (resSchema?.$ref) refsByBucket[g.key].add(resSchema.$ref);
+
+          const reqSchema = getRequestBodySchema(op);
+          if (reqSchema?.$ref && op.method !== "get" && op.method !== "delete") {
+            refsAll.add(reqSchema.$ref);
+            refsByBucket[g.key].add(reqSchema.$ref);
+          }
           operationsByBucket[g.key].push({ path: pathKey, method, operation: op });
         }
       } else {
@@ -574,6 +589,17 @@ async function main() {
           if (!refsByBucket[tag]) refsByBucket[tag] = new Set();
           collectRefs(spec, op, refsAll);
           collectRefs(spec, op, refsByBucket[tag]);
+          // Ensure we capture refs from extracted schemas too (some swagger shapes
+          // are not reliably discovered by generic traversal).
+          const resSchema = getResponseSchema(op);
+          if (resSchema?.$ref) refsAll.add(resSchema.$ref);
+          if (resSchema?.$ref) refsByBucket[tag].add(resSchema.$ref);
+
+          const reqSchema = getRequestBodySchema(op);
+          if (reqSchema?.$ref && op.method !== "get" && op.method !== "delete") {
+            refsAll.add(reqSchema.$ref);
+            refsByBucket[tag].add(reqSchema.$ref);
+          }
           operationsByBucket[tag].push({ path: pathKey, method, operation: op });
         }
       }
@@ -670,7 +696,8 @@ async function main() {
     if (operations.length === 0) {
       console.warn(`No endpoints found for "${bucket}".`);
     }
-    const imports = generateImports(spec, operations).replace("./types", `../${TYPES_SUBDIR}/${slugifyTag(bucket) || "api"}`);
+    const bucketSlug = slugifyTag(bucket) || "api";
+    const imports = generateImports(spec, operations, bucketSlug, sharedTypeNames);
     const functions = generateApiFunctions(spec, operations);
     const apiOut = apiTemplate
       .replace("{{TAG}}", bucket)
