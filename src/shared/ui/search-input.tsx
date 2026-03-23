@@ -1,4 +1,5 @@
 import type { FC, InputHTMLAttributes } from "react";
+import * as React from "react";
 import { Search } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
@@ -26,16 +27,28 @@ export const SearchInput: FC<SearchInputProps> = ({
   className,
   ...props
 }) => {
+  const generatedId = React.useId();
+
+  const { id: providedId, placeholder, ...restProps } = props;
+  const resolvedId = providedId ?? generatedId;
+
+  const ariaLabelFromProps = restProps["aria-label"];
+  const resolvedAriaLabel =
+    ariaLabelFromProps ??
+    (typeof placeholder === "string" && placeholder.trim().length > 0 ? placeholder : undefined);
+
   return (
     <div className={cn("relative", containerClassName)}>
       <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <input
         type="search"
+        id={resolvedId}
+        aria-label={resolvedAriaLabel}
         className={cn(
           "h-9 w-full rounded-md border border-input bg-background/80 pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring",
           className,
         )}
-        {...props}
+        {...restProps}
       />
     </div>
   );
