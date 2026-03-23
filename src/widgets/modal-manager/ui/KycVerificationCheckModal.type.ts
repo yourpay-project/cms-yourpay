@@ -1,7 +1,7 @@
 import type { BaseModalCallbacks } from "./BaseModalCallbacks.type";
 
 /**
- * One check payload in `KycVerificationCheckModal` verification map.
+ * One check payload in `KycVerificationCheck` verification map.
  */
 export interface KycVerificationCheckData {
   status?: string;
@@ -10,7 +10,7 @@ export interface KycVerificationCheckData {
 }
 
 /**
- * Verification map for `KycVerificationCheckModal`.
+ * Verification map for `KycVerificationCheck`.
  */
 export interface KycDocumentVerificationData {
   aml?: KycVerificationCheckData;
@@ -24,14 +24,14 @@ export interface KycDocumentVerificationData {
 }
 
 /**
- * Document image payload for `KycVerificationCheckModal`.
+ * Document image payload for `KycVerificationCheck`.
  */
 export interface KycDocumentImageModalData {
   imageUrl?: string;
 }
 
 /**
- * Payload for `KycVerificationCheckModal` data.
+ * Payload for `KycVerificationCheck` data.
  */
 export interface KycVerificationCheckModalData {
   onRunChecks?: () => Promise<void>;
@@ -42,7 +42,7 @@ export interface KycVerificationCheckModalData {
 }
 
 /**
- * Props for `KycVerificationCheckModal`.
+ * Props for `KycVerificationCheck`.
  */
 export type KycVerificationCheckModalProps = KycVerificationCheckModalData &
   BaseModalCallbacks;

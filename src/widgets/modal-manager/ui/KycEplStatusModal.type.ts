@@ -16,7 +16,7 @@ export interface KycEplStatusModalData {
 }
 
 /**
- * Full props for `KycEplStatusModal`.
+ * Full props for `KycEplStatus`.
  */
 export type KycEplStatusModalProps = KycEplStatusModalData & BaseModalCallbacks;
 

@@ -1,14 +1,14 @@
 import type { BaseModalCallbacks } from "./BaseModalCallbacks.type";
 
 /**
- * Payload for `KycEnableEditConfirmModal` data.
+ * Payload for `KycEnableEditConfirm` data.
  */
 export interface KycEnableEditConfirmModalData {
   onConfirm?: () => void;
 }
 
 /**
- * Full props for `KycEnableEditConfirmModal`.
+ * Full props for `KycEnableEditConfirm`.
  */
 export type KycEnableEditConfirmModalProps = KycEnableEditConfirmModalData &
   BaseModalCallbacks;

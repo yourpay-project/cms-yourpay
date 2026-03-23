@@ -8,7 +8,7 @@ export interface UserViewWalletsModalData {
 }
 
 /**
- * Full props for `UserViewWalletsModal`.
+ * Full props for `UserViewWallets`.
  */
 export type UserViewWalletsModalProps = UserViewWalletsModalData & BaseModalCallbacks;
 

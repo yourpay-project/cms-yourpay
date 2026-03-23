@@ -8,7 +8,7 @@ export interface UserViewDevicesModalData {
 }
 
 /**
- * Full props for `UserViewDevicesModal`.
+ * Full props for `UserViewDevices`.
  */
 export type UserViewDevicesModalProps = UserViewDevicesModalData & BaseModalCallbacks;
 

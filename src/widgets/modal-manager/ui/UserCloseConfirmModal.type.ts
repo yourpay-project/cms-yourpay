@@ -8,7 +8,7 @@ export interface UserCloseConfirmModalData {
 }
 
 /**
- * Full props for `UserCloseConfirmModal`.
+ * Full props for `UserCloseConfirm`.
  */
 export type UserCloseConfirmModalProps = UserCloseConfirmModalData &
   BaseModalCallbacks;

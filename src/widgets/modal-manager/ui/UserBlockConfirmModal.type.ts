@@ -10,7 +10,7 @@ export interface UserBlockConfirmModalData {
 }
 
 /**
- * Full props for `UserBlockConfirmModal`.
+ * Full props for `UserBlockConfirm`.
  */
 export type UserBlockConfirmModalProps = UserBlockConfirmModalData &
   BaseModalCallbacks;

@@ -14,7 +14,7 @@ export interface CountriesCreateEditModalData {
 }
 
 /**
- * Full props for `CountriesCreateEditModal`.
+ * Full props for `CountriesCreateEdit`.
  */
 export type CountriesCreateEditModalProps = CountriesCreateEditModalData & BaseModalCallbacks;
 

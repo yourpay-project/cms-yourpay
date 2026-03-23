@@ -12,7 +12,7 @@ export interface UserEditIdentityAccessModalData {
 }
 
 /**
- * Full props for `UserEditIdentityAccessModal`.
+ * Full props for `UserEditIdentityAccess`.
  */
 export type UserEditIdentityAccessModalProps = UserEditIdentityAccessModalData & BaseModalCallbacks;
 

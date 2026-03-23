@@ -13,7 +13,7 @@ export interface FeeConfigCreateEditModalData {
 }
 
 /**
- * Full props for `FeeConfigCreateEditModal`.
+ * Full props for `FeeConfigCreateEdit`.
  */
 export type FeeConfigCreateEditModalProps = FeeConfigCreateEditModalData & BaseModalCallbacks;
 

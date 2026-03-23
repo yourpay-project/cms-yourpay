@@ -1,14 +1,14 @@
 import type { BaseModalCallbacks } from "./BaseModalCallbacks.type";
 
 /**
- * Payload for `KycGenerateOcrConfirmModal` data.
+ * Payload for `KycGenerateOcrConfirm` data.
  */
 export interface KycGenerateOcrConfirmModalData {
   onConfirm?: () => void;
 }
 
 /**
- * Full props for `KycGenerateOcrConfirmModal`.
+ * Full props for `KycGenerateOcrConfirm`.
  */
 export type KycGenerateOcrConfirmModalProps = KycGenerateOcrConfirmModalData &
   BaseModalCallbacks;
