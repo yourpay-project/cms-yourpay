@@ -1,4 +1,4 @@
-import type { navGroups } from "../../model/nav-config";
+import type { NavItemConfig } from "@/widgets/app-layout";
 
-export type SidebarNavItem = (typeof navGroups)[number]["items"][number];
+export type SidebarNavItem = NavItemConfig;
 
