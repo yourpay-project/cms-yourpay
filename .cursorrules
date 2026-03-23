@@ -157,3 +157,9 @@ src/[layer]/[slice-name]/
 - **Custom Headless UI:** If a required UI component is not available in shadcn/ui, you MUST use `@radix-ui/react-*` primitives directly and style them with Tailwind. Do NOT introduce other component libraries (e.g., MUI, AntD).
 - **Modification & Theming:** Modify shadcn component internals (in `shared/ui`) if global design changes are needed. Manage colors and themes EXCLUSIVELY via CSS variables in `globals.css` (e.g., `--primary`, `--muted`) to ensure the Design Tokens apply seamlessly to all Radix/shadcn components.
 - **Bundle Optimization:** Always import `lucide-react` icons individually in shadcn components to maintain the tree-shaking benefits of the Radix+shadcn ecosystem.
+
+## 31. Strict Naming Convention (Context Over Suffix)
+- **Zero Redundancy:** NEVER append UI type suffixes (like `Modal`, `Page`, `Widget`, `Component`) to the file name or React component name IF the folder structure already provides that context.
+- **Example 1 (Modals):** Inside `widgets/modal-manager/ui/`, name the file `DeleteUserConfirm.tsx` (Component: `<DeleteUserConfirm />`), NOT `DeleteUserConfirmModal.tsx`.
+- **Example 2 (Pages):** Inside `pages/dashboard/ui/`, name the file `Dashboard.tsx`, NOT `DashboardPage.tsx`. (The route wrapper can be `DashboardRoute.tsx`).
+- **Action-Oriented:** Focus names on the domain intent (e.g., `VerificationCheck`, `UploadSelfiePrompt`, `FilterOptionsCard`).
