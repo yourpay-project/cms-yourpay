@@ -18,6 +18,8 @@ export const FeeConfigCreateEditModalForm: FC<FeeConfigCreateEditModalFormProps>
   activeStatus,
   onActiveChange,
 }) => {
+  const activeCheckboxId = "fee-config-active-status";
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -64,15 +66,17 @@ export const FeeConfigCreateEditModalForm: FC<FeeConfigCreateEditModalFormProps>
           helperText={errors.amount?.message}
           {...register("amount")}
         />
-        <div className="flex items-center gap-3">
+        <label className="flex items-center gap-3" htmlFor={activeCheckboxId}>
           <input
+            id={activeCheckboxId}
+            name="isActive"
             type="checkbox"
             className="h-4 w-4 rounded border-border"
             checked={activeStatus}
             onChange={(event) => onActiveChange(event.target.checked)}
           />
           <span className="text-sm text-foreground">Active Status</span>
-        </div>
+        </label>
       </div>
     </div>
   );

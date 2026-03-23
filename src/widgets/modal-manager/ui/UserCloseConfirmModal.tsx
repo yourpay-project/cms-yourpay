@@ -16,6 +16,8 @@ export const UserCloseConfirmModal: FC<UserCloseConfirmModalProps> = ({
   customerId,
 }) => {
   const formId = "user-close-confirm-form";
+  const terminationReasonId = "user-close-confirm-termination-reason";
+  const confirmCheckboxId = "user-close-confirm-understand";
   const [operatorPassword, setOperatorPassword] = useState("");
   const [reason, setReason] = useState("");
   const [confirmChecked, setConfirmChecked] = useState(false);
@@ -68,8 +70,12 @@ export const UserCloseConfirmModal: FC<UserCloseConfirmModalProps> = ({
             helperText="Enter your operator password to confirm this action"
           />
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Termination Reason*</label>
+            <label htmlFor={terminationReasonId} className="text-sm font-medium text-foreground">
+              Termination Reason*
+            </label>
             <textarea
+              id={terminationReasonId}
+              name="termination_reason"
               value={reason}
               onChange={(event) => setReason(event.target.value)}
               className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring"
@@ -79,8 +85,10 @@ export const UserCloseConfirmModal: FC<UserCloseConfirmModalProps> = ({
             </p>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-foreground">
+          <label className="flex items-center gap-2 text-sm text-foreground" htmlFor={confirmCheckboxId}>
             <input
+              id={confirmCheckboxId}
+              name="confirm_checked"
               type="checkbox"
               checked={confirmChecked}
               onChange={(event) => setConfirmChecked(event.target.checked)}
