@@ -65,10 +65,10 @@ const KycSubmissionDetailPage: FC = () => {
           </h2>
         </div>
 
-        <div className="flex w-full min-w-0 flex-col items-stretch gap-1 md:w-auto md:items-end">
+        <div className="flex w-full min-w-0 flex-col items-end gap-1 md:w-auto">
           <button
             type="button"
-            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium uppercase ${eplStatusClassByValue[logic.currentStatus]} ${
+            className={`inline-flex w-auto max-w-full items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium uppercase ${eplStatusClassByValue[logic.currentStatus]} ${
               logic.currentStatus === "pending" ? "cursor-pointer" : "cursor-default"
             }`}
             onClick={() => {
