@@ -296,7 +296,7 @@ For navigation inside components, use **TanStack Router hooks**:
 ### 5.3 Layout & Sidebar (widgets/app-layout)
 
 - `ui/AppLayout.tsx`
-  - Top nav (`Nav`), left sidebar (`Sidebar`), and main content area.
+  - Top nav (`Nav`), left sidebar (`Sidebar`), and main content area (`min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden`) so pages like KYC detail can use `flex-1 min-h-0` + inner `overflow-y-auto` for a fixed page header and scrollable cards.
   - Receives optional `navTitle` and `children`.
 - `ui/Nav.tsx`
   - App title, global loading indicator, sidebar toggle, theme toggle, and user menu (email + logout).
@@ -362,8 +362,11 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`pages/user-detail`** – Customer detail page at `/customers/$customerId`: fetches `GET v1/operators/customers/{customer_id}`, renders top action buttons and collapsible cards; includes lazy-loaded modals for **Edit Identity Access** (`GET v1/operators/identity-accesses`), **View Devices** (`GET v1/operators/customers/{customer_id}/devices`), **View Wallets** (`GET v1/operators/customers/{customer_id}/wallets`), **Block/Unblock User** (`POST v1/operators/customers/{customer_id}/status`), and **Close User** (confirmation form modal). Modal loading uses a lightweight Lucide spinner fallback and `useLazyModal` strategy (lazy load on first open, keep mounted afterwards) so animation remains smooth while still reducing initial route payload.
 - **`widgets/data-table`** – legacy table with `useDataTableInstance`, `DataTableHead`, `DataTableBody`, for custom layouts that need full control over table markup.
 - **`entities/user`** – `User` type and `useUsersQuery`; responses validated with Zod in `model`.
+- **`entities/indonesia-address`** – Zod-validated fetches for `v1/provinces`, `v1/cities`, `v1/districts`, `v1/sub-districts` and `useIndonesiaAddressMasterQueries` for cascading Indonesia address UI.
+- **`entities/occupation`** – Zod-validated `GET v1/occupations` and `useOccupationsQuery` for KYC document occupation dropdown.
 - **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` backed by `useUserListStore` (persisted as `cms-user-yourpay`), dynamic filter mapping from backend `filters` metadata (`control`, `options`, `date_range`), collapsible options filter card, control buttons row (e.g. country), search, badges via `shared/lib/filter-badge-colors`, and `UserTable`.
 - **`pages/kyc-submission`** – KYC Submissions page: `useKycSubmissionFilters` backed by `useKycSubmissionStore` (persisted as `cms-kyc-submission`), collapsible filters card including status, document type, **country**, reverify, KYC and Last update date ranges; search and `KycSubmissionTable`. Country filter lives inside the filter card and appears as a badge when set.
+- **`pages/kyc-submission-detail`** – KYC submission detail at `/kyc-submission/$id`: route wraps content in `flex-1 min-h-0` so the **page title row** (back + title + status) stays fixed while content cards scroll below. **`<md`** single column (submission, EPL, images). **`md+`** two columns — user data left, `w-96` EPL + document images right in one shared scroll area. **Document Images** now behaves conditionally: if image missing -> show `FileDropzone`; if image exists -> show preview with overlay controls (zoom in/out, rotate, reset/home, edit), click-to-open large modal, plus **Compare** action to open side-by-side (desktop) / stacked (mobile) comparison modal. Save/status/checks as per API. **ID** address: `entities/indonesia-address`.
 
 **Filter badges and shared filter UI:**
 
@@ -371,10 +374,12 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`shared/ui/dropdown-field-trigger.tsx`** – Generic field trigger wrapper (leading/trailing slots, default chevron) used by dropdown and select-like controls so label and chevron stay in one clickable button area.
 - **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select with `DropdownFieldTrigger` visual wrapper plus clear (X) behavior; used inside KYC and User Yourpay filter cards.
 - **`shared/ui/filter-controls.tsx`** – Generic backend-driven filter renderer primitives: `FilterControlButtons` (button/tabs style controls) and `FilterOptionsGrid` (select-with-clear grid for options filters).
+- **`shared/ui/select-dropdown.tsx`** – Generic dropdown selector with optional `searchable` mode. When `searchable` is true, it renders a search input and filters options by value/label/description. Reusable for status/reason pickers and other forms.
+- **`shared/ui/file-dropzone.tsx`** – Generic drag-and-drop file area (native `<input type="file" />`, dashed border, design tokens). Used on `pages/kyc-submission-detail` for ID/selfie uploads until an API is wired.
 
 **Calendar and date picker:**
 
-- **`shared/ui/calendar.tsx`** – shadcn-style Calendar (react-day-picker) with optional month/year dropdown (`captionLayout="dropdown"`). Used by KYC date range picker in `pages/kyc-submission`.
+- **`shared/ui/calendar.tsx`** – shadcn-style Calendar (react-day-picker) with optional month/year dropdown (`captionLayout="dropdown"`). Used by KYC date range picker in `pages/kyc-submission` and the single-date birth field on `pages/kyc-submission-detail`.
 
 Example – use the shared DataTable (recommended):
 
