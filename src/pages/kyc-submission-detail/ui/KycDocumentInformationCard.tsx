@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useMemo } from "react";
 
 import { useOccupationsQuery } from "@/entities/occupation";
-import { Card, CardContent, CardHeader, CardTitle, Input, SelectDropdown } from "@/shared/ui";
+import { Card, CardContent, CardHeader, CardTitle, Input, LabeledSelectField } from "@/shared/ui";
 
 import {
   KYC_ALL_DOCUMENT_TYPE_OPTIONS,
@@ -12,7 +12,6 @@ import {
   toDateInputValue,
 } from "../lib/kyc-verification-form-options";
 import type { KycLeftEditDraft } from "../model/use-kyc-submission-detail-logic";
-import { KycFormFieldLabel } from "./KycFormFieldLabel";
 
 export interface KycDocumentInformationCardProps {
   countryCode?: string;
@@ -82,25 +81,25 @@ export const KycDocumentInformationCard: FC<KycDocumentInformationCardProps> = (
       </CardHeader>
       <CardContent className="min-w-0 max-w-full">
         <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="flex flex-col gap-1.5 md:col-span-2">
-            <KycFormFieldLabel htmlFor="kyc-submission-identity-type">
-              <>
-                Document Type <span className="text-destructive">*</span>
-              </>
-            </KycFormFieldLabel>
-            <SelectDropdown
-              id="kyc-submission-identity-type"
-              value={draft.identityDocumentType ?? ""}
-              onChange={onDocumentTypeChange}
-              options={documentTypeOptions}
-              placeholder="Select an option"
-              disabled={locked}
-              searchable
-              allowClear={isEditable}
-            />
-          </div>
+          <LabeledSelectField
+            containerClassName="md:col-span-2"
+            id="kyc-submission-identity-type"
+            label="Document Type"
+            required
+            value={draft.identityDocumentType ?? ""}
+            onChange={onDocumentTypeChange}
+            options={documentTypeOptions}
+            placeholder="Select an option"
+            disabled={locked}
+            searchable
+            allowClear={isEditable}
+          />
 
-          <div className="flex min-h-12 items-center gap-3 rounded-md border border-input bg-background px-3 py-2 md:min-h-[3rem]">
+          <div
+            className={`flex min-h-12 items-center gap-3 rounded-md border border-input px-3 py-2 md:min-h-[3rem] ${
+              locked ? "bg-muted/20" : "bg-background"
+            }`}
+          >
             <input
               id="kyc-submission-is-photocopy"
               type="checkbox"
@@ -150,20 +149,19 @@ export const KycDocumentInformationCard: FC<KycDocumentInformationCardProps> = (
             </>
           ) : null}
 
-          <div className="flex flex-col gap-1.5 md:col-span-2">
-            <span className="text-xs font-medium text-muted-foreground">Occupation</span>
-            <SelectDropdown
-              id="kyc-submission-occupation"
-              value={draft.occupationId ?? ""}
-              onChange={onOccupationChange}
-              options={occupationOptions}
-              placeholder="Select an option"
-              disabled={locked}
-              isLoading={occupationsQuery.isLoading}
-              searchable
-              allowClear={isEditable}
-            />
-          </div>
+          <LabeledSelectField
+            containerClassName="md:col-span-2"
+            id="kyc-submission-occupation"
+            label="Occupation"
+            value={draft.occupationId ?? ""}
+            onChange={onOccupationChange}
+            options={occupationOptions}
+            placeholder="Select an option"
+            disabled={locked}
+            isLoading={occupationsQuery.isLoading}
+            searchable
+            allowClear={isEditable}
+          />
 
           {!isIndonesia ? (
             <>

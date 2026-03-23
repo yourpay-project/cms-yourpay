@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Input, SelectDropdown, type SelectDropdownOption } from "@/shared/ui";
+import { Input, LabeledSelectField, SelectDropdown, type SelectDropdownOption } from "@/shared/ui";
 import { Modal } from "@/shared/ui/modal";
 
 import type { EplStatusValue } from "../lib/epl-status-options";
@@ -83,11 +83,11 @@ export const EplStatusCard: FC<EplStatusCardProps> = ({
 
         {isRejected ? (
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="kyc-rejection-reason">
-              Rejection Reason<span className="text-destructive">*</span>
-            </label>
-            <SelectDropdown
+            <LabeledSelectField
               id="kyc-rejection-reason"
+              label="Rejection Reason"
+              required
+              labelClassName="text-sm font-medium text-foreground"
               value={selectedRejectReasonCode}
               onChange={onChangeRejectReasonCode}
               options={rejectReasonOptions}

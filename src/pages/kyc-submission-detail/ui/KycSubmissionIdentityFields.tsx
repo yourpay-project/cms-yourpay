@@ -10,7 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   Input,
-  SelectDropdown,
+  LabeledSelectField,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
@@ -172,32 +172,28 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Gender</span>
-        <SelectDropdown
-          id="kyc-identity-gender"
-          value={draft.gender ?? ""}
-          onChange={(value) => setDraft((prev) => ({ ...prev, gender: value || undefined }))}
-          options={KYC_GENDER_OPTIONS}
-          placeholder="Select an option"
-          disabled={locked}
-          allowClear={isEditable}
-        />
-      </div>
+      <LabeledSelectField
+        id="kyc-identity-gender"
+        label="Gender"
+        value={draft.gender ?? ""}
+        onChange={(value) => setDraft((prev) => ({ ...prev, gender: value || undefined }))}
+        options={KYC_GENDER_OPTIONS}
+        placeholder="Select an option"
+        disabled={locked}
+        allowClear={isEditable}
+      />
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Religion</span>
-        <SelectDropdown
-          id="kyc-identity-religion"
-          value={draft.religion ?? ""}
-          onChange={(value) => setDraft((prev) => ({ ...prev, religion: value || undefined }))}
-          options={KYC_RELIGION_OPTIONS}
-          placeholder="Select an option"
-          disabled={locked}
-          searchable
-          allowClear={isEditable}
-        />
-      </div>
+      <LabeledSelectField
+        id="kyc-identity-religion"
+        label="Religion"
+        value={draft.religion ?? ""}
+        onChange={(value) => setDraft((prev) => ({ ...prev, religion: value || undefined }))}
+        options={KYC_RELIGION_OPTIONS}
+        placeholder="Select an option"
+        disabled={locked}
+        searchable
+        allowClear={isEditable}
+      />
     </div>
   );
 };

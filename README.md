@@ -375,6 +375,7 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select with `DropdownFieldTrigger` visual wrapper plus clear (X) behavior; used inside KYC and User Yourpay filter cards.
 - **`shared/ui/filter-controls.tsx`** – Generic backend-driven filter renderer primitives: `FilterControlButtons` (button/tabs style controls) and `FilterOptionsGrid` (select-with-clear grid for options filters).
 - **`shared/ui/select-dropdown.tsx`** – Generic dropdown selector with optional `searchable` mode. When `searchable` is true, it renders a search input and filters options by value/label/description. Reusable for status/reason pickers and other forms.
+- **`shared/ui/labeled-select-field.tsx`** – Generic composition for `label + optional required star + SelectDropdown`, used to remove repeated field markup in KYC detail forms.
 - **`shared/ui/file-dropzone.tsx`** – Generic drag-and-drop file area (native `<input type="file" />`, dashed border, design tokens). Used on `pages/kyc-submission-detail` for ID/selfie uploads until an API is wired.
 
 **Calendar and date picker:**

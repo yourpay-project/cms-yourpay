@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle, Input, SelectDropdown } from "@/shared/ui";
+import { Card, CardContent, CardHeader, CardTitle, Input, LabeledSelectField } from "@/shared/ui";
 
 import { KYC_MARRIAGE_STATUS_OPTIONS, KYC_NATIONALITY_OPTIONS } from "../lib/kyc-verification-form-options";
 import type { KycLeftEditDraft } from "../model/use-kyc-submission-detail-logic";
@@ -59,32 +59,28 @@ export const KycPersonalInformationCard: FC<KycPersonalInformationCardProps> = (
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-muted-foreground">Marriage Status</span>
-            <SelectDropdown
-              id="kyc-submission-marriage-status"
-              value={draft.marriageStatus ?? ""}
-              onChange={(value) => setDraft((prev) => ({ ...prev, marriageStatus: value || undefined }))}
-              options={KYC_MARRIAGE_STATUS_OPTIONS}
-              placeholder="Select an option"
-              disabled={locked}
-              allowClear={isEditable}
-            />
-          </div>
+          <LabeledSelectField
+            id="kyc-submission-marriage-status"
+            label="Marriage Status"
+            value={draft.marriageStatus ?? ""}
+            onChange={(value) => setDraft((prev) => ({ ...prev, marriageStatus: value || undefined }))}
+            options={KYC_MARRIAGE_STATUS_OPTIONS}
+            placeholder="Select an option"
+            disabled={locked}
+            allowClear={isEditable}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-muted-foreground">Nationality</span>
-            <SelectDropdown
-              id="kyc-submission-nationality"
-              value={draft.nationality ?? ""}
-              onChange={(value) => setDraft((prev) => ({ ...prev, nationality: value || undefined }))}
-              options={KYC_NATIONALITY_OPTIONS}
-              placeholder="Select an option"
-              disabled={locked}
-              searchable
-              allowClear={isEditable}
-            />
-          </div>
+          <LabeledSelectField
+            id="kyc-submission-nationality"
+            label="Nationality"
+            value={draft.nationality ?? ""}
+            onChange={(value) => setDraft((prev) => ({ ...prev, nationality: value || undefined }))}
+            options={KYC_NATIONALITY_OPTIONS}
+            placeholder="Select an option"
+            disabled={locked}
+            searchable
+            allowClear={isEditable}
+          />
         </div>
       </CardContent>
     </Card>

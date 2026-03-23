@@ -102,6 +102,7 @@ export {
   type SelectDropdownOption,
   type SelectDropdownProps,
 } from "./select-dropdown";
+export { LabeledSelectField, type LabeledSelectFieldProps } from "./labeled-select-field";
 
 export {
   Dialog,
