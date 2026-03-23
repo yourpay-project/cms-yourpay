@@ -1,4 +1,5 @@
 import type { Table } from "@tanstack/react-table";
+import { useId } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -35,6 +36,7 @@ export function DataTablePagination<TData>({
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   showSelectionCount = true,
 }: DataTablePaginationProps<TData>): React.ReactElement {
+  const selectId = useId();
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
   const totalCount = table.getFilteredRowModel().rows.length;
   const pageIndex = table.getState().pagination.pageIndex;
@@ -55,8 +57,12 @@ export function DataTablePagination<TData>({
         )}
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">Rows per page</span>
+          <label htmlFor={selectId} className="text-sm font-medium text-foreground">
+            Rows per page
+          </label>
           <select
+            id={selectId}
+            name="rows_per_page"
             aria-label="Rows per page"
             value={pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}

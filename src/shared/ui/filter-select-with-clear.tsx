@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { useId } from "react";
 import { X } from "lucide-react";
 import { DropdownFieldTrigger } from "./dropdown-field-trigger";
 
@@ -36,13 +37,18 @@ export const FilterSelectWithClear: FC<FilterSelectWithClearProps> = ({
   onClear,
   allValue = "all",
 }) => {
+  const selectId = useId();
+  const safeName = `filter_${label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`;
+
   const showClear = value !== allValue;
   const selectedOption = options.find((option) => option.value === value);
   const selectedLabel = selectedOption?.label ?? options[0]?.label ?? "";
 
   return (
     <div>
-      <label className="mb-1 block text-xs text-muted-foreground">{label}</label>
+      <label htmlFor={selectId} className="mb-1 block text-xs text-muted-foreground">
+        {label}
+      </label>
       <div className="relative">
         {showClear ? (
           <div className="flex w-full items-center gap-0 rounded-md border border-border bg-background">
@@ -54,6 +60,8 @@ export const FilterSelectWithClear: FC<FilterSelectWithClearProps> = ({
               />
               <select
                 ref={selectRef}
+                id={selectId}
+                name={safeName}
                 className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
@@ -84,6 +92,8 @@ export const FilterSelectWithClear: FC<FilterSelectWithClearProps> = ({
             />
             <select
               ref={selectRef}
+              id={selectId}
+              name={safeName}
               className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
               value={value}
               onChange={(e) => onChange(e.target.value)}
