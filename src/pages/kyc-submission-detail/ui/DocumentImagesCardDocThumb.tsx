@@ -121,9 +121,12 @@ export const DocThumb: FC<DocThumbProps> = ({
           <input
             ref={fileInputRef}
             type="file"
+            id={`document-images-card-file-input-${docKey}`}
+            name={`document_images_card_upload_${docKey}`}
             className="sr-only"
             accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
             onChange={onHiddenInputChange}
+            aria-label={`Upload ${title}`}
           />
         </div>
       ) : (

@@ -77,6 +77,9 @@ export const EditIdentityAccessModalBody: FC<EditIdentityAccessModalBodyProps> =
                   aria-disabled={isDisabled}
                 >
                   <input
+                    id={`identity-access-method-${key}`}
+                    name="identity_access_methods"
+                    value={key}
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => onToggleCode(option.code)}
