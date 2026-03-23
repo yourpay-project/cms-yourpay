@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { apiClient } from "@/shared/api";
+import { getV1OperatorsRejectReasons } from "@/shared/api/generated/clients/operators-verification-submission";
+import { mapRejectReasons } from "./reject-reasons-mapper";
 
 export interface RejectReasonOption {
   code: string;
@@ -19,25 +20,8 @@ export function useRejectReasonsQuery(country?: string) {
     queryKey: ["operators-verification-reject-reasons", normalizedCountry],
     enabled: normalizedCountry.length > 0,
     queryFn: async ({ signal }) =>
-      apiClient.get<{
-        data?: unknown[] | { list?: unknown[] };
-      }>(`v1/operators/reject-reasons?country=${encodeURIComponent(normalizedCountry)}`, { signal }),
-    select: (res): RejectReasonOption[] => {
-      const rawData = res.data?.data;
-      const list = Array.isArray(rawData)
-        ? rawData
-        : Array.isArray((rawData as { list?: unknown[] } | undefined)?.list)
-          ? ((rawData as { list?: unknown[] }).list ?? [])
-          : [];
-      return list
-        .filter((item): item is { code?: string; label_title?: string; label_description?: string } => Boolean(item))
-        .map((item) => ({
-          code: item.code ?? "",
-          title: item.label_title ?? item.code ?? "Unknown reason",
-          description: item.label_description ?? "",
-        }))
-        .filter((item) => item.code.trim() !== "");
-    },
+      getV1OperatorsRejectReasons({ query: { country: normalizedCountry }, signal }),
+    select: (res) => mapRejectReasons(res.data?.data),
   });
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import { ApiClientError } from '@/shared/api';
 import { useAuthStore } from '@/entities/session';
@@ -21,12 +21,12 @@ export type LoginCallbackStatus = 'loading' | 'error';
  */
 export function useLoginCallback(): { status: LoginCallbackStatus } {
   const navigate = useNavigate();
+  const search = useSearch({ strict: false });
   const setUser = useAuthStore((s) => s.setUser);
   const [status, setStatus] = useState<LoginCallbackStatus>('loading');
 
   useEffect(() => {
-    const search = new URLSearchParams(window.location.search);
-    const raw = { token: search.get('token') ?? undefined };
+    const raw = { token: (search as Record<string, string | undefined>).token ?? undefined };
     const parsed = loginCallbackSearchSchema.parse(raw);
 
     if (parsed.token) {
@@ -56,7 +56,7 @@ export function useLoginCallback(): { status: LoginCallbackStatus } {
       });
 
     return () => controller.abort();
-  }, [navigate, setUser]);
+  }, [navigate, search, setUser]);
 
   return { status };
 }
