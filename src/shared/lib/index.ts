@@ -8,5 +8,6 @@ export { initSentry, captureException } from "./sentry";
 export { useDebouncedValue } from "./use-debounced-value";
 export { getFilterBadgeClassName } from "./filter-badge-colors";
 export { useModalStore, useModalData } from "./modal";
+export { formatDateOnly } from "./format-date-only";
 export type { ModalType } from "./modal";
 

@@ -36,10 +36,20 @@ async function requestWithRefresh<T>(
 
   const requestOptions = { ...options };
   delete requestOptions.pathParams;
+  const query = requestOptions.query;
+  delete requestOptions.query;
 
-  const url = resolvedPath.startsWith("http")
+  const baseUrl = resolvedPath.startsWith("http")
     ? path
     : `${config.baseUrl.replace(/\/$/, "")}/${resolvedPath.replace(/^\/+/, "")}`;
+  const searchParams = new URLSearchParams();
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value == null || value === "") continue;
+      searchParams.set(key, String(value));
+    }
+  }
+  const url = searchParams.toString() ? `${baseUrl}?${searchParams.toString()}` : baseUrl;
   const access = config.getAccessToken();
   const headers: Record<string, string> = {
     ...(requestOptions.headers as Record<string, string>),
