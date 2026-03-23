@@ -1,11 +1,19 @@
 export {
   kycSubmissionSchema,
   kycSubmissionsResponseSchema,
-  apiKycListResponseSchema,
+  kycVerificationSubmissionsResponseSchema,
+  kycFilterDefinitionSchema,
+  kycFiltersSchema,
   type KycSubmission,
   type KycSubmissionsResponse,
-  type ApiKycListResponse,
+  type KycVerificationSubmissionsResponse,
+  type KycFilterDefinition,
+  type KycFilters,
+  type KycFilterOption,
+  type KycFilterType,
 } from "./types";
+export type { KycSubmissionsQueryParams } from "./kyc-submissions-query-params";
+export { mapKycSubmissionsResponse } from "./kyc-submissions-mapper";
 
 export {
   kycDocumentImageSchema,

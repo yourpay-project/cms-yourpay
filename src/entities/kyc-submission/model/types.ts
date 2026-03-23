@@ -54,50 +54,91 @@ export const kycSubmissionSchema = z.object({
 export type KycSubmission = z.infer<typeof kycSubmissionSchema>;
 
 /**
- * Zod schema for the raw API pagination payload from
- * GET v1/operators/verification-submissions.
+ * Zod schema for a single filter option returned by backend metadata.
  */
-const apiKycItemSchema = z.object({
-  id: z.unknown().optional(),
-  kyc_header_id: z.unknown().optional(),
-  customer_id: z.string().optional(),
-  fullname: z.string().optional(),
-  country_code: z.string().optional(),
-  phone_number: z.string().optional(),
-  mobile: z.string().optional(),
-  status: z.unknown().optional(),
-  document_type: z.string().optional(),
-  verified_by: z.string().optional(),
-  rejection_note: z.string().optional(),
-  arc_number: z.string().optional(),
-  arc_expiry_date: z.string().optional(),
-  metadata: z
-    .object({
-      created_at: z.string().optional(),
-      updated_at: z.string().optional(),
-    })
-    .passthrough()
-    .optional(),
-  is_reverification: z.boolean().optional(),
+export const kycFilterOptionSchema = z.object({
+  label: z.string(),
+  value: z.string(),
 });
 
-const apiPaginationSchema = z.object({
+export type KycFilterOption = z.infer<typeof kycFilterOptionSchema>;
+export const kycFilterTypeSchema = z.enum(["control", "options", "date_range"]);
+export type KycFilterType = z.infer<typeof kycFilterTypeSchema>;
+
+/**
+ * Zod schema for a backend filter descriptor used by dynamic filter rendering.
+ */
+export const kycFilterDefinitionSchema = z.object({
+  key: z.string(),
+  name: z.string().optional(),
+  type: kycFilterTypeSchema,
+  options: z.array(kycFilterOptionSchema),
+  format: z.string().optional(),
+});
+
+export type KycFilterDefinition = z.infer<typeof kycFilterDefinitionSchema>;
+
+/**
+ * Normalized map representation for quick lookup by filter key.
+ */
+export const kycFiltersSchema = z.record(z.array(kycFilterOptionSchema));
+export type KycFilters = z.infer<typeof kycFiltersSchema>;
+
+const generatedFilterOptionSchema = z.object({
+  key: z.string().optional(),
+  label: z.string().optional(),
+  value: z.string().optional(),
+});
+
+const generatedFilterConfigSchema = z.object({
+  format: z.string().optional(),
+  key: z.string().optional(),
+  list: z.array(z.string()).optional(),
+  name: z.string().optional(),
+  options: z.array(generatedFilterOptionSchema).optional(),
+  type: z.enum(["control", "options", "date_range"]).optional(),
+});
+
+const generatedKycItemSchema = z
+  .object({
+    id: z.string().optional(),
+    customer_id: z.string().optional(),
+    fullname: z.string().optional(),
+    country_code: z.string().optional(),
+    phone_number: z.string().optional(),
+    document_type: z.string().optional(),
+    status: z.string().optional(),
+    verified_by: z.string().optional(),
+    rejection_note: z.string().optional(),
+    arc_number: z.string().optional(),
+    arc_expiry_date: z.string().optional(),
+    is_reverification: z.boolean().optional(),
+    metadata: z
+      .object({
+        created_at: z.string().optional(),
+        updated_at: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
+const generatedPaginationSchema = z.object({
   current_page: z.number().int().optional(),
-  items: z.array(apiKycItemSchema).optional(),
+  items: z.array(generatedKycItemSchema).optional(),
   limit: z.number().int().optional(),
   total_items: z.number().int().optional(),
   total_page: z.number().int().optional(),
+  filters: z.array(generatedFilterConfigSchema).optional(),
 });
 
-/**
- * Raw API response schema for verification-submissions list.
- */
-export const apiKycListResponseSchema = z.object({
-  data: apiPaginationSchema.optional(),
-  req_id: z.string().optional(),
+export const kycVerificationSubmissionsResponseSchema = z.object({
+  data: generatedPaginationSchema.optional(),
+  request_id: z.string().optional(),
 });
-
-export type ApiKycListResponse = z.infer<typeof apiKycListResponseSchema>;
+export type KycVerificationSubmissionsResponse = z.infer<
+  typeof kycVerificationSubmissionsResponseSchema
+>;
 
 /**
  * Paginated KYC list response for the page (mapped from API).
@@ -105,6 +146,8 @@ export type ApiKycListResponse = z.infer<typeof apiKycListResponseSchema>;
 export const kycSubmissionsResponseSchema = z.object({
   data: z.array(kycSubmissionSchema),
   total: z.number(),
+  filters: kycFiltersSchema.optional(),
+  filterDefinitions: z.array(kycFilterDefinitionSchema).optional(),
 });
 
 export type KycSubmissionsResponse = z.infer<typeof kycSubmissionsResponseSchema>;
