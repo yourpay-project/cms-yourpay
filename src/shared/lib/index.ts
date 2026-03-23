@@ -7,4 +7,6 @@ export { useThemeEffect } from "./use-theme-effect";
 export { initSentry, captureException } from "./sentry";
 export { useDebouncedValue } from "./use-debounced-value";
 export { getFilterBadgeClassName } from "./filter-badge-colors";
+export { useModalStore, useModalData } from "./modal";
+export type { ModalType } from "./modal";
 
