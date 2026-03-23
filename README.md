@@ -381,14 +381,16 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`shared/ui/dropdown-field-trigger.tsx`** – Generic field trigger wrapper (leading/trailing slots, default chevron) used by dropdown and select-like controls so label and chevron stay in one clickable button area.
 - **`shared/ui/filter-select-with-clear.tsx`** – Reusable filter row: native select with `DropdownFieldTrigger` visual wrapper plus clear (X) behavior; used inside KYC and User Yourpay filter cards.
 - **`shared/ui/filter-controls.tsx`** – Generic backend-driven filter renderer primitives: `FilterControlButtons` (button/tabs style controls) and `FilterOptionsGrid` (select-with-clear grid for options filters).
-- **`shared/ui/select-dropdown.tsx`** – Generic dropdown selector with optional `searchable` mode. When `searchable` is true, it renders a search input and filters options by value/label/description. Reusable for status/reason pickers and other forms.
+- **`shared/ui/select-dropdown.tsx`** – Generic dropdown selector with optional `searchable` mode. When `searchable` is true, it renders a search input and filters options by value/label/description. Reusable for status/reason pickers and other forms. Editable state uses subtle hover/focus background, while disabled/read-only state keeps static background and blocked interactions.
 - **`shared/ui/labeled-select-field.tsx`** – Generic composition for `label + optional required star + SelectDropdown`, used to remove repeated field markup in KYC detail forms.
+- **`shared/ui/input`** – Floating-label input primitives with consistent state UX: editable inputs use subtle hover + focus cues, while read-only/disabled inputs use `not-allowed` cursor and avoid interactive background changes.
 - **`shared/ui/file-dropzone.tsx`** – Generic drag-and-drop file area (native `<input type="file" />`, dashed border, design tokens). Used on `pages/kyc-submission-detail` for ID/selfie uploads until an API is wired.
 
 **Calendar and date picker:**
 
 - **`shared/ui/calendar.tsx`** – shadcn-style Calendar (react-day-picker) with optional month/year dropdown (`captionLayout="dropdown"`). Used by KYC date range picker in `pages/kyc-submission` and the single-date birth field on `pages/kyc-submission-detail`.
-- **`shared/ui/date-picker.tsx`** and **`shared/ui/date-range-picker.tsx`** – generic dropdown-calendar pickers used by KYC filters and KYC detail fields (Birth Date + date ranges). These keep the filter UI consistent across the app and centralize date formatting/clearing behavior.
+- **`shared/ui/date-picker.tsx`** and **`shared/ui/date-range-picker.tsx`** – generic dropdown-calendar pickers used by KYC filters and KYC detail fields (Birth Date + date ranges). These keep the filter UI consistent across the app, centralize date formatting/clearing behavior, and remove sticky focus-ring after popup close.
+- **`shared/ui/badge.tsx`** – semantic status badge with low-glare color density for long-session readability (`default`, `success`, `warning`, `destructive`).
 
 Example – use the shared DataTable (recommended):
 
