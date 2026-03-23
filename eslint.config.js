@@ -22,7 +22,7 @@ export default tseslint.config(
       boundaries: boundaries,
     },
     settings: {
-      // Define FSD layer hierarchy
+      // Define FSD layer hierarchy for boundaries v6
       "boundaries/elements": [
         { type: "app", pattern: "src/app/**/*" },
         { type: "pages", pattern: "src/pages/**/*" },
@@ -41,24 +41,42 @@ export default tseslint.config(
       ],
 
       // ==========================================
-      // 🛡️ FSD ARCHITECTURE ENFORCEMENT
+      // 🛡️ FSD ARCHITECTURE ENFORCEMENT (v6)
       // ==========================================
 
       // 1. LAYER HIERARCHY RULES (Downward Discovery)
-      // Prevents lower layers (e.g., shared) from importing from upper layers (e.g., features)
+      // Prevents lower layers from importing upper layers using v6 'boundaries/dependencies'
       "boundaries/dependencies": [
         "error",
         {
           default: "disallow",
           message:
-            'FSD Violation: Layer "{{from.type}}" cannot import from "{{to.type}}"! Imports must strictly flow downwards.',
+            "FSD Violation: Layer '${file.type}' cannot import from '${dependency.type}'! Imports must strictly flow downwards.",
           rules: [
-            { from: { type: "app" }, allow: [{ to: { type: ["pages", "widgets", "features", "entities", "shared"] } }] },
-            { from: { type: "pages" }, allow: [{ to: { type: ["widgets", "features", "entities", "shared"] } }] },
-            { from: { type: "widgets" }, allow: [{ to: { type: ["features", "entities", "shared"] } }] },
-            { from: { type: "features" }, allow: [{ to: { type: ["entities", "shared"] } }] },
-            { from: { type: "entities" }, allow: [{ to: { type: ["shared"] } }] },
-            { from: { type: "shared" }, allow: [] }, // Shared is a leaf, strictly no upward imports
+            { 
+              from: { type: "app" }, 
+              allow: [{ to: { type: ["pages", "widgets", "features", "entities", "shared"] } }] 
+            },
+            { 
+              from: { type: "pages" }, 
+              allow: [{ to: { type: ["widgets", "features", "entities", "shared"] } }] 
+            },
+            { 
+              from: { type: "widgets" }, 
+              allow: [{ to: { type: ["features", "entities", "shared"] } }] 
+            },
+            { 
+              from: { type: "features" }, 
+              allow: [{ to: { type: ["entities", "shared"] } }] 
+            },
+            { 
+              from: { type: "entities" }, 
+              allow: [{ to: { type: ["shared"] } }] 
+            },
+            { 
+              from: { type: "shared" }, 
+              allow: [] // Shared is a leaf, strictly no upward imports
+            },
           ],
         },
       ],
@@ -71,8 +89,6 @@ export default tseslint.config(
           patterns: [
             {
               // Blocks paths penetrating more than 1 folder deep into an FSD layer
-              // Blocked: "@/features/auth/ui/LoginForm"
-              // Allowed: "@/features/auth"
               group: [
                 "@/app/*/*",
                 "@/pages/*/*",
@@ -95,6 +111,23 @@ export default tseslint.config(
       // ==========================================
       // 🛡️ END FSD ENFORCEMENT
       // ==========================================
+    },
+  },
+  {
+    // ==========================================
+    // 📏 COMPONENT SIZE ENFORCEMENT
+    // ==========================================
+    // Specific rule to warn when React UI components exceed 150 lines
+    files: ["src/**/*.tsx"],
+    rules: {
+      "max-lines": [
+        "warn",
+        {
+          max: 150,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
     },
   },
   {
