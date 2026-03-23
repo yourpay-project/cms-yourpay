@@ -76,8 +76,14 @@ src/
 │   │   ├── ui/DataTable.tsx, DataTableHead, DataTableBody, DataTablePagination
 │   │   ├── model/data-table-types.ts, use-data-table-instance.ts
 │   │   └── index.ts
-│   └── user-table/         # Customer list table (uses shared DataTable)
-│       ├── ui/UserTable.tsx
+│   ├── user-table/         # Customer list table (uses shared DataTable)
+│   │   ├── ui/UserTable.tsx
+│   │   └── index.ts
+│   └── modal-manager/      # Global modal orchestrator (lazy, centralized)
+│       ├── model/modal-registry.ts, prefetch-modal.ts
+│       ├── ui/ModalContainer.tsx
+│       ├── ui/types.ts, ui/KycVerificationCheckItem.tsx
+│       ├── ui/KycEnableEditConfirmModal.tsx, ui/KycGenerateOcrConfirmModal.tsx, ui/KycVerificationCheckModal.tsx
 │       └── index.ts
 ├── features/                # User interactions with business value
 │   └── auth/
@@ -338,6 +344,7 @@ For navigation inside components, use **TanStack Router hooks**:
   - `env.ts` – `validateEnv()` validates Vite env vars with Zod at startup (called in `main.tsx`).
   - `theme-store.ts` – `useThemeStore` for app theme.
   - `use-theme-effect.ts` – applies theme to `document.documentElement` and listens to system changes.
+  - `modal/*` – centralized modal contract + store (`ModalRegistryProps`, `ModalType`, `useModalStore`).
 - `shared/ui/*`
   - shadcn/ui components wired with Tailwind theme tokens (Button, Card, DropdownMenu, Input, Skeleton, PageSkeleton, ThemeToggle, **Table** primitives).
   - **RouteFallback** – full-page loading fallback for `Suspense` when lazy-loading route components.
@@ -420,6 +427,9 @@ Example – server-side pagination:
 
 - **Lazy loading (route/code-split)**  
   Page components (Dashboard, Login, UserList, etc.) are loaded with `React.lazy` and wrapped in `<Suspense fallback={<RouteFallback />}>`. The initial bundle stays smaller; the nav and layout load first, then the page chunk loads and the fallback is shown until the component is ready.
+
+- **Centralized modal lazy loading**  
+  All global modals are mounted through `widgets/modal-manager/ui/ModalContainer.tsx` and injected once in `app/App.tsx`. Triggering happens with `useModalStore(state => state.openModal)` using typed keys from `shared/lib/modal`, while modal chunks are loaded on-demand via `React.lazy` and can be warmed with `prefetchModal(type)`. Modal payload contracts and runtime assertions live in `widgets/modal-manager/ui/types.ts`.
 
 - **Global loading**  
   For the **first load of a page’s main data** (e.g. the initial query that fills the screen), call `useSyncGlobalLoading(isLoading)` from TanStack Query’s `isLoading`. The Nav shows the global spinner (Loader2) while that query has no data yet. When the page unmounts, global loading is cleared.

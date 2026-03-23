@@ -19,10 +19,10 @@ export function useKycIndonesiaAddressFields({ countryCode, draft, setDraft }: U
   const { provincesQuery, citiesQuery, districtsQuery, subDistrictsQuery, isLoading: isMasterLoading } =
     useIndonesiaAddressMasterQueries({ enabled: isIndonesia });
 
-  const provinces = provincesQuery.data?.data ?? [];
-  const cities = citiesQuery.data?.data ?? [];
-  const districts = districtsQuery.data?.data ?? [];
-  const subDistricts = subDistrictsQuery.data?.data ?? [];
+  const provinces = useMemo(() => provincesQuery.data?.data ?? [], [provincesQuery.data]);
+  const cities = useMemo(() => citiesQuery.data?.data ?? [], [citiesQuery.data]);
+  const districts = useMemo(() => districtsQuery.data?.data ?? [], [districtsQuery.data]);
+  const subDistricts = useMemo(() => subDistrictsQuery.data?.data ?? [], [subDistrictsQuery.data]);
 
   const withFallbackOption = (
     base: { value: string; label: string }[],

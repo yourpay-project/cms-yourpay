@@ -2,15 +2,14 @@ import type { FC } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { ChevronDown, ChevronLeft, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useModalStore } from "@/widgets/modal-manager";
 import { ApiClientError } from "@/shared/api";
 import { PageSkeleton, Button } from "@/shared/ui";
-import { Modal } from "@/shared/ui/modal";
 
 import { useKycSubmissionDetailPageLogic } from "..";
 import { EplStatusCard } from "./EplStatusCard";
 import { DocumentImagesCard } from "./DocumentImagesCard";
 import { KycUserDataCards } from "./KycUserDataCards";
-import { VerificationCheckModal } from "./VerificationCheckModal";
 import { eplStatusClassByValue } from "../lib/epl-status-options";
 
 /**
@@ -23,6 +22,7 @@ const KycSubmissionDetailPage: FC = () => {
   const { id } = useParams({ from: "/kyc-submission/$id" });
   const logic = useKycSubmissionDetailPageLogic({ id });
   const { query, detail } = logic;
+  const { open } = useModalStore();
 
   if (query.isLoading) {
     return <PageSkeleton />;
@@ -107,8 +107,16 @@ const KycSubmissionDetailPage: FC = () => {
             setDraft={logic.setLeftDraft}
             isEditable={!logic.isLeftLocked}
             isSaving={logic.isSavingLeftEdit}
-            onOpenEnableEditConfirm={logic.onOpenEnableEditConfirm}
-            onUpdateDataFromOcr={logic.onUpdateDataFromOcr}
+            onOpenEnableEditConfirm={() => {
+              open("KYC_ENABLE_EDIT_CONFIRM_MODAL", {
+                onConfirm: logic.onConfirmEnableEdit,
+              });
+            }}
+            onUpdateDataFromOcr={() => {
+              open("KYC_GENERATE_OCR_CONFIRM_MODAL", {
+                onConfirm: logic.onConfirmGenerateFromOcr,
+              });
+            }}
             onCancelEdit={logic.onCancelLeftEdit}
             onSaveEdit={logic.onSaveLeftEdit}
           />
@@ -145,37 +153,6 @@ const KycSubmissionDetailPage: FC = () => {
         </div>
       </div>
 
-      <VerificationCheckModal
-        open={logic.isCheckModalOpen}
-        onOpenChange={logic.setIsCheckModalOpen}
-        onRunChecks={logic.onRunVerificationChecks}
-        isRunning={logic.isRunningVerificationChecks}
-        idDocument={logic.idDocumentPreview}
-        selfieDocument={logic.selfieDocumentPreview}
-        verification={detail.documentVerification}
-      />
-
-      <Modal
-        open={logic.isEnableEditConfirmOpen}
-        onCancel={() => logic.setIsEnableEditConfirmOpen(false)}
-        onOk={logic.onConfirmEnableEdit}
-        okText="Yes, Enable Editing"
-        cancelText="Cancel"
-        title="Update User Data"
-        description="Are you sure you want to enable editing mode to update this user's KYC documents?"
-        centered
-      />
-
-      <Modal
-        open={logic.isGenerateFromOcrModalOpen}
-        onCancel={() => logic.setIsGenerateFromOcrModalOpen(false)}
-        onOk={logic.onConfirmGenerateFromOcr}
-        okText="Yes, Generate from OCR"
-        cancelText="Cancel"
-        title="Generate Data from OCR"
-        description="This will automatically extract and fill form data from the document image using OCR."
-        centered
-      />
     </div>
   );
 };

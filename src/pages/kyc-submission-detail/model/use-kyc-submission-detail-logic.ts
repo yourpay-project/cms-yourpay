@@ -46,9 +46,6 @@ export interface UseKycSubmissionDetailPageLogicReturn {
   detail?: KycSubmissionDetail;
 
   isLeftLocked: boolean;
-  isEnableEditConfirmOpen: boolean;
-  setIsEnableEditConfirmOpen: (next: boolean) => void;
-  onOpenEnableEditConfirm: () => void;
   onConfirmEnableEdit: () => void;
   onCancelLeftEdit: () => void;
   onSaveLeftEdit: () => void;
@@ -70,17 +67,11 @@ export interface UseKycSubmissionDetailPageLogicReturn {
 
   isSavingEplStatus: boolean;
   onSaveEplStatus: () => void;
-
-  isCheckModalOpen: boolean;
-  setIsCheckModalOpen: (next: boolean) => void;
-  isRunningVerificationChecks: boolean;
-  onRunVerificationChecks: () => Promise<void>;
-
-  isGenerateFromOcrModalOpen: boolean;
-  setIsGenerateFromOcrModalOpen: (next: boolean) => void;
-  onUpdateDataFromOcr: () => void;
   onConfirmGenerateFromOcr: () => void;
   onEditDocument: (docType?: string) => void;
+
+  isRunningVerificationChecks: boolean;
+  onRunVerificationChecks: () => Promise<void>;
 
   idDocumentPreview?: KycDocumentImage;
   selfieDocumentPreview?: KycDocumentImage;
@@ -138,7 +129,6 @@ export function useKycSubmissionDetailPageLogic({
 
   const [isLeftEditEnabled, setIsLeftEditEnabled] = useState(false);
   const isLeftLocked = !isLeftEditEnabled;
-  const [isEnableEditConfirmOpen, setIsEnableEditConfirmOpen] = useState(false);
 
   const [leftDraft, setLeftDraft] = useState<KycLeftEditDraft>({});
 
@@ -182,12 +172,7 @@ export function useKycSubmissionDetailPageLogic({
     setIsLeftEditEnabled(false);
   }, [detail]);
 
-  const onOpenEnableEditConfirm = useCallback(() => {
-    setIsEnableEditConfirmOpen(true);
-  }, []);
-
   const onConfirmEnableEdit = useCallback(() => {
-    setIsEnableEditConfirmOpen(false);
     setIsLeftEditEnabled(true);
   }, []);
 
@@ -352,9 +337,6 @@ export function useKycSubmissionDetailPageLogic({
   const updateStatusMutation = useUpdateVerificationStatusMutation();
   const checkMutation = useTriggerVerificationChecksMutation();
 
-  const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
-  const [isGenerateFromOcrModalOpen, setIsGenerateFromOcrModalOpen] = useState(false);
-
   const idDocumentPreview = detail?.idDocument;
   const selfieDocumentPreview = detail?.selfieDocument;
 
@@ -418,13 +400,7 @@ export function useKycSubmissionDetailPageLogic({
     });
   }, [checkMutation, detail, verificationCheckRequest]);
 
-  const onUpdateDataFromOcr = useCallback(() => {
-    setIsGenerateFromOcrModalOpen(true);
-  }, []);
-
   const onConfirmGenerateFromOcr = useCallback(() => {
-    setIsGenerateFromOcrModalOpen(false);
-    setIsEnableEditConfirmOpen(false);
     setIsLeftEditEnabled(true);
     toast.info("Generate data from OCR: no action yet.");
   }, []);
@@ -433,11 +409,11 @@ export function useKycSubmissionDetailPageLogic({
     toast.info(`Edit document action is not available yet (${docType ?? "unknown"}).`);
   }, []);
 
-  const onIdDocumentFilesSelected = useCallback((_files: File[]) => {
+  const onIdDocumentFilesSelected = useCallback(() => {
     toast.info("ID document upload is not connected to an API yet.");
   }, []);
 
-  const onSelfieFilesSelected = useCallback((_files: File[]) => {
+  const onSelfieFilesSelected = useCallback(() => {
     toast.info("Selfie upload is not connected to an API yet.");
   }, []);
 
@@ -445,9 +421,6 @@ export function useKycSubmissionDetailPageLogic({
     query,
     detail,
     isLeftLocked,
-    isEnableEditConfirmOpen,
-    setIsEnableEditConfirmOpen,
-    onOpenEnableEditConfirm,
     onConfirmEnableEdit,
     onCancelLeftEdit,
     onSaveLeftEdit,
@@ -468,14 +441,8 @@ export function useKycSubmissionDetailPageLogic({
     isSavingEplStatus: updateStatusMutation.isPending,
     onSaveEplStatus,
 
-    isCheckModalOpen,
-    setIsCheckModalOpen,
     isRunningVerificationChecks: checkMutation.isPending,
     onRunVerificationChecks,
-
-    isGenerateFromOcrModalOpen,
-    setIsGenerateFromOcrModalOpen,
-    onUpdateDataFromOcr,
     onConfirmGenerateFromOcr,
     onEditDocument,
 
