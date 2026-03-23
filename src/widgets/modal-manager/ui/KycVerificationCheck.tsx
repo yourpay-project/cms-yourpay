@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { Button, Card, CardContent } from "@/shared/ui";
 import { KycVerificationCheckItem } from "./KycVerificationCheckItem";
-import type { KycVerificationCheckModalProps } from "./KycVerificationCheckModal.type";
+import type { KycVerificationCheckProps } from "./KycVerificationCheck.type";
 
 const VERIFICATION_CHECK_LABELS: Record<string, string> = {
   aml: "AML",
@@ -19,7 +19,7 @@ const VERIFICATION_CHECK_LABELS: Record<string, string> = {
 /**
  * KYC verification preview modal for documents and check results.
  */
-export const KycVerificationCheck: FC<KycVerificationCheckModalProps> = ({
+export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
   open,
   onClose,
   onRunChecks,

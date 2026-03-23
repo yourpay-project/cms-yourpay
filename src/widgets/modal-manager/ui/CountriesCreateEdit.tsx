@@ -7,7 +7,7 @@ import type { Country } from "@/entities/country";
 import { Button } from "@/shared/ui";
 
 import { CountriesModalForm } from "./CountriesModalForm";
-import type { CountriesCreateEditModalProps } from "./CountriesCreateEditModal.type";
+import type { CountriesCreateEditProps } from "./CountriesCreateEdit.type";
 
 const countryFormSchema = z.object({
   code: z.string().min(1, "Code is required"),
@@ -19,7 +19,7 @@ type CountryFormErrors = {
   name?: string;
 };
 
-export const CountriesCreateEdit: FC<CountriesCreateEditModalProps> = ({
+export const CountriesCreateEdit: FC<CountriesCreateEditProps> = ({
   open,
   onClose,
   mode,

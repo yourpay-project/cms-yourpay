@@ -1,12 +1,12 @@
 import type { FC } from "react";
 import { Button } from "@/shared/ui";
 
-import type { KycGenerateOcrConfirmModalProps } from "./KycGenerateOcrConfirmModal.type";
+import type { KycGenerateOcrConfirmProps } from "./KycGenerateOcrConfirm.type";
 
 /**
  * Confirmation modal for triggering OCR-based KYC data generation.
  */
-export const KycGenerateOcrConfirm: FC<KycGenerateOcrConfirmModalProps> = ({
+export const KycGenerateOcrConfirm: FC<KycGenerateOcrConfirmProps> = ({
   open,
   onClose,
   onConfirm,

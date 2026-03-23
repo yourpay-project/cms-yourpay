@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import { useCustomerWalletsQuery, type CustomerWalletItem } from "@/entities/user";
 
-import type { UserViewWalletsModalProps } from "./UserViewWalletsModal.type";
+import type { UserViewWalletsProps } from "./UserViewWallets.type";
 
 function formatWalletName(wallet: CustomerWalletItem): string {
   const fromFormatted = wallet.formattedName?.trim();
@@ -57,7 +57,7 @@ function renderWalletCard(wallet: CustomerWalletItem): JSX.Element {
 /**
  * Read-only modal that displays customer wallets grouped by balance category.
  */
-export const UserViewWallets: FC<UserViewWalletsModalProps> = ({
+export const UserViewWallets: FC<UserViewWalletsProps> = ({
   open,
   customerId,
 }) => {

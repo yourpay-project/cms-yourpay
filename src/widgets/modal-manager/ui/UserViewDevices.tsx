@@ -4,12 +4,12 @@ import { useCustomerDevicesQuery } from "@/entities/user";
 import { formatDateTime, formatDeviceTitle, formatOperatingSystem } from "@/shared/lib";
 import { UserDetailCollapsibleCard, UserDetailFieldGrid, type UserDetailFieldItem } from "@/entities/user";
 
-import type { UserViewDevicesModalProps } from "./UserViewDevicesModal.type";
+import type { UserViewDevicesProps } from "./UserViewDevices.type";
 
 /**
  * Read-only modal that displays registered customer devices.
  */
-export const UserViewDevices: FC<UserViewDevicesModalProps> = ({
+export const UserViewDevices: FC<UserViewDevicesProps> = ({
   open,
   customerId,
 }) => {

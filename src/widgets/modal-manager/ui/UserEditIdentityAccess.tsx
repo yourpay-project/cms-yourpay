@@ -7,12 +7,12 @@ import { useIdentityAccessOptionsQuery } from "@/entities/user";
 import { normalizeCode } from "@/shared/lib";
 import { EditIdentityAccessModalBody } from "@/features/identity-access";
 
-import type { UserEditIdentityAccessModalProps } from "./UserEditIdentityAccessModal.type";
+import type { UserEditIdentityAccessProps } from "./UserEditIdentityAccess.type";
 
 /**
  * Modal for editing customer identity access selections.
  */
-export const UserEditIdentityAccess: FC<UserEditIdentityAccessModalProps> = ({
+export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
   open,
   onClose,
   customerId,

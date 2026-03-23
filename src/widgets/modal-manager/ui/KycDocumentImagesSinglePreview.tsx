@@ -4,9 +4,9 @@ import { House, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 
 import { Button } from "@/shared/ui";
 
-import type { KycDocumentImagesSinglePreviewModalProps } from "./KycDocumentImagesSinglePreviewModal.type";
+import type { KycDocumentImagesSinglePreviewProps } from "./KycDocumentImagesSinglePreview.type";
 import { KycDocumentImagesDraggableScrollViewport } from "./KycDocumentImagesDraggableScrollViewport";
-import type { DocumentImagesDocKey } from "./KycDocumentImagesSinglePreviewModal.type";
+import type { DocumentImagesDocKey } from "./KycDocumentImagesSinglePreview.type";
 
 const DOCUMENT_IMAGE_SCALE_MIN = 0.5;
 const DOCUMENT_IMAGE_SCALE_MAX = 3;
@@ -20,7 +20,7 @@ function applyScaleDelta(prev: number, delta: number): number {
   return clampScale(next);
 }
 
-export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewModalProps> = ({
+export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewProps> = ({
   onClose,
   open,
   activeDocKey,

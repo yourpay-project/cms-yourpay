@@ -10,7 +10,7 @@ import type { RejectReasonOption } from "@/features/kyc-submission-verification"
 import type { UpdateStatusVerifSubmissionRequest } from "@/shared/api/generated";
 import { Button } from "@/shared/ui";
 
-import type { KycEplStatusModalProps, EplStatusValue } from "./KycEplStatusModal.type";
+import type { KycEplStatusProps, EplStatusValue } from "./KycEplStatus.type";
 import { KycEplStatusModalContent } from "./KycEplStatusModalContent";
 
 const EPL_STATUS_EDIT_OPTIONS: Array<{ value: "approved" | "rejected"; label: string }> = [
@@ -18,7 +18,7 @@ const EPL_STATUS_EDIT_OPTIONS: Array<{ value: "approved" | "rejected"; label: st
   { value: "rejected", label: "rejected" },
 ];
 
-export const KycEplStatus: FC<KycEplStatusModalProps> = ({
+export const KycEplStatus: FC<KycEplStatusProps> = ({
   open,
   onClose,
   submissionId,

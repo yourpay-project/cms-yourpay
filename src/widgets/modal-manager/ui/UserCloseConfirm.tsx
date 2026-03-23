@@ -6,12 +6,12 @@ import { toast } from "sonner";
 
 import { Button, Input } from "@/shared/ui";
 
-import type { UserCloseConfirmModalProps } from "./UserCloseConfirmModal.type";
+import type { UserCloseConfirmProps } from "./UserCloseConfirm.type";
 
 /**
  * Confirmation modal for terminating a customer account.
  */
-export const UserCloseConfirm: FC<UserCloseConfirmModalProps> = ({
+export const UserCloseConfirm: FC<UserCloseConfirmProps> = ({
   onClose,
   customerId,
 }) => {

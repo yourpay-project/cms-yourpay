@@ -8,12 +8,12 @@ import { postV1OperatorsCustomersByIdStatus } from "@/shared/api/generated";
 import { ApiClientError } from "@/shared/api";
 import { Button } from "@/shared/ui";
 
-import type { UserBlockConfirmModalProps } from "./UserBlockConfirmModal.type";
+import type { UserBlockConfirmProps } from "./UserBlockConfirm.type";
 
 /**
  * Confirmation modal for blocking/unblocking a customer.
  */
-export const UserBlockConfirm: FC<UserBlockConfirmModalProps> = ({
+export const UserBlockConfirm: FC<UserBlockConfirmProps> = ({
   onClose,
   customerId,
   isBlocked,

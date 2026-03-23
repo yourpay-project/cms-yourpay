@@ -10,7 +10,7 @@ import { postV1OperatorsFee, type NewFeeConfigRequest } from "@/shared/api/gener
 import { feeConfigFormSchema, type FeeConfigFormValues } from "@/features/fee-config";
 import { Button } from "@/shared/ui";
 
-import type { FeeConfigCreateEditModalProps } from "./FeeConfigCreateEditModal.type";
+import type { FeeConfigCreateEditProps } from "./FeeConfigCreateEdit.type";
 import { FeeConfigCreateEditModalForm } from "./FeeConfigCreateEditModalForm";
 
 const DEFAULT_VALUES: FeeConfigFormValues = {
@@ -27,7 +27,7 @@ const DEFAULT_VALUES: FeeConfigFormValues = {
 /**
  * Centralized create/edit modal for fee config.
  */
-export const FeeConfigCreateEdit: FC<FeeConfigCreateEditModalProps> = ({
+export const FeeConfigCreateEdit: FC<FeeConfigCreateEditProps> = ({
   open,
   onClose,
   mode,

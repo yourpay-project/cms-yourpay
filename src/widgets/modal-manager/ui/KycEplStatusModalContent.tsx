@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import { Input, LabeledSelectField, SelectDropdown, type SelectDropdownOption } from "@/shared/ui";
 
-import type { EplStatusValue } from "./KycEplStatusModal.type";
+import type { EplStatusValue } from "./KycEplStatus.type";
 
 export interface KycEplStatusModalContentProps {
   currentStatus: EplStatusValue;

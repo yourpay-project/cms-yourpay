@@ -2,12 +2,12 @@ import type { FC } from "react";
 
 import { Button } from "@/shared/ui";
 
-import type { KycDocumentImagesProgressModalProps } from "./KycDocumentImagesProgressModal.type";
+import type { KycDocumentImagesProgressProps } from "./KycDocumentImagesProgress.type";
 
 /**
  * Placeholder modal for document progress details.
  */
-export const KycDocumentImagesProgress: FC<KycDocumentImagesProgressModalProps> = ({
+export const KycDocumentImagesProgress: FC<KycDocumentImagesProgressProps> = ({
   onClose,
 }) => {
   return (

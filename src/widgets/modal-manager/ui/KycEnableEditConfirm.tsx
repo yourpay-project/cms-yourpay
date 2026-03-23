@@ -1,12 +1,12 @@
 import type { FC } from "react";
 import { Button } from "@/shared/ui";
 
-import type { KycEnableEditConfirmModalProps } from "./KycEnableEditConfirmModal.type";
+import type { KycEnableEditConfirmProps } from "./KycEnableEditConfirm.type";
 
 /**
  * Confirmation modal for enabling KYC editing mode.
  */
-export const KycEnableEditConfirm: FC<KycEnableEditConfirmModalProps> = ({ open, onClose, onConfirm }) => {
+export const KycEnableEditConfirm: FC<KycEnableEditConfirmProps> = ({ open, onClose, onConfirm }) => {
   // `open` is controlled by ModalContainer; this content only renders actions.
   void open;
 
