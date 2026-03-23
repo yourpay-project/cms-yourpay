@@ -83,7 +83,7 @@ src/
 │       ├── model/modal-registry.ts, prefetch-modal.ts
 │       ├── ui/ModalContainer.tsx
 │       ├── ui/types.ts, ui/KycVerificationCheckItem.tsx
-│       ├── ui/KycEnableEditConfirmModal.tsx, ui/KycGenerateOcrConfirmModal.tsx, ui/KycVerificationCheckModal.tsx
+│       ├── ui/KycEnableEditConfirm.tsx, ui/KycGenerateOcrConfirm.tsx, ui/KycVerificationCheck.tsx
 │       └── index.ts
 ├── features/                # User interactions with business value
 │   └── auth/
@@ -550,6 +550,8 @@ Example: add a new **“Reports”** feature with a table page.
 - **FSD discipline**
   - Only import through slice `index.ts` public APIs.
   - Push shared logic down to `entities` or `shared` when reused across features.
+- **Naming**
+  - Prefer context-based component names and avoid redundant suffixes when context already implies type (e.g. inside `modal-manager/ui`, use `KycVerificationCheck` instead of `KycVerificationCheckModal`).
 - **State**
   - Use TanStack Query for anything coming from the server.
   - Use Zustand for domain/global UI state (session, theme, global loading, sidebar).
