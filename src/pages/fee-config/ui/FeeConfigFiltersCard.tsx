@@ -1,8 +1,10 @@
 import type { FC } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 
 import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
 import type { FeeStatusFilter, FeeTypeFilter } from "../model";
+import type { FeeConfigFilterBadge } from "../model/use-fee-config-filters";
+import { getFilterBadgeClassName } from "@/shared/lib";
 import { FeeConfigFiltersGrid } from "./FeeConfigFiltersGrid";
 
 export interface FeeConfigFiltersCardProps {
@@ -14,11 +16,9 @@ export interface FeeConfigFiltersCardProps {
   setFeeType: (v: FeeTypeFilter) => void;
   service: string;
   setService: (v: string) => void;
-  statusSelectRef: React.RefObject<HTMLSelectElement>;
-  feeTypeSelectRef: React.RefObject<HTMLSelectElement>;
-  serviceSelectRef: React.RefObject<HTMLSelectElement>;
   serviceOptions: readonly { value: string; label: string }[];
-  resetPageIndex: () => void;
+  badges: FeeConfigFilterBadge[];
+  handleResetFilters: () => void;
 }
 
 /**
@@ -28,7 +28,7 @@ export interface FeeConfigFiltersCardProps {
  * @returns Card with Filters toggle, reset action, and optional filter grid
  */
 export const FeeConfigFiltersCard: FC<FeeConfigFiltersCardProps> = (props) => {
-  const { filtersOpen, setFiltersOpen } = props;
+  const { filtersOpen, setFiltersOpen, badges, handleResetFilters } = props;
 
   return (
     <Card className="border-border bg-card">
@@ -48,17 +48,28 @@ export const FeeConfigFiltersCard: FC<FeeConfigFiltersCardProps> = (props) => {
             }
           />
           <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+            {badges.map((b) => (
+              <span key={b.id} className={getFilterBadgeClassName(b.key)}>
+                {b.label}: {b.valueLabel}
+                <button
+                  type="button"
+                  className="rounded p-0.5 hover:bg-muted hover:text-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    b.onClear();
+                  }}
+                  aria-label={`Remove ${b.label}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
             <Button
               variant="ghost"
               size="sm"
               type="button"
               className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-              onClick={() => {
-                props.setStatus("all");
-                props.setFeeType("all");
-                props.setService("");
-                props.resetPageIndex();
-              }}
+              onClick={handleResetFilters}
             >
               Reset
             </Button>
@@ -69,15 +80,11 @@ export const FeeConfigFiltersCard: FC<FeeConfigFiltersCardProps> = (props) => {
           <FeeConfigFiltersGrid
             status={props.status}
             setStatus={props.setStatus}
-            statusSelectRef={props.statusSelectRef}
             feeType={props.feeType}
             setFeeType={props.setFeeType}
-            feeTypeSelectRef={props.feeTypeSelectRef}
             service={props.service}
             setService={props.setService}
-            serviceSelectRef={props.serviceSelectRef}
             serviceOptions={props.serviceOptions}
-            resetPageIndex={props.resetPageIndex}
           />
         )}
       </CardContent>

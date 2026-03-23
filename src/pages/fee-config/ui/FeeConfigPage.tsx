@@ -14,7 +14,7 @@ const FeeConfigPage: FC = () => {
   const filters = useFeeConfigFilters();
   const logic = useFeeConfigPageLogic(filters);
   const { open } = useModalStore();
-  const { filtersOpen, setFiltersOpen, statusSelectRef, feeTypeSelectRef, serviceSelectRef, serviceOptions } = logic;
+  const { filtersOpen, setFiltersOpen, serviceOptions } = logic;
 
   if (filters.isLoading) {
     return <PageSkeleton />;
@@ -46,11 +46,9 @@ const FeeConfigPage: FC = () => {
         setFeeType={filters.setFeeType}
         service={filters.service}
         setService={filters.setService}
-        statusSelectRef={statusSelectRef}
-        feeTypeSelectRef={feeTypeSelectRef}
-        serviceSelectRef={serviceSelectRef}
         serviceOptions={serviceOptions}
-        resetPageIndex={filters.resetPageIndex}
+        badges={filters.badges}
+        handleResetFilters={filters.handleResetFilters}
       />
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">

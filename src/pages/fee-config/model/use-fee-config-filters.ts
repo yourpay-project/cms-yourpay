@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useSyncGlobalLoading } from "@/shared/lib";
+import { useFeeConfigStore } from "./fee-config-store";
 import {
   feeConfigListResponseSchema,
   feeConfigSchema,
@@ -19,6 +20,14 @@ export type FeeStatusFilter = "all" | "active" | "inactive";
 
 export type FeeTypeFilter = "all" | "fixed" | "percentage" | "tiered";
 
+export interface FeeConfigFilterBadge {
+  id: string;
+  key: "status" | "feeType" | "service" | "currency";
+  label: string;
+  valueLabel: string;
+  onClear: () => void;
+}
+
 export interface FeeConfigFiltersState {
   search: string;
   setSearch: (value: string) => void;
@@ -30,11 +39,14 @@ export interface FeeConfigFiltersState {
   setService: (value: string) => void;
   currency: FeeCurrencyFilter;
   setCurrency: (value: FeeCurrencyFilter) => void;
+  /** Services available for the dropdown, computed without applying the current `service` filter. */
+  serviceOptions: Array<{ value: string; label: string }>;
   pageIndex: number;
   pageSize: number;
   setPageIndex: (value: number) => void;
   setPageSize: (value: number) => void;
   resetPageIndex: () => void;
+  handleResetFilters: () => void;
   refetch: () => void;
   items: FeeConfig[];
   total: number;
@@ -42,6 +54,7 @@ export interface FeeConfigFiltersState {
   isFetching: boolean;
   isError: boolean;
   error: unknown;
+  badges: FeeConfigFilterBadge[];
 }
 
 function mapApiFeeToEntity(item: FeeConfigResponseDTO): FeeConfig | null {
@@ -86,13 +99,23 @@ function mapApiResponseToList(
 }
 
 export function useFeeConfigFilters(): FeeConfigFiltersState {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<FeeStatusFilter>("all");
-  const [feeType, setFeeType] = useState<FeeTypeFilter>("all");
-  const [service, setService] = useState<string>("");
-  const [currency, setCurrency] = useState<FeeCurrencyFilter>("ALL");
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const {
+    search,
+    setSearch,
+    status,
+    setStatus,
+    feeType,
+    setFeeType,
+    service,
+    setService,
+    currency,
+    setCurrency,
+    pageIndex,
+    pageSize,
+    setPageIndex,
+    setPageSize,
+    resetFilters,
+  } = useFeeConfigStore();
 
   const query = useQuery({
     queryKey: ["fee-config"],
@@ -102,8 +125,7 @@ export function useFeeConfigFilters(): FeeConfigFiltersState {
   });
 
   useSyncGlobalLoading(query.isLoading);
-
-  const { items, total } = useMemo(() => {
+  const { items, total, serviceOptions } = useMemo(() => {
     const list = query.data?.data ?? [];
 
     const filteredByCurrency =
@@ -121,33 +143,95 @@ export function useFeeConfigFilters(): FeeConfigFiltersState {
         ? filteredByStatus
         : filteredByStatus.filter((item) => item.feeType === feeType);
 
+    const keyword = search.trim().toLowerCase();
+    const filteredBySearch = !keyword
+      ? filteredByFeeType
+      : filteredByFeeType.filter((item) => {
+          return (
+            item.name.toLowerCase().includes(keyword) ||
+            item.service.toLowerCase().includes(keyword) ||
+            item.currency.toLowerCase().includes(keyword)
+          );
+        });
+
     const filteredByService =
       !service.trim() || service === "all"
-        ? filteredByFeeType
-        : filteredByFeeType.filter((item) => item.service === service);
+        ? filteredBySearch
+        : filteredBySearch.filter((item) => item.service === service);
 
-    const filtered = filteredByService.filter((item) => {
-      if (!search.trim()) return true;
-      const keyword = search.trim().toLowerCase();
-
-      return (
-        item.name.toLowerCase().includes(keyword) ||
-        item.service.toLowerCase().includes(keyword) ||
-        item.currency.toLowerCase().includes(keyword)
-      );
-    });
+    const serviceOptions = Array.from(new Set(filteredBySearch.map((item) => item.service)))
+      .filter(Boolean)
+      .sort()
+      .map((s) => ({ value: s, label: s }));
 
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    const paged = filtered.slice(start, end);
+    const paged = filteredByService.slice(start, end);
+    const total = filteredByService.length;
 
-    return {
-      items: paged,
-      total: filtered.length,
-    };
+    return { items: paged, total, serviceOptions };
   }, [query.data, currency, status, feeType, service, search, pageIndex, pageSize]);
 
   const resetPageIndex = () => setPageIndex(0);
+
+  const badges = useMemo<FeeConfigFilterBadge[]>(() => {
+    const list: FeeConfigFilterBadge[] = [];
+
+    const statusLabel = status === "active" ? "Active" : status === "inactive" ? "Inactive" : "";
+    if (status !== "all") {
+      list.push({
+        id: `status:${status}`,
+        key: "status",
+        label: "Status",
+        valueLabel: statusLabel,
+        onClear: () => setStatus("all"),
+      });
+    }
+
+    const feeTypeLabel =
+      feeType === "fixed"
+        ? "FIXED"
+        : feeType === "percentage"
+          ? "PERCENTAGE"
+          : feeType === "tiered"
+            ? "TIERED"
+            : "";
+    if (feeType !== "all") {
+      list.push({
+        id: `feeType:${feeType}`,
+        key: "feeType",
+        label: "Fee Type",
+        valueLabel: feeTypeLabel,
+        onClear: () => setFeeType("all"),
+      });
+    }
+
+    if (service.trim()) {
+      list.push({
+        id: `service:${service}`,
+        key: "service",
+        label: "Service",
+        valueLabel: service,
+        onClear: () => setService(""),
+      });
+    }
+
+    const currencyLabel =
+      currency === "ALL"
+        ? ""
+        : currency; // keep compact; currency buttons already show canonical code
+    if (currency !== "ALL") {
+      list.push({
+        id: `currency:${currency}`,
+        key: "currency",
+        label: "Currency",
+        valueLabel: currencyLabel,
+        onClear: () => setCurrency("ALL"),
+      });
+    }
+
+    return list;
+  }, [currency, feeType, service, setCurrency, setFeeType, setService, setStatus, status]);
 
   return {
     search,
@@ -160,11 +244,13 @@ export function useFeeConfigFilters(): FeeConfigFiltersState {
     setService,
     currency,
     setCurrency,
+    serviceOptions,
     pageIndex,
     pageSize,
     setPageIndex,
     setPageSize,
     resetPageIndex,
+    handleResetFilters: () => resetFilters(),
     items,
     total,
     isLoading: query.isLoading,
@@ -174,6 +260,7 @@ export function useFeeConfigFilters(): FeeConfigFiltersState {
     refetch: () => {
       void query.refetch();
     },
+    badges,
   };
 }
 
