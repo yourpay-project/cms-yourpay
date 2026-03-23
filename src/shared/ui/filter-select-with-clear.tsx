@@ -1,7 +1,8 @@
 import type { FC } from "react";
 import { useId } from "react";
-import { X } from "lucide-react";
-import { DropdownFieldTrigger } from "./dropdown-field-trigger";
+
+import { SelectDropdown } from "./select-dropdown";
+import type { SelectDropdownOption } from "./select-dropdown.type";
 
 /** Option for the native select inside {@link FilterSelectWithClear}. */
 export interface FilterSelectOption {
@@ -14,7 +15,6 @@ export interface FilterSelectWithClearProps {
   label: string;
   value: string;
   options: readonly FilterSelectOption[];
-  selectRef: React.RefObject<HTMLSelectElement>;
   onChange: (value: string) => void;
   onClear: () => void;
   /** Value that means "all" / no filter; when equal to `value`, clear button is hidden and chevron shown. */
@@ -32,83 +32,42 @@ export const FilterSelectWithClear: FC<FilterSelectWithClearProps> = ({
   label,
   value,
   options,
-  selectRef,
   onChange,
   onClear,
   allValue = "all",
 }) => {
   // `useId()` contains `:` in React 18, which some a11y engines may fail to match reliably.
   const selectId = useId().replace(/:/g, "");
-  const safeName = `filter_${label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`;
-
   const showClear = value !== allValue;
   const selectedOption = options.find((option) => option.value === value);
-  const selectedLabel = selectedOption?.label ?? options[0]?.label ?? "";
+  const placeholder = selectedOption?.label ?? options[0]?.label ?? "Select an option";
+  const dropdownOptions: SelectDropdownOption[] = options.map((o) => ({
+    value: o.value,
+    label: o.label,
+  }));
 
   return (
     <div>
       <label htmlFor={selectId} className="mb-1 block text-xs text-muted-foreground">
         {label}
       </label>
-      <div className="relative">
-        {showClear ? (
-          <div className="flex w-full items-center gap-0 rounded-md border border-border bg-background">
-            <div className="relative min-w-0 flex-1">
-              <DropdownFieldTrigger
-                label={selectedLabel}
-                className="pointer-events-none rounded-r-none border-0"
-                aria-label={`Open ${label}`}
-              />
-              <select
-                ref={selectRef}
-                id={selectId}
-                name={safeName}
-                className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                aria-label={label}
-              >
-                {options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              type="button"
-              onClick={onClear}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
-              aria-label={`Clear ${label}`}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="relative rounded-md border border-border bg-background">
-            <DropdownFieldTrigger
-              label={selectedLabel}
-              className="pointer-events-none border-0"
-              aria-label={`Open ${label}`}
-            />
-            <select
-              ref={selectRef}
-              id={selectId}
-              name={safeName}
-              className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              aria-label={label}
-            >
-              {options.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
+      <SelectDropdown
+        id={selectId}
+        value={value}
+        onChange={(next) => {
+          // `SelectDropdown` clears by emitting `""`.
+          if (next === "") {
+            onClear();
+            return;
+          }
+          onChange(next);
+        }}
+        options={dropdownOptions}
+        placeholder={placeholder}
+        allowClear={showClear}
+        size="sm"
+        searchable={false}
+      />
     </div>
   );
 };

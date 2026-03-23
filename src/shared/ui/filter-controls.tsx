@@ -1,4 +1,4 @@
-import { createRef, type FC } from "react";
+import { type FC } from "react";
 import { Button } from "./button";
 import { FilterSelectWithClear, type FilterSelectOption } from "./filter-select-with-clear";
 import { cn } from "@/shared/lib/utils";
@@ -81,7 +81,6 @@ export const FilterOptionsGrid: FC<FilterOptionsGridProps> = ({ fields, values, 
           label={field.label}
           value={values[field.key] ?? field.allValue}
           options={field.options}
-          selectRef={createRef<HTMLSelectElement>()}
           onChange={(value) => onChange(field.key, value)}
           onClear={() => onChange(field.key, field.allValue)}
           allValue={field.allValue}

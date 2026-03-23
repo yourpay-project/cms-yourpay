@@ -7,6 +7,7 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { SelectDropdown } from "@/shared/ui";
 import { PAGE_SIZE_OPTIONS } from "../lib/table-utils";
 import { cn } from "@/shared/lib/utils";
 
@@ -61,23 +62,18 @@ export function DataTablePagination<TData>({
           <label htmlFor={selectId} className="text-sm font-medium text-foreground">
             Rows per page
           </label>
-          <select
-            id={selectId}
-            name="rows_per_page"
-            aria-label="Rows per page"
-            value={pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className={cn(
-              "h-8 min-w-[4.5rem] rounded-md border border-input bg-background px-2.5 text-sm text-foreground",
-              "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            )}
-          >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+          <div className="w-[8.5rem]">
+            <SelectDropdown
+              id={selectId}
+              value={String(pageSize)}
+              onChange={(v) => table.setPageSize(Number(v))}
+              options={pageSizeOptions.map((size) => ({ value: String(size), label: String(size) }))}
+              allowClear={false}
+              searchable={false}
+              placeholder={String(pageSize)}
+              size="sm"
+            />
+          </div>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium text-foreground">
           Page {pageIndex + 1} of {pageCount}

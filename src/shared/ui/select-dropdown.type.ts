@@ -20,6 +20,7 @@ export interface SelectDropdownProps {
   searchable?: boolean;
   searchPlaceholder?: string;
   allowClear?: boolean;
+  size?: "sm" | "md";
   id?: string;
 }
 

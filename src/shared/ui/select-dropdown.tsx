@@ -22,6 +22,7 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
   searchPlaceholder = "Start typing to search...",
   allowClear = true,
   id,
+  size = "md",
 }) => {
   const logic = useSelectDropdownLogic({
     value,
@@ -48,7 +49,8 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
             aria-expanded={logic.open}
             aria-haspopup="listbox"
             className={cn(
-              "flex h-12 min-w-0 flex-1 items-center justify-between gap-2 border-0 bg-transparent px-3 text-left text-sm text-foreground",
+              "flex min-w-0 flex-1 items-center justify-between gap-2 border-0 bg-transparent px-3 text-left text-sm text-foreground",
+              size === "sm" ? "h-8" : "h-12",
               "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
               logic.isDisabled && "cursor-default text-muted-foreground",
             )}
@@ -116,7 +118,10 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
       {allowClear && value ? (
         <button
           type="button"
-          className="flex h-12 w-11 shrink-0 items-center justify-center border-l border-input bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
+          className={cn(
+            "flex shrink-0 items-center justify-center border-l border-input bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
+            size === "sm" ? "h-8 w-7" : "h-12 w-11",
+          )}
           disabled={logic.isDisabled}
           onClick={() => onChange("")}
           aria-label="Clear selected option"
