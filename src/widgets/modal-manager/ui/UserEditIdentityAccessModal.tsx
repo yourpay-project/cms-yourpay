@@ -3,9 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import { toast } from "sonner";
 import { Button } from "@/shared/ui";
-import { useIdentityAccessOptionsQuery } from "@/pages/user-detail/model";
-import { normalizeCode } from "@/pages/user-detail/lib";
-import { EditIdentityAccessModalBody } from "@/pages/user-detail/ui/EditIdentityAccessModalBody";
+import { useIdentityAccessOptionsQuery } from "@/entities/user";
+import { normalizeCode } from "@/shared/lib";
+import { EditIdentityAccessModalBody } from "@/features/identity-access";
 
 import type { UserEditIdentityAccessModalProps } from "./UserEditIdentityAccessModal.type";
 

@@ -1,4 +1,4 @@
-import { normalizeCode } from "./formatters";
+import { normalizeCode } from "@/shared/lib";
 
 interface IdentityAccessBadgeToken {
   border: string;

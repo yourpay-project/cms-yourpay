@@ -8,8 +8,7 @@ import { Button, PageSkeleton } from "@/shared/ui";
 import { useCustomerDetailQuery, getUserDetailFieldItems } from "../model";
 import { useModalStore } from "@/widgets/modal-manager";
 import { UserDetailActionButtons } from "./UserDetailActionButtons";
-import { UserDetailCollapsibleCard } from "./UserDetailCollapsibleCard";
-import { UserDetailFieldGrid } from "./UserDetailFieldGrid";
+import { UserDetailCollapsibleCard, UserDetailFieldGrid } from "@/entities/user";
 import { IdentityAccessBadges } from "./IdentityAccessBadges";
 
 /**

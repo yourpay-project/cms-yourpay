@@ -8,4 +8,5 @@ export {
   getFullName,
   formatDeviceTitle,
   formatOperatingSystem,
-} from "./formatters";
+} from "@/shared/lib";
+

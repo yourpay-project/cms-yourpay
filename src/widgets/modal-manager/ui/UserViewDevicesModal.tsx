@@ -1,9 +1,8 @@
 import type { FC } from "react";
 
-import { useCustomerDevicesQuery } from "@/pages/user-detail/model";
-import { formatDateTime, formatDeviceTitle, formatOperatingSystem } from "@/pages/user-detail/lib";
-import { UserDetailCollapsibleCard } from "@/pages/user-detail/ui/UserDetailCollapsibleCard";
-import { UserDetailFieldGrid, type UserDetailFieldItem } from "@/pages/user-detail/ui/UserDetailFieldGrid";
+import { useCustomerDevicesQuery } from "@/entities/user";
+import { formatDateTime, formatDeviceTitle, formatOperatingSystem } from "@/shared/lib";
+import { UserDetailCollapsibleCard, UserDetailFieldGrid, type UserDetailFieldItem } from "@/entities/user";
 
 import type { UserViewDevicesModalProps } from "./UserViewDevicesModal.type";
 

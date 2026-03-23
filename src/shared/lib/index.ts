@@ -10,4 +10,12 @@ export { getFilterBadgeClassName } from "./filter-badge-colors";
 export { useModalStore, useModalData } from "./modal";
 export { formatDateOnly } from "./format-date-only";
 export type { ModalType } from "./modal";
+export {
+  normalizeCode,
+  formatDateTime,
+  getFullName,
+  formatDeviceTitle,
+  formatOperatingSystem,
+} from "./user-detail-formatters";
+
 

@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 
-import { useCustomerWalletsQuery, type CustomerWalletItem } from "@/pages/user-detail/model";
+import { useCustomerWalletsQuery, type CustomerWalletItem } from "@/entities/user";
 
 import type { UserViewWalletsModalProps } from "./UserViewWalletsModal.type";
 
