@@ -58,6 +58,12 @@ const KycSubmissionRoutePage = lazyRouteComponent(
   'default',
 );
 
+/** Lazy-loaded route for KYC submission detail page. */
+const KycSubmissionDetailRoutePage = lazyRouteComponent(
+  () => import('@/pages/kyc-submission-detail').then((m) => ({ default: m.KycSubmissionDetailRoutePage })),
+  'default',
+);
+
 /** Lazy-loaded route for Countries (Master Data) page. */
 const CountriesRoutePage = lazyRouteComponent(
   () => import('@/pages/countries').then((m) => ({ default: m.CountriesRoutePage })),
@@ -103,6 +109,12 @@ const userDetailRoute = createRoute({
   component: UserDetailRoutePage,
 });
 
+const kycSubmissionDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/kyc-submission/$id',
+  component: KycSubmissionDetailRoutePage,
+});
+
 /**
  * Dynamic routes generated from shared navigation configuration.
  */
@@ -126,6 +138,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   loginCallbackRoute,
   userDetailRoute,
+  kycSubmissionDetailRoute,
   ...sectionRoutes,
 ]);
 

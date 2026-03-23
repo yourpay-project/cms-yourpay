@@ -58,7 +58,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       value,
       defaultValue,
       onChange,
+      onFocus,
+      tabIndex,
       label,
+      readOnly,
       ...rest
     },
     ref,
@@ -67,15 +70,23 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       value: value as string | number | undefined,
       defaultValue: defaultValue as string | number | undefined,
       disabled,
+      readOnly,
       onChange,
     });
 
     React.useImperativeHandle(ref, () => innerRef.current as HTMLInputElement);
     const helperStatusClass = status ? statusTextClass[status] : "text-muted-foreground";
+    const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+      if (readOnly) {
+        event.currentTarget.blur();
+        return;
+      }
+      onFocus?.(event);
+    };
 
     return (
-      <div className="flex flex-col gap-1.5">
-        <div className="group/input flex w-full items-stretch text-sm">
+      <div className="flex w-full min-w-0 max-w-full flex-col gap-1.5">
+        <div className="group/input flex w-full min-w-0 items-stretch text-sm">
           {addonBefore && (
             <div className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 text-muted-foreground">
               {addonBefore}
@@ -89,6 +100,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               !addonAfter && "rounded-r-md",
               status && statusBorderClass[status],
               disabled && "cursor-not-allowed opacity-50",
+              readOnly && "cursor-default",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0",
               "bg-background"
             )}
@@ -99,7 +111,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               </span>
             )}
 
-            <div className="relative flex h-full flex-1 items-center">
+            <div className="relative flex h-full min-w-0 flex-1 items-center">
               {prefix && (
                 <span
                   className={cn(
@@ -118,6 +130,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 className={cn(
                   "peer h-full w-full bg-transparent text-sm text-foreground placeholder-transparent",
                   "border-none p-0 outline-none focus:ring-0",
+                  readOnly && "cursor-default",
                   size !== "sm" && label && "pt-4",
                   className,
                   "[&:-webkit-autofill]:shadow-[0_0_0_1000px_hsl(var(--background))_inset]",
@@ -125,8 +138,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                   "[&:-webkit-autofill]:[-webkit-text-fill-color:hsl(var(--foreground))]"
                 )}
                 disabled={disabled}
+                readOnly={readOnly}
+                tabIndex={readOnly ? -1 : tabIndex}
                 value={currentValue}
                 onChange={handleChange}
+                onFocus={handleFocus}
                 placeholder=" "
                 {...rest}
               />
@@ -148,7 +164,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
 
             <div className={cn("flex items-center gap-2", size !== "sm" && "mt-2")}>
-              {allowClear && hasValue && !disabled && (
+              {allowClear && hasValue && !disabled && !readOnly && (
                 <button
                   type="button"
                   onClick={handleClear}

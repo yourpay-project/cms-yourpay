@@ -25,7 +25,7 @@ export const AppLayout: FC<AppLayoutProps> = ({ navTitle, className, children })
       <div className="flex flex-1 overflow-hidden">
         <MobileSidebar />
         <Sidebar className="hidden md:flex" />
-        <main className="flex-1 overflow-auto bg-background p-4">
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-background p-4">
           {children}
         </main>
       </div>

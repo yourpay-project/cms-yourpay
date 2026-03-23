@@ -4,6 +4,7 @@ interface UseInputValueOptions {
   value?: string | number;
   defaultValue?: string | number;
   disabled?: boolean;
+  readOnly?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -19,7 +20,7 @@ interface UseInputValueResult {
  * Handles controlled and uncontrolled input value state, including clear logic.
  */
 export function useInputValue(options: UseInputValueOptions): UseInputValueResult {
-  const { value, defaultValue, disabled, onChange } = options;
+  const { value, defaultValue, disabled, readOnly, onChange } = options;
 
   const innerRef = React.useRef<HTMLInputElement | null>(null);
   const isControlled = value !== undefined;
@@ -31,6 +32,7 @@ export function useInputValue(options: UseInputValueOptions): UseInputValueResul
   const currentValue = (isControlled ? value : uncontrolledValue) ?? "";
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (readOnly) return;
     if (!isControlled) {
       setUncontrolledValue(event.target.value);
     }
@@ -38,7 +40,7 @@ export function useInputValue(options: UseInputValueOptions): UseInputValueResul
   };
 
   const handleClear = () => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
 
     if (isControlled) {
       onChange?.({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>);

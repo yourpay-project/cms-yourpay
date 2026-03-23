@@ -34,6 +34,7 @@ export {
   type DropdownFieldTriggerProps,
 } from "./dropdown-field-trigger";
 export { Input, type InputProps } from "./input";
+export { FileDropzone, type FileDropzoneProps } from "./file-dropzone";
 export { Skeleton } from "./skeleton";
 export { PageSkeleton } from "./page-skeleton";
 export { RouteFallback } from "./route-fallback";
@@ -96,6 +97,11 @@ export {
 } from "./data-table";
 
 export { SearchInput, type SearchInputProps } from "./search-input";
+export {
+  SelectDropdown,
+  type SelectDropdownOption,
+  type SelectDropdownProps,
+} from "./select-dropdown";
 
 export {
   Dialog,
