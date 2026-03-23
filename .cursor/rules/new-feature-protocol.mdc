@@ -1,0 +1,37 @@
+---
+description: STRICT PROTOCOL FOR CREATING NEW FEATURES OR PAGES. Triggers whenever the user asks to "create", "build", or "add" a new feature, page, or widget.
+globs: src/**/*.{ts,tsx}
+---
+
+# NEW FEATURE CREATION PROTOCOL (FSD & API STRICT)
+
+You are an expert FSD Architect. Whenever you are instructed to create a new feature, page, or widget, you MUST strictly follow this step-by-step scaffolding protocol. 
+
+**DO NOT skip steps. DO NOT write monolithic code. DO NOT hallucinate API clients.**
+
+## STEP 1: VERIFY GENERATED API (THE GATEKEEPER)
+Before writing any UI or Model code, you must look for the required API client in `src/shared/api/generated/clients/` and the types in `src/shared/api/generated/types/`.
+- If the endpoint or type DOES NOT EXIST: Stop immediately. Tell the user: "The required API client is missing. Please run `make generate-api` to sync the latest Swagger docs, then prompt me again."
+- NEVER write a manual `fetch`, `apiClient.get`, or manual DTO interfaces (`export interface *Response`).
+
+## STEP 2: SCAFFOLD THE FSD SLICE
+Always create the standard FSD segment folders for the new slice. Do not dump everything in one folder.
+Example for `src/features/my-feature/`:
+- `api/` (For TanStack Query/Mutation hooks wrapping the generated client)
+- `model/` (For Zod schemas, Zustand stores, and complex hook logic)
+- `ui/` (For pure React components)
+- `index.ts` (The ONLY public export point)
+
+## STEP 3: IMPLEMENTATION ORDER (BOTTOM-UP)
+1. **Model (Zod):** Write the Zod schema in `model/` to validate the incoming data from the generated API type.
+2. **API (TanStack Query):** Write the hook in `api/` that calls the generated client and parses the response using the Zod schema (`parseApiData(schema, res)`).
+3. **Model (Logic Hooks):** Write custom hooks in `model/` for any data mapping, filtering, or heavy state management.
+4. **UI (React):** Write the React components in `ui/`. Ensure they use semantic Tailwind classes (`bg-background`, `text-foreground`). If fetching data, wrap it in a Skeleton or use `useSyncGlobalLoading`.
+5. **Public API:** Export ONLY what is necessary through `index.ts`.
+
+## STEP 4: STRICT UI & CODE STANDARDS
+- Keep components under 150 lines. Split into sub-components in the `ui/` folder if it grows.
+- Use `lucide-react` for icons.
+- Avoid deep imports. If a widget needs a feature, it imports from `src/features/my-feature`, NEVER `src/features/my-feature/ui/MyComponent`.
+
+**Failure to follow this protocol will result in immediate rejection of the generated code.**
