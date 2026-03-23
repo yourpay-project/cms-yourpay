@@ -37,7 +37,8 @@ export const FilterSelectWithClear: FC<FilterSelectWithClearProps> = ({
   onClear,
   allValue = "all",
 }) => {
-  const selectId = useId();
+  // `useId()` contains `:` in React 18, which some a11y engines may fail to match reliably.
+  const selectId = useId().replace(/:/g, "");
   const safeName = `filter_${label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`;
 
   const showClear = value !== allValue;

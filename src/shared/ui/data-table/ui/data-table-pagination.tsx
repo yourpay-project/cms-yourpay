@@ -36,7 +36,8 @@ export function DataTablePagination<TData>({
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   showSelectionCount = true,
 }: DataTablePaginationProps<TData>): React.ReactElement {
-  const selectId = useId();
+  // `useId()` contains `:` in React 18, which some a11y engines may fail to match reliably.
+  const selectId = useId().replace(/:/g, "");
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
   const totalCount = table.getFilteredRowModel().rows.length;
   const pageIndex = table.getState().pagination.pageIndex;
