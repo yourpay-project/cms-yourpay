@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 
 import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
 import type { FeeStatusFilter, FeeTypeFilter } from "../model";
-import type { FeeConfigFilterBadge } from "../model/use-fee-config-filters";
+import type { FeeConfigFilterBadge } from "../model";
 import { getFilterBadgeClassName } from "@/shared/lib";
 import { FeeConfigFiltersGrid } from "./FeeConfigFiltersGrid";
 

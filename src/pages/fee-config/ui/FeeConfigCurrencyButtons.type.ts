@@ -1,4 +1,4 @@
-import type { FeeCurrencyFilter } from "../model/use-fee-config-filters";
+import type { FeeCurrencyFilter } from "../model";
 
 /**
  * Props for `FeeConfigCurrencyButtons`.

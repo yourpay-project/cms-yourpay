@@ -2,7 +2,7 @@ import type { FC } from "react";
 
 import { Button } from "@/shared/ui";
 
-import { FEE_CONFIG_CURRENCY_OPTIONS } from "../model/fee-config-currency-options";
+import { FEE_CONFIG_CURRENCY_OPTIONS } from "../model";
 import type { FeeConfigCurrencyButtonsProps } from "./FeeConfigCurrencyButtons.type";
 
 /**

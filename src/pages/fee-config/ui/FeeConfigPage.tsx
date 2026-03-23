@@ -4,11 +4,10 @@ import { ApiClientError } from "@/shared/api";
 import { Button, PageSkeleton, SearchInput } from "@/shared/ui";
 import { FeeConfigTable } from "@/widgets/fee-config-table";
 import { useModalStore } from "@/widgets/modal-manager";
-import { useFeeConfigFilters } from "..";
+import { useFeeConfigFilters, useFeeConfigPageLogic } from "..";
 import { FeeConfigFiltersCard } from "./FeeConfigFiltersCard";
 import { cn } from "@/shared/lib";
 import { FeeConfigCurrencyButtons } from "./FeeConfigCurrencyButtons";
-import { useFeeConfigPageLogic } from "../model/use-fee-config-page-logic";
 
 const FeeConfigPage: FC = () => {
   const filters = useFeeConfigFilters();

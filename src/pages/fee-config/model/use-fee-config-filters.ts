@@ -4,15 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useSyncGlobalLoading } from "@/shared/lib";
 import { useFeeConfigStore } from "./fee-config-store";
 import {
-  feeConfigListResponseSchema,
-  feeConfigSchema,
-  type FeeConfig,
-} from "@/entities/fee-config";
-import {
   getV1OperatorsFee,
-  type FeeConfigResponseDTO,
-  type ListFeeConfigResponse,
 } from "@/shared/api/generated";
+import { type FeeConfig } from "@/entities/fee-config";
+import { mapApiResponseToFeeConfigList } from "./fee-config-response-mapper";
 
 export type FeeCurrencyFilter = "ALL" | "IDR" | "SGD" | "HKD" | "NTD";
 
@@ -57,47 +52,6 @@ export interface FeeConfigFiltersState {
   badges: FeeConfigFilterBadge[];
 }
 
-function mapApiFeeToEntity(item: FeeConfigResponseDTO): FeeConfig | null {
-  const currency = typeof item.currency === "string" ? item.currency : "";
-
-  const feeMode = item.fee_mode === "inclusive" ? "inclusive" : "exclusive";
-
-  const feeType =
-    item.fee_type === "percentage" || item.fee_type === "tiered" ? item.fee_type : "fixed";
-
-  const candidate: FeeConfig = {
-    id: item.id ?? "",
-    name: item.name ?? "",
-    nominal: item.fee_value ?? 0,
-    service: item.service_name ?? item.service_id ?? "",
-    currency,
-    feeType,
-    feeMode,
-    isActive: item.is_active ?? false,
-  };
-
-  const parsed = feeConfigSchema.safeParse(candidate);
-  if (!parsed.success) {
-    return null;
-  }
-
-  return parsed.data;
-}
-
-function mapApiResponseToList(
-  data: ListFeeConfigResponse | undefined,
-) {
-  const list = data?.data?.list ?? [];
-  const mapped = list
-    .map(mapApiFeeToEntity)
-    .filter((item): item is FeeConfig => item !== null);
-
-  return feeConfigListResponseSchema.parse({
-    data: mapped,
-    total: mapped.length,
-  });
-}
-
 export function useFeeConfigFilters(): FeeConfigFiltersState {
   const {
     search,
@@ -121,7 +75,7 @@ export function useFeeConfigFilters(): FeeConfigFiltersState {
     queryKey: ["fee-config"],
     queryFn: async ({ signal }) =>
       getV1OperatorsFee({ signal }),
-    select: (response) => mapApiResponseToList(response.data),
+    select: (response) => mapApiResponseToFeeConfigList(response.data),
   });
 
   useSyncGlobalLoading(query.isLoading);
