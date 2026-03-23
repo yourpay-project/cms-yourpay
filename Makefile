@@ -1,10 +1,12 @@
-.PHONY: run build lint generate-api help
+.PHONY: run build lint lint-staged hooks-init generate-api help
 
 help:
 	@echo "Usage:"
 	@echo "  make run            Start dev server"
 	@echo "  make build          Build"
 	@echo "  make lint           Lint"
+	@echo "  make lint-staged    Run lint-staged checks"
+	@echo "  make hooks-init     Initialize husky hooks"
 	@echo "  make generate-api   Generate API client from Swagger using API_TAGS."
 	@echo ""
 	@echo "Configure VITE_API_DOC_URL in .env. Generation selection is in Makefile vars (API_TAGS, API_SHARED_MODELS)."
@@ -18,6 +20,12 @@ build:
 
 lint:
 	npm run lint
+
+lint-staged:
+	npx lint-staged
+
+hooks-init:
+	npx husky init
 
 # API client generator.
 -include .env
