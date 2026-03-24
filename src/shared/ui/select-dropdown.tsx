@@ -53,9 +53,8 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
             className={cn(
               "flex min-w-0 flex-1 items-center justify-between gap-2 border-0 bg-transparent px-3 text-left text-sm text-foreground",
               size === "sm" ? "h-8" : "h-12",
-              "outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50",
+              "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
               logic.isDisabled && "cursor-not-allowed text-muted-foreground",
-              logic.isDisabled && "hover:bg-transparent focus-visible:bg-transparent",
             )}
           >
             <span className="truncate">{logic.displayText}</span>

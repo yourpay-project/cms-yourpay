@@ -74,6 +74,6 @@ export const useTransactionsStore = create<TransactionsStoreState>()(
           pageIndex: 0,
         }),
     }),
-    { name: "cms-transactions-api-filters" }
+    { name: "cms-user-transactions" }
   )
 );

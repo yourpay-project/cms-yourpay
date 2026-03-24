@@ -73,6 +73,7 @@ export function useKycSubmissionFilters() {
     () => query.data?.filterDefinitions ?? [],
     [query.data?.filterDefinitions]
   );
+  const hasBackendFilters = filterDefinitions.length > 0;
   const optionsFilterFields = useMemo((): FilterField[] => {
     const optionDefinitions = filterDefinitions.filter(
       (definition) => definition.type === "options"
@@ -259,6 +260,7 @@ export function useKycSubmissionFilters() {
     lastUpdatePresetLabel,
     setLastUpdatePresetLabel,
     optionsFilterFields,
+    hasBackendFilters,
     selectedOptionFilterValues,
     handleChangeOptionFilter,
     createdAtLabel,

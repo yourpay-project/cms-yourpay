@@ -119,6 +119,7 @@ export function useUserListFilters() {
     () => filterFields.filter((field) => field.type === "options"),
     [filterFields]
   );
+  const hasBackendFilters = filterFields.length > 0;
 
   const selectedFilterValues = useMemo((): Record<string, string> => {
     return filterFields.reduce<Record<string, string>>((accumulator, field) => {
@@ -173,6 +174,7 @@ export function useUserListFilters() {
     filterFields,
     controlFilterFields,
     optionsFilterFields,
+    hasBackendFilters,
     selectedFilterValues,
     setFilterValue,
     handleChangeFilter,

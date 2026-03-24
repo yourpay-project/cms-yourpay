@@ -32,15 +32,17 @@ const UserListPage: FC = () => {
         <h2 className="text-xl font-semibold">User Yourpay</h2>
       </div>
 
-      <UserListFiltersCard
-        filtersOpen={filters.filtersOpen}
-        setFiltersOpen={filters.setFiltersOpen}
-        badges={filters.badges}
-        handleResetFilters={filters.handleResetFilters}
-        optionFilterFields={filters.optionsFilterFields}
-        selectedFilterValues={filters.selectedFilterValues}
-        onChangeFilter={filters.handleChangeFilter}
-      />
+      {filters.hasBackendFilters ? (
+        <UserListFiltersCard
+          filtersOpen={filters.filtersOpen}
+          setFiltersOpen={filters.setFiltersOpen}
+          badges={filters.badges}
+          handleResetFilters={filters.handleResetFilters}
+          optionFilterFields={filters.optionsFilterFields}
+          selectedFilterValues={filters.selectedFilterValues}
+          onChangeFilter={filters.handleChangeFilter}
+        />
+      ) : null}
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div className="flex w-full justify-center md:w-auto md:justify-start">

@@ -26,20 +26,22 @@ const TransactionsPage: FC = () => {
         <h2 className="text-xl font-semibold">Transactions</h2>
       </div>
 
-      <TransactionsFiltersCard
-        filtersOpen={filters.filtersOpen}
-        setFiltersOpen={filters.setFiltersOpen}
-        badges={filters.badges}
-        handleResetFilters={filters.handleResetFilters}
-        gridProps={{
-          optionsFilterFields: filters.optionsFilterFields,
-          selectedFilterValues: filters.selectedFilterValues,
-          handleChangeFilter: filters.handleChangeFilter,
-          dateRangeDefinitions: filters.dateRangeDefinitions,
-          dateRanges: filters.dateRanges,
-          setDateRange: filters.setDateRange,
-        }}
-      />
+      {filters.hasBackendFilters ? (
+        <TransactionsFiltersCard
+          filtersOpen={filters.filtersOpen}
+          setFiltersOpen={filters.setFiltersOpen}
+          badges={filters.badges}
+          handleResetFilters={filters.handleResetFilters}
+          gridProps={{
+            optionsFilterFields: filters.optionsFilterFields,
+            selectedFilterValues: filters.selectedFilterValues,
+            handleChangeFilter: filters.handleChangeFilter,
+            dateRangeDefinitions: filters.dateRangeDefinitions,
+            dateRanges: filters.dateRanges,
+            setDateRange: filters.setDateRange,
+          }}
+        />
+      ) : null}
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div className="flex w-full justify-center md:w-auto md:justify-start">

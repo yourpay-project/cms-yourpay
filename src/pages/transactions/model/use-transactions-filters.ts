@@ -111,6 +111,7 @@ export function useTransactionsFilters() {
     () => resolvedDefinitions.filter((d) => d.type === "date_range"),
     [resolvedDefinitions]
   );
+  const hasBackendFilters = resolvedDefinitions.length > 0;
 
   const selectedFilterValues = useMemo(() => {
     const out: Record<string, string> = {};
@@ -176,6 +177,7 @@ export function useTransactionsFilters() {
     controlFilterFields,
     optionsFilterFields,
     dateRangeDefinitions,
+    hasBackendFilters,
     selectedFilterValues,
     handleChangeFilter,
     badges,

@@ -31,30 +31,32 @@ const KycSubmissionPage: FC = () => {
         <h2 className="text-xl font-semibold">KYC Submissions{filters.pageTitleSuffix}</h2>
       </div>
 
-      <KycSubmissionFiltersCard
-        filtersOpen={filters.filtersOpen}
-        setFiltersOpen={filters.setFiltersOpen}
-        badges={filters.badges}
-        handleResetFilters={filters.handleResetFilters}
-        optionsFilterFields={filters.optionsFilterFields}
-        selectedOptionFilterValues={filters.selectedOptionFilterValues}
-        handleChangeOptionFilter={filters.handleChangeOptionFilter}
-        createdAtLabel={filters.createdAtLabel}
-        updatedAtLabel={filters.updatedAtLabel}
-        kycFrom={filters.kycFrom}
-        kycTo={filters.kycTo}
-        kycPresetLabel={filters.kycPresetLabel}
-        setKycFrom={filters.setKycFrom}
-        setKycTo={filters.setKycTo}
-        setKycPresetLabel={filters.setKycPresetLabel}
-        lastUpdateFrom={filters.lastUpdateFrom}
-        lastUpdateTo={filters.lastUpdateTo}
-        lastUpdatePresetLabel={filters.lastUpdatePresetLabel}
-        setLastUpdateFrom={filters.setLastUpdateFrom}
-        setLastUpdateTo={filters.setLastUpdateTo}
-        setLastUpdatePresetLabel={filters.setLastUpdatePresetLabel}
-        resetPageIndex={filters.resetPageIndex}
-      />
+      {filters.hasBackendFilters ? (
+        <KycSubmissionFiltersCard
+          filtersOpen={filters.filtersOpen}
+          setFiltersOpen={filters.setFiltersOpen}
+          badges={filters.badges}
+          handleResetFilters={filters.handleResetFilters}
+          optionsFilterFields={filters.optionsFilterFields}
+          selectedOptionFilterValues={filters.selectedOptionFilterValues}
+          handleChangeOptionFilter={filters.handleChangeOptionFilter}
+          createdAtLabel={filters.createdAtLabel}
+          updatedAtLabel={filters.updatedAtLabel}
+          kycFrom={filters.kycFrom}
+          kycTo={filters.kycTo}
+          kycPresetLabel={filters.kycPresetLabel}
+          setKycFrom={filters.setKycFrom}
+          setKycTo={filters.setKycTo}
+          setKycPresetLabel={filters.setKycPresetLabel}
+          lastUpdateFrom={filters.lastUpdateFrom}
+          lastUpdateTo={filters.lastUpdateTo}
+          lastUpdatePresetLabel={filters.lastUpdatePresetLabel}
+          setLastUpdateFrom={filters.setLastUpdateFrom}
+          setLastUpdateTo={filters.setLastUpdateTo}
+          setLastUpdatePresetLabel={filters.setLastUpdatePresetLabel}
+          resetPageIndex={filters.resetPageIndex}
+        />
+      ) : null}
 
       <div className="flex flex-wrap items-end justify-end gap-3">
         <KycSubmissionSearchBar
