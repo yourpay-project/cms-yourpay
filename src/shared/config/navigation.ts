@@ -69,7 +69,7 @@ export const navGroups: NavigationGroupConfig[] = [
     items: [
       {
         to: '/transactions',
-        label: 'Transactions (API)',
+        label: 'Transactions',
         iconKey: 'transactions',
         permission: 'view_any_transaction_api_transaction',
       },

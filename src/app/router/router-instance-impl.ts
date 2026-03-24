@@ -81,6 +81,19 @@ const FeeConfigRoutePage = lazyRouteComponent(
   "default",
 );
 
+const TransactionsRoutePage = lazyRouteComponent(
+  () => import("@/pages/transactions").then((m) => ({ default: m.TransactionsRoutePage })),
+  "default",
+);
+
+const TransactionDetailRoutePage = lazyRouteComponent(
+  () =>
+    import("@/pages/transaction-detail").then((m) => ({
+      default: m.TransactionDetailRoutePage,
+    })),
+  "default",
+);
+
 /**
  * Static route for the main dashboard.
  */
@@ -120,6 +133,12 @@ const kycSubmissionDetailRoute = createRoute({
   component: KycSubmissionDetailRoutePage,
 });
 
+const transactionDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/transactions/$id",
+  component: TransactionDetailRoutePage,
+});
+
 /**
  * Dynamic routes generated from shared navigation configuration.
  */
@@ -130,6 +149,7 @@ const sectionRoutes = createSectionRoutes({
   sectionComponent: SectionRoutePage,
   sectionOverrides: {
     "/kyc-submission": KycSubmissionRoutePage,
+    "/transactions": TransactionsRoutePage,
     "/countries": CountriesRoutePage,
     "/fee-config": FeeConfigRoutePage,
   },
@@ -144,6 +164,7 @@ const routeTree = rootRoute.addChildren([
   loginCallbackRoute,
   userDetailRoute,
   kycSubmissionDetailRoute,
+  transactionDetailRoute,
   ...sectionRoutes,
 ]);
 
