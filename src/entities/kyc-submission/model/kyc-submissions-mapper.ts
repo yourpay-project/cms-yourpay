@@ -1,9 +1,4 @@
 import { formatDateOnly } from "@/shared/lib";
-import type {
-  FilterConfig,
-  FilterOption,
-  GetVerificationSubmissionsResponseDTO,
-} from "@/shared/api/generated/types/operators-verification-submission";
 import {
   type KycFilterDefinition,
   type KycFilterOption,
@@ -29,7 +24,7 @@ type KycVerificationSubmissionItem = NonNullable<
 /**
  * Normalize a generated filter option payload into the shared filter option shape.
  */
-function normalizeOptionRecord(option: FilterOption | string | unknown): KycFilterOption | null {
+function normalizeOptionRecord(option: unknown): KycFilterOption | null {
   if (typeof option === "string") {
     return { label: option, value: option };
   }
@@ -48,7 +43,7 @@ function normalizeOptionRecord(option: FilterOption | string | unknown): KycFilt
   return null;
 }
 
-function normalizeKycFilters(input: FilterConfig[] | unknown): NormalizedKycFiltersResult | undefined {
+function normalizeKycFilters(input: unknown): NormalizedKycFiltersResult | undefined {
   if (!input || !Array.isArray(input)) {
     return undefined;
   }
@@ -66,7 +61,7 @@ function normalizeKycFilters(input: FilterConfig[] | unknown): NormalizedKycFilt
       rawType === "control" || rawType === "date_range" ? rawType : "options";
     const rawOptions = Array.isArray(item.options) ? item.options : [];
     const mappedOptions = rawOptions
-      .map((option: FilterOption) => normalizeOptionRecord(option))
+      .map((option: unknown) => normalizeOptionRecord(option))
       .filter((option: KycFilterOption | null): option is KycFilterOption => option !== null);
 
     if (type !== "date_range" && mappedOptions.length === 0) {
@@ -130,14 +125,14 @@ function mapKycItem(item: KycVerificationSubmissionItem): KycSubmission {
  * KYC submissions response model with normalized dynamic filters.
  */
 export function mapKycSubmissionsResponse(
-  raw: GetVerificationSubmissionsResponseDTO | KycVerificationSubmissionsResponse
+  raw: unknown
 ): KycSubmissionsResponse {
-  const page = raw.data;
+  const validated = (raw ?? {}) as KycVerificationSubmissionsResponse;
+  const page = validated.data;
   const items = (page?.items ?? []) as KycVerificationSubmissionItem[];
   const total = page?.total_items ?? 0;
   const data = items.map(mapKycItem);
   const normalizedFilters = normalizeKycFilters(page?.filters);
-
   return kycSubmissionsResponseSchema.parse({
     data,
     total,
