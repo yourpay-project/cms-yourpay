@@ -12,6 +12,12 @@ export interface SidebarItemProps {
   onTogglePinned: (path: string) => void;
 }
 
+/**
+ * Single sidebar navigation entry with optional pin/unpin affordance.
+ *
+ * Keeps active/inactive visuals consistent between expanded and collapsed modes
+ * while reserving a fixed right-side action slot in expanded mode.
+ */
 export const SidebarItem: FC<SidebarItemProps> = ({
   item,
   collapsed,
@@ -20,8 +26,10 @@ export const SidebarItem: FC<SidebarItemProps> = ({
   onTogglePinned,
 }) => {
   const baseItemClass = cn(
-    "group flex items-center rounded-md py-2.5 text-sm font-medium transition-colors [&_svg]:shrink-0",
-    collapsed ? "justify-center px-0" : "gap-3 px-3"
+    "group flex items-center rounded-md font-medium transition-colors [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
+    collapsed
+      ? "mx-auto h-9 w-9 justify-center p-0 text-[0px]"
+      : "h-9 gap-3 px-3 text-xs"
   );
 
   return (
@@ -44,32 +52,36 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     >
       {({ isActive }) => (
         <>
-          {item.icon ?? null}
+          <span className="inline-flex h-4 w-4 items-center justify-center">
+            {item.icon ?? null}
+          </span>
           {!collapsed && (
             <>
               <span className="min-w-0 truncate">{item.label}</span>
-              {canShowPin && (
-                <button
-                  type="button"
-                  aria-label={pinnedItem ? "Unpin from top" : "Pin to top"}
-                  className={cn(
-                    "ml-auto inline-flex h-6 w-6 items-center justify-center rounded transition-opacity hover:bg-background/40",
-                    pinnedItem ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-                    isActive && "opacity-100"
-                  )}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    onTogglePinned(item.to);
-                  }}
-                >
-                  {pinnedItem ? (
-                    <PinOff className="h-3.5 w-3.5" />
-                  ) : (
-                    <Pin className="h-3.5 w-3.5" />
-                  )}
-                </button>
-              )}
+              <span className="ml-auto inline-flex h-6 w-6 items-center justify-center">
+                {canShowPin && (
+                  <button
+                    type="button"
+                    aria-label={pinnedItem ? "Unpin from top" : "Pin to top"}
+                    className={cn(
+                      "inline-flex h-6 w-6 items-center justify-center rounded transition-opacity hover:bg-background/40",
+                      pinnedItem ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+                      isActive && "opacity-100"
+                    )}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onTogglePinned(item.to);
+                    }}
+                  >
+                    {pinnedItem ? (
+                      <PinOff className="h-3.5 w-3.5" />
+                    ) : (
+                      <Pin className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                )}
+              </span>
             </>
           )}
         </>

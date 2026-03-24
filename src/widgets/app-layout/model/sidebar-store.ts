@@ -22,6 +22,8 @@ interface SidebarState {
   togglePinned: (path: string) => void;
 }
 
+const MAX_PINNED_ITEMS = 5;
+
 export const useSidebarStore = create<SidebarState>()(
   persist(
     (set) => ({
@@ -36,7 +38,9 @@ export const useSidebarStore = create<SidebarState>()(
         set((s) =>
           s.pinned.includes(path)
             ? { pinned: s.pinned.filter((p) => p !== path) }
-            : { pinned: [...s.pinned, path] }
+            : s.pinned.length >= MAX_PINNED_ITEMS
+              ? s
+              : { pinned: [...s.pinned, path] }
         ),
     }),
     { name: "cms-sidebar" }

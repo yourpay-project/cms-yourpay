@@ -17,5 +17,6 @@ export {
   formatDeviceTitle,
   formatOperatingSystem,
 } from "./user-detail-formatters";
+export { useScrollEdgeShadow, type ScrollEdgeShadowState } from "./use-scroll-edge-shadow";
 
 

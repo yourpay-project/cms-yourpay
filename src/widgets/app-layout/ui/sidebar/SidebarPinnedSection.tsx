@@ -12,6 +12,9 @@ export interface SidebarPinnedSectionProps {
   onTogglePinned: (path: string) => void;
 }
 
+/**
+ * Renders the fixed "Pinned" navigation group at the top of the sidebar.
+ */
 export const SidebarPinnedSection: FC<SidebarPinnedSectionProps> = ({
   collapsed,
   items,

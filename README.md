@@ -306,9 +306,12 @@ For navigation inside components, use **TanStack Router hooks**:
   - Receives optional `navTitle` and `children`.
 - `ui/Nav.tsx`
   - App title, global loading indicator, sidebar toggle, theme toggle, and user menu (email + logout).
+- `ui/MobileSidebar.tsx`
+  - Mobile overlay sidebar with `@react-spring/web` enter/exit animation (backdrop fade + panel slide).
 - `ui/Sidebar.tsx`
   - Renders navigation groups from `model/nav-config.tsx` (which maps icons onto `shared/config` navigation data).
   - Respects RBAC via `useCan`.
+  - Uses `@react-spring/web` width animation for smooth desktop collapse/expand.
   - Supports:
     - **Pinned section** (max 5 items) that stays fixed at the top.
     - **Search** input (with icon) for filtering non‑pinned items by label.
@@ -319,7 +322,7 @@ For navigation inside components, use **TanStack Router hooks**:
 - `model/sidebar-store.ts`
   - Zustand store `useSidebarStore`:
     - `collapsed`, `setCollapsed`, `toggle`.
-    - `pinned: string[]`, `togglePinned(path)`; pinned entries are persisted.
+    - `pinned: string[]`, `togglePinned(path)`; pinned entries are persisted and capped to 5 items.
 
 **Page-level persisted filter state (separate localStorage keys):**
 
@@ -373,7 +376,7 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`entities/occupation`** – Zod-validated `GET v1/occupations` and `useOccupationsQuery` for KYC document occupation dropdown.
 - **`pages/user-list`** – `UserListPage` at `/customers`: `useUserListFilters` backed by `useUserListStore` (persisted as `cms-user-yourpay`), dynamic filter mapping from backend `filters` metadata (`control`, `options`, `date_range`), shared collapsible filter card (`shared/ui/filter-card.tsx`), control buttons row (e.g. country), search, badges via `shared/lib/filter-badge-colors`, and `UserTable`.
 - **`pages/kyc-submission`** – KYC Submissions page: `useKycSubmissionFilters` backed by `useKycSubmissionStore` (persisted as `cms-kyc-submission`), shared collapsible filter card (`shared/ui/filter-card.tsx`) rendered from backend `filters` metadata (`options` + `date_range` labels), search and `KycSubmissionTable`. Option filter values and badges are normalized from the verification-submissions payload.
-- **`pages/transactions`** – Transactions list page at `/transactions`: SDUI filters from `GET v1/operators/transactions` (`filterDefinitions`: `options`, optional `control`, `date_range` e.g. `transaction_date`). Uses shared filter card (`shared/ui/filter-card.tsx`) plus `FilterControlButtons` and `DateRangePicker`; `useTransactionsStore` persists as `cms-transactions-api-filters`; debounced `keyword` search; `TransactionTable` with row-click to detail.
+- **`pages/transactions`** – Transactions list page at `/transactions`: SDUI filters from `GET v1/operators/transactions` (`filterDefinitions`: `options`, optional `control`, `date_range` e.g. `transaction_date`). Uses shared filter card (`shared/ui/filter-card.tsx`) plus `FilterControlButtons` and `DateRangePicker`; `useTransactionsStore` persists as `cms-user-transactions`; debounced `keyword` search; `TransactionTable` opens detail via explicit `Actions -> View` button (row click disabled), and supports double-click copy for Transaction ID.
 - **`pages/transaction-detail`** – Transaction detail page at `/transactions/$id`: fetches `GET v1/operators/transactions/{id}` and renders read-only sections (basic information, transaction details, parties, references, timestamps) with a back action to list.
 - **`pages/kyc-submission-detail`** – KYC submission detail at `/kyc-submission/$id`: route wraps content in `flex-1 min-h-0` so the **page title row** (back + title + status) stays fixed while content cards scroll below. **`<md`** single column (submission, EPL, images). **`md+`** two columns — user data left, `w-96` EPL + document images right in one shared scroll area. UI is split into `KycSubmissionDetailPageHeader` + `KycSubmissionDetailPageRightColumn` for readability. **Document Images** now behaves conditionally: if image missing -> show `FileDropzone`; if image exists -> show preview with overlay controls (zoom in/out, rotate, reset/home, edit), click-to-open large modal, plus **Compare** action to open side-by-side (desktop) / stacked (mobile) comparison modal. Save/status/checks as per API. **Document information** (document type/number, passport dates, occupation/ARC) and **Verification checks** are composed from smaller sections with payload normalization in model hooks (`use-kyc-document-information-card-logic`, `use-verification-check-items`). **ID** address: `entities/indonesia-address`.
 

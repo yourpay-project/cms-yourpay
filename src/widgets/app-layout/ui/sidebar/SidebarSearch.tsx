@@ -8,6 +8,9 @@ export interface SidebarSearchProps {
   dividerClassName: string;
 }
 
+/**
+ * Search control for filtering non-pinned sidebar items by label.
+ */
 export const SidebarSearch: FC<SidebarSearchProps> = ({
   value,
   onChange,
@@ -15,7 +18,7 @@ export const SidebarSearch: FC<SidebarSearchProps> = ({
 }) => {
   return (
     <>
-      <div className="px-3">
+      <div className="px-3 pt-1">
         <SearchInput
           value={value}
           onChange={(event) => onChange(event.target.value)}
@@ -24,7 +27,7 @@ export const SidebarSearch: FC<SidebarSearchProps> = ({
           className="h-8 w-full rounded-md border border-border bg-background pl-7 pr-2 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
       </div>
-      <div className={cn("my-2 border-t border-border/60", dividerClassName)} aria-hidden />
+      <div className={cn("mt-3 border-t border-border/60", dividerClassName)} aria-hidden />
     </>
   );
 };

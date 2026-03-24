@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useState } from "react";
+import { animated, useSpring } from "@react-spring/web";
 import { useCan } from "@/features/auth";
 import { cn } from "@/shared/lib";
 import { useSidebarNavigationLogic, useSidebarStore } from "../model";
@@ -22,6 +23,11 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   const pinned = useSidebarStore((s) => s.pinned);
   const togglePinned = useSidebarStore((s) => s.togglePinned);
   const [search, setSearch] = useState("");
+  const sidebarWidth = collapsed ? 64 : 256;
+  const sidebarSpring = useSpring({
+    width: sidebarWidth,
+    config: { tension: 220, friction: 26 },
+  });
 
   const {
     dashboardItem,
@@ -29,7 +35,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
     filteredGroups,
     canShowPinForItem,
     isPinned,
-    sectionInsetClass,
     dividerInsetClass,
   } = useSidebarNavigationLogic({
     collapsed,
@@ -39,16 +44,16 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   });
 
   return (
-    <aside
+    <animated.aside
+      style={sidebarSpring}
       className={cn(
-        "flex shrink-0 flex-col border-r border-border bg-card/95 backdrop-blur-md text-card-foreground transition-[width] duration-200 ease-in-out",
-        collapsed ? "w-16" : "w-64",
+        "flex shrink-0 flex-col overflow-hidden border-r border-border bg-card/95 backdrop-blur-md text-card-foreground",
         className
       )}
     >
-      <div className="flex flex-1 min-h-0 flex-col pt-3 pb-4">
+      <div className="flex flex-1 min-h-0 flex-col pt-3">
         {dashboardItem && (
-          <div className={cn("flex flex-col gap-0.5", sectionInsetClass)}>
+          <div className={cn("flex flex-col gap-0.5", collapsed ? "px-2" : "px-1")}>
             <SidebarItem
               item={dashboardItem}
               collapsed={collapsed}
@@ -56,7 +61,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
               canShowPin={false}
               onTogglePinned={togglePinned}
             />
-            <div className={cn("my-2 border-t border-border/60", dividerInsetClass)} aria-hidden />
+            <div className={cn("my-2 border-t border-border/60", collapsed ? "mx-2" : "mx-1")} aria-hidden />
           </div>
         )}
         <SidebarPinnedSection
@@ -74,44 +79,50 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
             dividerClassName={dividerInsetClass}
           />
         )}
-        <nav
+        <div
           className={cn(
-            "sidebar-scroll flex flex-1 min-h-0 flex-col overflow-y-auto overflow-x-hidden",
-            collapsed ? "gap-1 px-2" : "gap-5 px-0",
-            !collapsed && "mt-0"
+            "relative flex min-h-0 flex-1 flex-col",
+            collapsed ? "mt-1 mx-0" : "mt-2 mx-0 pt-2 pb-3"
           )}
         >
-          {filteredGroups.map((group, index) => (
-            <div
-              key={group.group ?? "main"}
-              className={cn(
-                "flex flex-col gap-0.5",
-                index > 0 && !collapsed && "mt-1"
-              )}
-            >
-              {!collapsed && group.group && (
-                <p className="mb-1.5 px-3 py-0.5 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                  {group.group}
-                </p>
-              )}
-              {collapsed && index > 0 && (
-                <div className="mx-2 my-1 border-t border-border" />
-              )}
-              {group.items.map((item) => (
-                <SidebarItem
-                  key={item.to}
-                  item={item}
-                  collapsed={collapsed}
-                  pinnedItem={isPinned(item.to)}
-                  canShowPin={canShowPinForItem(item.to)}
-                  onTogglePinned={togglePinned}
-                />
-              ))}
-            </div>
-          ))}
-        </nav>
+          <nav
+            className={cn(
+              "flex flex-1 min-h-0 flex-col overflow-y-auto overflow-x-auto",
+              !collapsed && "sidebar-scroll",
+              collapsed
+                ? "gap-1 px-2 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                : "gap-3 px-1 pb-4"
+            )}
+          >
+            {filteredGroups.map((group, index) => (
+              <div
+                key={group.group ?? "main"}
+                className={cn(
+                  "flex flex-col gap-0.5",
+                  index > 0 && !collapsed && "mt-1"
+                )}
+              >
+                {!collapsed && group.group && (
+                  <p className="mb-1 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                    {group.group}
+                  </p>
+                )}
+                {group.items.map((item) => (
+                  <SidebarItem
+                    key={item.to}
+                    item={item}
+                    collapsed={collapsed}
+                    pinnedItem={isPinned(item.to)}
+                    canShowPin={canShowPinForItem(item.to)}
+                    onTogglePinned={togglePinned}
+                  />
+                ))}
+              </div>
+            ))}
+          </nav>
+        </div>
       </div>
-    </aside>
+    </animated.aside>
   );
 };
 
