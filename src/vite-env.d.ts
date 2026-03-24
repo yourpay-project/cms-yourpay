@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string;
+  readonly VITE_BRAND_LOGO_URL?: string;
   readonly VITE_GOOGLE_AUTH_URL?: string;
   readonly VITE_APP_VERSION?: string;
   readonly VITE_APP_ENV?: "development" | "staging" | "production";

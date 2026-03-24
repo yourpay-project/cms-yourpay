@@ -6,13 +6,12 @@ import {
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   Input,
 } from "@/shared/ui";
+import { BRAND_LOGO_URL } from "@/shared/config";
 import { cn } from "@/shared/lib";
-import { DEMO_CREDENTIALS } from "../constants";
 import { getGoogleAuthUrl } from "../api";
 import { loginSchema, type LoginFormValues, useLoginMutation } from "../model";
 import { GoogleIcon } from "./GoogleIcon";
@@ -46,9 +45,9 @@ export const LoginForm: FC<LoginFormProps> = ({
 
   return (
     <Card className={cn("w-full max-w-md", className)}>
-      <CardHeader>
+      <CardHeader className="items-center gap-3 text-center">
+        <img src={BRAND_LOGO_URL} alt="YourPay" className="h-10 w-auto" />
         <CardTitle>Sign in</CardTitle>
-        <CardDescription>YourPay CMS — use your operator account</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {isUsernamePasswordEnabled && (
@@ -124,9 +123,6 @@ export const LoginForm: FC<LoginFormProps> = ({
               <strong className="font-semibold">@yourpay.co.id</strong> email.
             </p>
           </div>
-          <p className="text-center text-xs text-muted-foreground">
-            Demo: {DEMO_CREDENTIALS.email} / {DEMO_CREDENTIALS.password}
-          </p>
         </div>
       </CardContent>
     </Card>

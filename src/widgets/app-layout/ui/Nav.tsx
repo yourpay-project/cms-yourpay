@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Loader2, LogOut, Menu, PanelLeft, PanelLeftClose, User } from "lucide-react";
 import { useAuth, useLogout } from "@/features/auth";
+import { BRAND_LOGO_URL } from "@/shared/config";
 import { cn, useLoadingStore } from "@/shared/lib";
 import { ThemeToggle } from "@/shared/ui";
 import {
@@ -27,7 +28,7 @@ export interface NavProps {
  * - `useLoadingStore` to show a subtle loading spinner,
  * - and auth hooks for showing the current operator and a logout action.
  */
-export const Nav: FC<NavProps> = ({ title = "YourPay CMS", className }) => {
+export const Nav: FC<NavProps> = ({ className }) => {
   const { user } = useAuth();
   const logout = useLogout();
   const globalLoading = useLoadingStore((s) => s.globalLoading);
@@ -72,18 +73,22 @@ export const Nav: FC<NavProps> = ({ title = "YourPay CMS", className }) => {
           />
         )}
         <div className="flex flex-col">
-          <h1 className="hidden text-lg font-semibold md:inline">{title}</h1>
+          <img
+            src={BRAND_LOGO_URL}
+            alt="YourPay"
+            className="hidden h-7 w-auto md:block"
+          />
           <button
             type="button"
             onClick={toggleMobileSidebar}
-            className="flex items-center text-sm text-muted-foreground md:hidden focus:outline-none"
+            className="flex items-center md:hidden focus:outline-none"
             aria-label="Open navigation"
           >
-            <span className="truncate">Home</span>
-            <span className="mx-1">/</span>
-            <span className="font-medium text-foreground truncate">
-              {title}
-            </span>
+            <img
+              src={BRAND_LOGO_URL}
+              alt="YourPay"
+              className="h-6 w-auto"
+            />
           </button>
         </div>
       </div>

@@ -61,7 +61,6 @@ export const InputMain: FC<InputMainProps> = ({
           disabled && "cursor-not-allowed opacity-50",
           readOnly && "cursor-not-allowed",
           !readOnly && "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0",
-          !readOnly && !disabled && "hover:bg-muted/50",
           readOnly ? "bg-muted/20" : "bg-background",
         )}
       >

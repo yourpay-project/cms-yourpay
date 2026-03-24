@@ -44,8 +44,9 @@ export const SearchInput: FC<SearchInputProps> = ({
         type="search"
         id={resolvedId}
         aria-label={resolvedAriaLabel}
+        placeholder={placeholder}
         className={cn(
-          "h-9 w-full rounded-md border border-input bg-background/80 pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring",
+          "h-9 w-full rounded-md border border-input bg-background/80 pl-9 pr-3 text-sm !placeholder:text-foreground/70 !placeholder:opacity-100 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring",
           className,
         )}
         {...restProps}

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   VITE_API_BASE_URL: z.string().default('/api'),
+  VITE_BRAND_LOGO_URL: z.string().optional(),
   VITE_GOOGLE_AUTH_URL: z.string().optional(),
   VITE_APP_VERSION: z.string().optional(),
   VITE_SENTRY_DSN: z.string().optional(),

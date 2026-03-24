@@ -29,6 +29,9 @@ export default defineConfig(() => {
     build: {
       sourcemap: true,
     },
+    server: {
+      allowedHosts: ["566f-2404-8000-100c-1198-519a-3c5b-2336-90ac.ngrok-free.app"],
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
