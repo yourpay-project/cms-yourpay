@@ -22,7 +22,7 @@ export const DEFAULT_SKELETON_ROW_COUNT = 5;
  *
  * @param column - TanStack Table column (from header or cell).
  * @param isHeader - When true, applies higher z-index so header is not covered by body.
- * @returns CSS style object for position, left/right, zIndex, and backgroundColor.
+ * @returns CSS style object for position, left/right, and zIndex.
  */
 export function getPinningStyles<TData, TValue>(
   column: Column<TData, TValue>,
@@ -47,7 +47,6 @@ export function getPinningStyles<TData, TValue>(
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
     zIndex: baseZ,
-    backgroundColor: "hsl(var(--background))",
     minWidth: column.getSize(),
   };
 }

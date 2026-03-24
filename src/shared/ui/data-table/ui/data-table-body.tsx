@@ -109,7 +109,7 @@ export function DataTableBody<TData>({
                       ...cellMeta?.style,
                     }}
                     className={cn(
-                      "border-b border-border/60 text-foreground transition-colors group-hover:bg-muted/40",
+                      "border-b border-border/60 bg-background text-foreground transition-colors group-hover:bg-muted",
                       isPinned ? "bg-background" : "bg-background",
                       sizeCellClass ?? "px-4 py-3 text-sm",
                       alignClass,

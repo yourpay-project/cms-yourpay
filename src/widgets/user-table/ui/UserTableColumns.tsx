@@ -111,7 +111,9 @@ export function getUserTableColumns(): ColumnDef<User, unknown>[] {
     },
     {
       id: "actions",
-      header: "",
+      header: "Actions",
+      size: 92,
+      minSize: 92,
       meta: { align: "center" },
       cell: ({ row }) => {
         const customerId = row.original.id;
@@ -123,7 +125,7 @@ export function getUserTableColumns(): ColumnDef<User, unknown>[] {
         return (
           <div className="flex justify-center">
             <Button asChild variant="default" size="sm" type="button">
-              <Link to="/customers/$customerId" params={{ customerId }}>
+              <Link to="/customers/$customerId" params={{ customerId }} className="h-7 px-2 text-xs">
                 View
               </Link>
             </Button>

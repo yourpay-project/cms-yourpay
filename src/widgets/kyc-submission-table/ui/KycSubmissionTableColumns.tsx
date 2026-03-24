@@ -1,5 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Link } from "@tanstack/react-router";
+import { Button } from "@/shared/ui";
 
 import type { KycSubmission } from "@/entities/kyc-submission";
 
@@ -122,9 +123,9 @@ export function getKycSubmissionTableColumns(): ColumnDef<KycSubmission, unknown
     },
     {
       id: "actions",
-      header: "Action",
-      size: 120,
-      minSize: 100,
+      header: "Actions",
+      size: 92,
+      minSize: 92,
       meta: { align: "center" as const },
       cell: ({ row }) => {
         const id = row.original.kycHeaderId ?? row.original.id ?? "";
@@ -132,13 +133,11 @@ export function getKycSubmissionTableColumns(): ColumnDef<KycSubmission, unknown
 
         return (
           <div className="flex justify-center">
-            <Link
-              to="/kyc-submission/$id"
-              params={{ id }}
-              className="text-primary hover:underline text-sm font-medium"
-            >
-              View Details
-            </Link>
+            <Button asChild variant="default" size="sm" type="button">
+              <Link to="/kyc-submission/$id" params={{ id }} className="h-7 px-2 text-xs">
+                View
+              </Link>
+            </Button>
           </div>
         );
       },

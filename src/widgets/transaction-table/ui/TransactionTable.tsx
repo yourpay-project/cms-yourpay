@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { DataTable, ErrorBoundary, TABLE_BODY_VIEWPORT_HEIGHT } from "@/shared/ui";
 import type { Transaction } from "@/entities/transaction";
 import type { TransactionTableProps } from "./TransactionTable.type";
@@ -15,7 +14,6 @@ export const TransactionTable: FC<TransactionTableProps> = ({
   isRefetching,
   onPageChange,
 }) => {
-  const navigate = useNavigate();
   const pageCount = total === 0 ? 1 : Math.ceil(total / pageSize);
 
   return (
@@ -29,17 +27,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
           enableVerticalShadow
           isLoading={isRefetching}
           loading={{ loadingVariant: "spinner" }}
-          initialColumnPinning={{ left: ["id"], right: ["status"] }}
-          onRow={(row) => ({
-            className: row.original.id ? "cursor-pointer" : undefined,
-            onClick: () => {
-              if (!row.original.id) return;
-              void navigate({
-                to: "/transactions/$id",
-                params: { id: row.original.id },
-              });
-            },
-          })}
+          initialColumnPinning={{ left: ["id"], right: ["status", "actions"] }}
           pagination={{ pageIndex, pageSize }}
           pageCount={pageCount}
           onPaginationChange={(pagination) => onPageChange(pagination.pageIndex, pagination.pageSize)}
