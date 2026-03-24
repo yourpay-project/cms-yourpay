@@ -98,6 +98,12 @@ export {
 } from "./data-table";
 
 export { SearchInput, type SearchInputProps } from "./search-input";
+export {
+  FilterCard,
+  type FilterCardBadge,
+  type FilterCardProps,
+} from "./filter-card";
+export { toFilterCardBadges, toFilterCardBadgeLabel } from "./filter-card-badges";
 export { SelectDropdown } from "./select-dropdown";
 export type { SelectDropdownOption, SelectDropdownProps } from "./select-dropdown.type";
 export { LabeledSelectField, type LabeledSelectFieldProps } from "./labeled-select-field";

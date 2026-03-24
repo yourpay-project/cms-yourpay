@@ -1,7 +1,5 @@
 import type { FC } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
-import { getFilterBadgeClassName } from "@/shared/lib";
+import { FilterCard, toFilterCardBadgeLabel, toFilterCardBadges } from "@/shared/ui";
 import type { UserListDynamicFilterField, UserListFilterBadge } from "..";
 import { UserListFiltersGrid } from "./UserListFiltersGrid";
 
@@ -26,58 +24,22 @@ export const UserListFiltersCard: FC<UserListFiltersCardProps> = (props) => {
   const { filtersOpen, setFiltersOpen, badges, handleResetFilters } = props;
 
   return (
-    <Card className="border-border bg-card">
-      <CardContent className="p-4">
-        <div className="flex w-full flex-wrap items-center justify-between gap-2">
-          <DropdownFieldTrigger
-            label="Filters"
-            className="h-auto w-auto shrink-0 rounded-none px-0 py-0 text-sm font-medium hover:bg-transparent hover:opacity-80 focus:ring-0 focus:ring-offset-0"
-            onClick={() => setFiltersOpen((v) => !v)}
-            aria-expanded={filtersOpen}
-            trailing={
-              filtersOpen ? (
-                <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-              ) : (
-                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-              )
-            }
-          />
-          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-            {badges.map((b) => (
-              <span key={b.id} className={getFilterBadgeClassName(b.name)}>
-                {b.name}: {b.valueLabel}
-                <button
-                  type="button"
-                  className="rounded p-0.5 hover:bg-muted hover:text-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    b.onClear();
-                  }}
-                  aria-label={`Remove ${b.name}`}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-              onClick={handleResetFilters}
-            >
-              Reset
-            </Button>
-          </div>
-        </div>
-        {filtersOpen && (
-          <UserListFiltersGrid
-            filterFields={props.optionFilterFields}
-            selectedFilterValues={props.selectedFilterValues}
-            onChangeFilter={props.onChangeFilter}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <FilterCard
+      filtersOpen={filtersOpen}
+      setFiltersOpen={setFiltersOpen}
+      badges={toFilterCardBadges(badges, (badge) => ({
+        id: badge.id,
+        badgeKey: badge.name,
+        label: toFilterCardBadgeLabel(badge.name, badge.valueLabel),
+        onClear: badge.onClear,
+      }))}
+      onReset={handleResetFilters}
+    >
+      <UserListFiltersGrid
+        filterFields={props.optionFilterFields}
+        selectedFilterValues={props.selectedFilterValues}
+        onChangeFilter={props.onChangeFilter}
+      />
+    </FilterCard>
   );
 };

@@ -1,8 +1,6 @@
 import type { FC } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { Button, Card, CardContent, DropdownFieldTrigger } from "@/shared/ui";
+import { FilterCard, toFilterCardBadges } from "@/shared/ui";
 import type { FilterField } from "@/shared/ui";
-import { getFilterBadgeClassName } from "@/shared/lib";
 import type { FilterBadge } from "..";
 import { KycSubmissionFiltersGrid } from "./KycSubmissionFiltersGrid";
 
@@ -42,54 +40,19 @@ export const KycSubmissionFiltersCard: FC<KycSubmissionFiltersCardProps> = (prop
   const { filtersOpen, setFiltersOpen, badges, handleResetFilters } = props;
 
   return (
-    <Card className="border-border bg-card">
-      <CardContent className="p-4">
-        <div className="flex w-full flex-wrap items-center justify-between gap-2">
-          <DropdownFieldTrigger
-            label="Filters"
-            className="h-auto w-auto shrink-0 rounded-none px-0 py-0 text-sm font-medium hover:bg-transparent hover:opacity-80 focus:ring-0 focus:ring-offset-0"
-            onClick={() => setFiltersOpen((v) => !v)}
-            aria-expanded={filtersOpen}
-            trailing={
-              filtersOpen ? (
-                <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-              ) : (
-                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-              )
-            }
-          />
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
-            <div className="hidden flex-wrap items-center gap-1.5 sm:flex">
-              {badges.map((b) => (
-                <span key={b.key} className={getFilterBadgeClassName(b.key)}>
-                  {b.label}
-                  <button
-                    type="button"
-                    className="rounded p-0.5 hover:bg-muted hover:text-foreground"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      b.onClear();
-                    }}
-                    aria-label={`Remove ${b.label}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-              onClick={handleResetFilters}
-            >
-              Reset
-            </Button>
-          </div>
-        </div>
-        {filtersOpen && <KycSubmissionFiltersGrid {...props} />}
-      </CardContent>
-    </Card>
+    <FilterCard
+      filtersOpen={filtersOpen}
+      setFiltersOpen={setFiltersOpen}
+      badges={toFilterCardBadges(badges, (badge) => ({
+        id: badge.key,
+        badgeKey: badge.key,
+        label: badge.label,
+        onClear: badge.onClear,
+      }))}
+      onReset={handleResetFilters}
+      badgesClassName="hidden sm:flex"
+    >
+      <KycSubmissionFiltersGrid {...props} />
+    </FilterCard>
   );
 };
