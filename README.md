@@ -12,7 +12,7 @@ This document is written for **new engineers** joining the project. It explains 
 End-to-end path for a new machine:
 
 1. Install **Git** (to clone the repo).
-2. Install **Node.js 20.x** and a matching **npm** — either with **nvm** (recommended) or the **official Node.js installer**.
+2. Install **Node.js 25.x** (this repo pins **v25.7.0** in [`.nvmrc`](./.nvmrc)) and **npm 11.x** — either with **nvm** (recommended) or the **official Node.js installer**.
 3. Clone the repo, install dependencies, copy **`.env`**, run the dev server.
 
 ---
@@ -22,8 +22,8 @@ End-to-end path for a new machine:
 | Tool | Why |
 |------|-----|
 | **Git** | Clone and update the repository. |
-| **Node.js 20.x+** | Runtime for Vite and the toolchain. |
-| **npm 10+** | Installs packages (comes with Node 20+). |
+| **Node.js 25.7+** | Runtime for Vite and the toolchain (see `.nvmrc`). |
+| **npm 11.10+** | Installs packages (bundled with Node 25; verify with `npm -v`). |
 
 Optional but recommended: **[nvm](https://github.com/nvm-sh/nvm)** (macOS/Linux) or **[nvm-windows](https://github.com/coreybutler/nvm-windows)** so the whole team can pin the same major Node version via [`.nvmrc`](./.nvmrc).
 
@@ -96,22 +96,22 @@ Then run `source ~/.zshrc` (or open a new terminal) and check `nvm -v`. After th
 Then, in **this repo’s root** (after you have cloned it):
 
 ```bash
-nvm install    # uses .nvmrc on macOS/Linux nvm; if your Windows nvm ignores it, run: nvm install 20
+nvm install    # uses .nvmrc on macOS/Linux nvm; if your Windows nvm ignores it, run: nvm install 25.7.0
 nvm use
-node -v      # expect v20.x.x
-npm -v       # expect 10.x or higher
+node -v      # expect v25.7.x (or newer matching .nvmrc)
+npm -v       # expect 11.10.x or higher
 ```
 
-On **nvm-windows**, if `nvm install` does not read `.nvmrc`, run `nvm install 20` then `nvm use 20`.
+On **nvm-windows**, if `nvm install` does not read `.nvmrc`, run `nvm install 25.7.0` then `nvm use 25.7.0`.
 
 #### Option B — Node without nvm
 
-1. Download the **20.x LTS** installer from [https://nodejs.org](https://nodejs.org) and install it.
+1. Download the **Current** **25.x** installer from [https://nodejs.org](https://nodejs.org) (or install the exact version from [releases](https://nodejs.org/en/download/current)) and install it.
 2. Open a new terminal and confirm:
 
 ```bash
-node -v   # v20.x or higher
-npm -v    # 10.x or higher
+node -v   # v25.7.x or higher (match .nvmrc when possible)
+npm -v    # 11.10.x or higher
 ```
 
 You can develop the CMS this way; you only lose easy per-project version switching.
