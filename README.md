@@ -7,7 +7,151 @@ This document is written for **new engineers** joining the project. It explains 
 
 ---
 
-## 1. Tech Stack Overview
+## 1. How to get started
+
+End-to-end path for a new machine:
+
+1. Install **Git** (to clone the repo).
+2. Install **Node.js 20.x** and a matching **npm** — either with **nvm** (recommended) or the **official Node.js installer**.
+3. Clone the repo, install dependencies, copy **`.env`**, run the dev server.
+
+---
+
+### Prerequisites (what you need)
+
+| Tool | Why |
+|------|-----|
+| **Git** | Clone and update the repository. |
+| **Node.js 20.x+** | Runtime for Vite and the toolchain. |
+| **npm 10+** | Installs packages (comes with Node 20+). |
+
+Optional but recommended: **[nvm](https://github.com/nvm-sh/nvm)** (macOS/Linux) or **[nvm-windows](https://github.com/coreybutler/nvm-windows)** so the whole team can pin the same major Node version via [`.nvmrc`](./.nvmrc).
+
+---
+
+### Step 0 — Install Git (if you do not have it)
+
+- **macOS:** Install [Xcode Command Line Tools](https://developer.apple.com/download/all/) (`xcode-select --install`) or Git via Homebrew (`brew install git`).
+- **Windows:** Install [Git for Windows](https://git-scm.com/download/win).
+- **Linux (Debian/Ubuntu):** `sudo apt update && sudo apt install git`
+
+Check:
+
+```bash
+git --version
+```
+
+---
+
+### Step 1 — Install Node.js
+
+Pick **one** of the following.
+
+#### Option A — Node via nvm (recommended)
+
+Use this if **nvm is not installed yet** (or you want version switching per project).
+
+**macOS / Linux ([nvm](https://github.com/nvm-sh/nvm#installing-and-updating))**
+
+1. Run the **current** install one-liner from the [nvm README “Installing and updating”](https://github.com/nvm-sh/nvm#installing-and-updating) section (it may look like `curl … | bash` or `wget … | bash`). That downloads and configures nvm under `~/.nvm`.
+2. **Reload your shell** so `nvm` is available:
+   - Close and reopen the terminal, **or**
+   - Run `source ~/.nvm/nvm.sh` (usual path after the official install script), **or**
+   - Follow the post-install snippet the installer prints (it often appends `NVM_DIR` and a `source` line to `~/.bashrc` / `~/.zshrc`).
+3. Verify:
+
+```bash
+command -v nvm   # should print "nvm", or run: nvm -v
+```
+
+If you see `command not found: nvm`, the shell did not load nvm yet — fix your profile file or open a new terminal, then try again.
+
+**macOS — nvm via Homebrew (optional)**
+
+If you already use [Homebrew](https://brew.sh), you can install nvm with the formula instead of the curl script:
+
+```bash
+brew install nvm
+```
+
+Homebrew does not load nvm automatically. Create the version directory and add the lines below to `~/.zshrc` (or `~/.bash_profile` if you use bash).  
+`$(brew --prefix nvm)` resolves to the correct path on both Apple Silicon (`/opt/homebrew/...`) and Intel (`/usr/local/...`).
+
+```bash
+mkdir -p ~/.nvm
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$(brew --prefix nvm)/nvm.sh" ] && \. "$(brew --prefix nvm)/nvm.sh"
+[ -s "$(brew --prefix nvm)/etc/bash_completion.d/nvm" ] && \. "$(brew --prefix nvm)/etc/bash_completion.d/nvm"
+```
+
+Then run `source ~/.zshrc` (or open a new terminal) and check `nvm -v`. After that, use `nvm install` / `nvm use` in the project root as usual.
+
+**Windows ([nvm-windows](https://github.com/coreybutler/nvm-windows))**
+
+1. Uninstall any standalone “Node.js” from *Apps & features* if you previously installed it manually (nvm-windows manages Node).
+2. Download and run the **nvm-setup** installer from the [nvm-windows releases](https://github.com/coreybutler/nvm-windows/releases) page.
+3. Open a **new** Command Prompt or PowerShell and verify: `nvm version`
+
+Then, in **this repo’s root** (after you have cloned it):
+
+```bash
+nvm install    # uses .nvmrc on macOS/Linux nvm; if your Windows nvm ignores it, run: nvm install 20
+nvm use
+node -v      # expect v20.x.x
+npm -v       # expect 10.x or higher
+```
+
+On **nvm-windows**, if `nvm install` does not read `.nvmrc`, run `nvm install 20` then `nvm use 20`.
+
+#### Option B — Node without nvm
+
+1. Download the **20.x LTS** installer from [https://nodejs.org](https://nodejs.org) and install it.
+2. Open a new terminal and confirm:
+
+```bash
+node -v   # v20.x or higher
+npm -v    # 10.x or higher
+```
+
+You can develop the CMS this way; you only lose easy per-project version switching.
+
+---
+
+### Step 2 — Clone and first-time setup
+
+```bash
+git clone <repository-url> yourpay-cms
+cd yourpay-cms
+nvm use                    # only if you use nvm (after install / use steps above)
+npm install
+cp .env.example .env       # edit API URL and other values (see Environment Variables)
+```
+
+---
+
+### Step 3 — Run the app locally
+
+```bash
+npm run dev
+# or
+make run
+```
+
+The Vite dev server prints a local URL (commonly `http://localhost:5173`). Use that in the browser. Set `VITE_API_BASE_URL` in `.env` to a reachable API if you need live data.
+
+### Everyday commands
+
+| Task | Command |
+|------|---------|
+| Dev server | `npm run dev` or `make run` |
+| Lint | `npm run lint` or `make lint` |
+| Production build | `npm run build` or `make build` |
+| Preview production build | `npm run preview` |
+
+---
+
+## 2. Tech Stack Overview
 
 - **Runtime / Framework**
   - React 18
@@ -30,7 +174,7 @@ This document is written for **new engineers** joining the project. It explains 
 
 ---
 
-## 2. Project Structure (FSD)
+## 3. Project Structure (FSD)
 
 All application code lives under `src/` and follows the FSD layering rules.  
 Valid import direction: **`app → pages → widgets → features → entities → shared`** (never upwards).
@@ -153,48 +297,19 @@ src/
 
 ---
 
-## 3. Running the App
+## 4. Running the app (reference)
 
-### Requirements
-
-- Node.js 20+
-- npm 10+
-
-### Setup
+Requirements, nvm usage, install steps, and commands are documented in **[How to get started](#1-how-to-get-started)** above. Use this section only if you need a minimal reminder:
 
 ```bash
 npm install
-cp .env.example .env        # Adjust values as needed
-```
-
-### Development
-
-```bash
+cp .env.example .env
 npm run dev
-# or
-make run
-```
-
-### Lint, Build, Preview
-
-```bash
-# Lint
-npm run lint
-# or
-make lint
-
-# Build
-npm run build
-# or
-make build
-
-# Preview production build
-npm run preview
 ```
 
 ---
 
-## 4. Environment Variables
+## 5. Environment Variables
 
 Configured via `.env` (see `.env.example`):
 
@@ -234,9 +349,9 @@ Build‑time Sentry configuration (used only by the Vite plugin for sourcemaps):
 
 ---
 
-## 5. Architecture for New Engineers
+## 6. Architecture for New Engineers
 
-### 5.1 Routing (TanStack Router)
+### 6.1 Routing (TanStack Router)
 
 File: `app/App.tsx`
 
@@ -259,7 +374,7 @@ For navigation inside components, use **TanStack Router hooks**:
 - `useNavigate()` – navigate by `to: "/path"`.
 - `Link` – for declarative navigation from the sidebar.
 
-### 5.2 Auth & Session
+### 6.2 Auth & Session
 
 **Domain state (entities):**
 
@@ -299,7 +414,7 @@ For navigation inside components, use **TanStack Router hooks**:
 - `LoginRedirect` – for `/login`; if already authenticated, redirects to `/`.
 - `Can` – conditional renderer based on permissions/roles (wrapping `useCan`).
 
-### 5.3 Layout & Sidebar (widgets/app-layout)
+### 6.3 Layout & Sidebar (widgets/app-layout)
 
 - `ui/AppLayout.tsx`
   - Top nav (`Nav`), left sidebar (`Sidebar`), and main content area (`min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden`) so pages like KYC detail can use `flex-1 min-h-0` + inner `overflow-y-auto` for a fixed page header and scrollable cards.
@@ -329,7 +444,7 @@ For navigation inside components, use **TanStack Router hooks**:
 - **`pages/user-list/model/user-list-store.ts`** – `useUserListStore` persisted as `cms-user-yourpay`. Holds generic backend-driven `filterValues` (`Record<string,string>`), search, pagination, and filters card open state. Isolated from KYC state.
 - **`pages/kyc-submission/model/kyc-submission-store.ts`** – `useKycSubmissionStore` persisted as `cms-kyc-submission`. Holds filters (status, document type, country, reverify, KYC/Last update date ranges), search, pagination, and filters card open state. Isolated from User Yourpay state.
 
-### 5.4 Shared Layer
+### 6.4 Shared Layer
 
 - `shared/api/api-client.ts`
   - `apiRequest` wrapper around `fetch` with:
@@ -353,7 +468,7 @@ For navigation inside components, use **TanStack Router hooks**:
   - **RouteFallback** – full-page loading fallback for `Suspense` when lazy-loading route components.
   - **ErrorBoundary** – isolates widget/page crashes to prevent total app failure.
 
-### 5.5 Data tables (shared/ui/data-table, widgets/user-table)
+### 6.5 Data tables (shared/ui/data-table, widgets/user-table)
 
 The primary table for the app is the **shared DataTable** (`shared/ui/data-table`). It uses **@tanstack/react-table** with **semantic Tailwind tokens** (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-card`) so it respects light/dark theme and stays consistent with the rest of the UI.
 
@@ -432,7 +547,7 @@ Example – server-side pagination:
 />
 ```
 
-### 5.6 Loading: global, local, and lazy loading
+### 6.6 Loading: global, local, and lazy loading
 
 - **Lazy loading (route/code-split)**  
   Page components (Dashboard, Login, UserList, etc.) are loaded with `React.lazy` and wrapped in `<Suspense fallback={<RouteFallback />}>`. The initial bundle stays smaller; the nav and layout load first, then the page chunk loads and the fallback is shown until the component is ready.
@@ -455,7 +570,7 @@ Example – server-side pagination:
 
 ---
 
-## 6. How to Add a New Feature (Step‑by‑Step)
+## 7. How to Add a New Feature (Step‑by‑Step)
 
 Example: add a new **“Reports”** feature with a table page.
 
@@ -553,7 +668,7 @@ Example: add a new **“Reports”** feature with a table page.
 
 ---
 
-## 7. Coding Guidelines
+## 8. Coding Guidelines
 
 - **FSD discipline**
   - Only import through slice `index.ts` public APIs.
@@ -575,7 +690,7 @@ Example: add a new **“Reports”** feature with a table page.
 
 ---
 
-## 8. Backend API client generation
+## 9. Backend API client generation
 
 This project includes a generator that produces a fully typed backend API client from the Swagger/OpenAPI spec used by the CMS.
 
