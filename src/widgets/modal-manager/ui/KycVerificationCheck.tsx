@@ -17,8 +17,47 @@ const VERIFICATION_CHECK_LABELS: Record<string, string> = {
   similar_photo: "Photo Similarity",
 };
 
+interface KycVerificationResultsProps {
+  hasItems: boolean;
+  checkItems: Array<{
+    key: string;
+    label: string;
+    status?: string;
+    score?: number;
+    failedReason?: string;
+  }>;
+}
+
+const KycVerificationResults: FC<KycVerificationResultsProps> = ({ hasItems, checkItems }) => {
+  if (!hasItems) {
+    return (
+      <div className="rounded-lg border border-dashed border-border bg-muted/15 px-4 py-6 text-center text-sm text-muted-foreground">
+        No verification details available yet.
+      </div>
+    );
+  }
+
+  return (
+    <ul className="space-y-2">
+      {checkItems.map((item) => (
+        <li key={item.key}>
+          <KycVerificationCheckItem
+            label={item.label}
+            status={item.status}
+            score={item.score}
+            failedReason={item.failedReason}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 /**
  * KYC verification preview modal for documents and check results.
+ *
+ * @param props Modal handlers, preview assets, and verification state.
+ * @returns Verification preview with check result list and action footer.
  */
 export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
   open,
@@ -56,31 +95,15 @@ export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
 
   // `open` is controlled by ModalContainer; this content renders body + actions.
   void open;
-
-  let resultsNode: React.ReactNode = (
-    <ul className="space-y-2">
-      {checkItems.map((item) => (
-        <li key={item.key}>
-          <KycVerificationCheckItem
-            label={item.label}
-            status={item.status}
-            score={item.score}
-            failedReason={item.failedReason}
-          />
-        </li>
-      ))}
-    </ul>
-  );
-
-  if (checkItems.length === 0) {
-    resultsNode = (
-      <div className="rounded-lg border border-dashed border-border bg-muted/15 px-4 py-6 text-center text-sm text-muted-foreground">
-        No verification details available yet.
-      </div>
-    );
+  const hasCheckItems = checkItems.length > 0;
+  let runLabel = "Run Verification Checks";
+  if (isRunning) {
+    runLabel = "Running...";
   }
-
-  const runLabel = isRunning ? "Running..." : "Run Verification Checks";
+  let runIcon: React.ReactNode = null;
+  if (isRunning) {
+    runIcon = <Loader2 className="h-4 w-4 animate-spin" />;
+  }
 
   return (
     <div className="space-y-5">
@@ -101,7 +124,7 @@ export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
         <div className="mb-2 text-sm font-semibold text-foreground">
           Check results
         </div>
-        {resultsNode}
+        <KycVerificationResults hasItems={hasCheckItems} checkItems={checkItems} />
       </div>
 
       <div className="flex items-center justify-end gap-2 pb-5 pt-4">
@@ -115,7 +138,7 @@ export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
           }}
           disabled={Boolean(isRunning)}
         >
-          {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          {runIcon}
           {runLabel}
         </Button>
       </div>

@@ -49,6 +49,14 @@ export const KycEplStatus: FC<KycEplStatusProps> = ({
 
   const hasEplStatusChanged = eplStatusDraft !== currentStatus;
   const isRejected = eplStatusDraft === "rejected";
+  let submitLabel = "Save Changes";
+  if (updateMutation.isPending) {
+    submitLabel = "Saving...";
+  }
+  let submitLeadingNode: React.ReactNode = null;
+  if (updateMutation.isPending) {
+    submitLeadingNode = <Loader2 className="h-4 w-4 animate-spin" />;
+  }
 
   const selectedRejectReason = useMemo(() => {
     const reasons = rejectReasonsQuery.data ?? [];
@@ -87,7 +95,12 @@ export const KycEplStatus: FC<KycEplStatusProps> = ({
     const body: UpdateStatusVerifSubmissionRequest = {};
     if (eplStatusDraft === "rejected") {
       body.rejection_code = selectedRejectReason?.code ?? "";
-      body.rejection_notes = selectedRejectReason?.description || selectedRejectReason?.title || "";
+      const rejectReasonDescription = selectedRejectReason?.description?.trim();
+      if (rejectReasonDescription) {
+        body.rejection_notes = rejectReasonDescription;
+      } else {
+        body.rejection_notes = selectedRejectReason?.title ?? "";
+      }
     }
 
     updateMutation.mutate(
@@ -126,8 +139,8 @@ export const KycEplStatus: FC<KycEplStatusProps> = ({
           Cancel
         </Button>
         <Button type="button" onClick={onSubmit} disabled={updateMutation.isPending}>
-          {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {updateMutation.isPending ? "Saving..." : "Save Changes"}
+          {submitLeadingNode}
+          {submitLabel}
         </Button>
       </div>
     </div>
