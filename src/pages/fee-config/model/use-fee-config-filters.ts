@@ -15,6 +15,17 @@ export type FeeStatusFilter = "all" | "active" | "inactive";
 
 export type FeeTypeFilter = "all" | "fixed" | "percentage" | "tiered";
 
+const FEE_STATUS_LABEL_BY_VALUE: Record<Exclude<FeeStatusFilter, "all">, string> = {
+  active: "Active",
+  inactive: "Inactive",
+};
+
+const FEE_TYPE_LABEL_BY_VALUE: Record<Exclude<FeeTypeFilter, "all">, string> = {
+  fixed: "FIXED",
+  percentage: "PERCENTAGE",
+  tiered: "TIERED",
+};
+
 export interface FeeConfigFilterBadge {
   id: string;
   key: "status" | "feeType" | "service" | "currency";
@@ -131,31 +142,22 @@ export function useFeeConfigFilters(): FeeConfigFiltersState {
   const badges = useMemo<FeeConfigFilterBadge[]>(() => {
     const list: FeeConfigFilterBadge[] = [];
 
-    const statusLabel = status === "active" ? "Active" : status === "inactive" ? "Inactive" : "";
     if (status !== "all") {
       list.push({
         id: `status:${status}`,
         key: "status",
         label: "Status",
-        valueLabel: statusLabel,
+        valueLabel: FEE_STATUS_LABEL_BY_VALUE[status],
         onClear: () => setStatus("all"),
       });
     }
 
-    const feeTypeLabel =
-      feeType === "fixed"
-        ? "FIXED"
-        : feeType === "percentage"
-          ? "PERCENTAGE"
-          : feeType === "tiered"
-            ? "TIERED"
-            : "";
     if (feeType !== "all") {
       list.push({
         id: `feeType:${feeType}`,
         key: "feeType",
         label: "Fee Type",
-        valueLabel: feeTypeLabel,
+        valueLabel: FEE_TYPE_LABEL_BY_VALUE[feeType],
         onClear: () => setFeeType("all"),
       });
     }
