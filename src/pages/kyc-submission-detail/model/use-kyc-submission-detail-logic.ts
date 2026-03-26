@@ -27,14 +27,20 @@ const RELIGION_VALUES: readonly customer_Religion[] = ["Islam", "Kristen", "Hind
 
 function parseReligion(value?: string): customer_Religion | undefined {
   if (!value) return undefined;
-  return RELIGION_VALUES.includes(value as customer_Religion) ? (value as customer_Religion) : undefined;
+  if (RELIGION_VALUES.includes(value as customer_Religion)) {
+    return value as customer_Religion;
+  }
+  return undefined;
 }
 
 const GENDER_VALUES: readonly gender_Gender[] = ["M", "F"] as const;
 
 function parseGender(value?: string): gender_Gender | undefined {
   if (!value) return undefined;
-  return GENDER_VALUES.includes(value as gender_Gender) ? (value as gender_Gender) : undefined;
+  if (GENDER_VALUES.includes(value as gender_Gender)) {
+    return value as gender_Gender;
+  }
+  return undefined;
 }
 
 export interface UseKycSubmissionDetailPageLogicReturn {
@@ -146,7 +152,10 @@ const LEFT_DRAFT_KEYS: ReadonlyArray<keyof KycLeftEditDraft> = [
 function normalizeDraftValue(value: unknown): unknown {
   if (typeof value === "string") {
     const trimmed = value.trim();
-    return trimmed === "" ? undefined : trimmed;
+    if (trimmed === "") {
+      return undefined;
+    }
+    return trimmed;
   }
   return value;
 }
@@ -173,6 +182,27 @@ export function useKycSubmissionDetailPageLogic({
 
   const initialLeftDraft = useMemo<KycLeftEditDraft>(() => {
     if (!detail) return {};
+
+    let provinceId: string | undefined = undefined;
+    if (detail.provinceId !== undefined) {
+      provinceId = String(detail.provinceId);
+    }
+
+    let cityId: string | undefined = undefined;
+    if (detail.cityId !== undefined) {
+      cityId = String(detail.cityId);
+    }
+
+    let districtId: string | undefined = undefined;
+    if (detail.districtId !== undefined) {
+      districtId = String(detail.districtId);
+    }
+
+    let subdistrictId: string | undefined = undefined;
+    if (detail.subdistrictId !== undefined) {
+      subdistrictId = String(detail.subdistrictId);
+    }
+
     return {
       fullname: detail.fullname,
       gender: detail.gender,
@@ -195,13 +225,13 @@ export function useKycSubmissionDetailPageLogic({
       arcNumber: detail.arcNumber,
       arcExpiryDate: detail.arcExpiryDate,
       addressLine: detail.addressLine,
-      provinceId: detail.provinceId !== undefined ? String(detail.provinceId) : undefined,
+      provinceId,
       provinceName: detail.provinceName,
-      cityId: detail.cityId !== undefined ? String(detail.cityId) : undefined,
+      cityId,
       cityName: detail.cityName,
-      districtId: detail.districtId !== undefined ? String(detail.districtId) : undefined,
+      districtId,
       districtName: detail.districtName,
-      subdistrictId: detail.subdistrictId !== undefined ? String(detail.subdistrictId) : undefined,
+      subdistrictId,
       subdistrictName: detail.subdistrictName,
       postalCode: detail.postalCode,
       rt: detail.rt,
@@ -237,7 +267,10 @@ export function useKycSubmissionDetailPageLogic({
     const parseNumber = (value?: string): number | undefined => {
       if (!value) return undefined;
       const parsed = Number(value);
-      return Number.isFinite(parsed) ? parsed : undefined;
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+      return undefined;
     };
     const documentTypes: verificationdocument_VerificationDocument[] = [
       "KTP",
