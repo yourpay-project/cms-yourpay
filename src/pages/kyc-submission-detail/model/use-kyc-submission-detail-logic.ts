@@ -46,6 +46,8 @@ export interface UseKycSubmissionDetailPageLogicReturn {
   onCancelLeftEdit: () => void;
   onSaveLeftEdit: () => void;
   isSavingLeftEdit: boolean;
+  /** True when at least one editable field differs from the loaded detail. */
+  isLeftDraftDirty: boolean;
   leftDraft: KycLeftEditDraft;
   setLeftDraft: (next: KycLeftEditDraft | ((prev: KycLeftEditDraft) => KycLeftEditDraft)) => void;
 
@@ -105,6 +107,59 @@ export interface KycLeftEditDraft {
   isPhotocopy?: boolean;
 }
 
+const LEFT_DRAFT_KEYS: ReadonlyArray<keyof KycLeftEditDraft> = [
+  "fullname",
+  "gender",
+  "birthDate",
+  "countryCode",
+  "mobile",
+  "email",
+  "nationality",
+  "religion",
+  "birthPlace",
+  "motherName",
+  "marriageStatus",
+  "occupationId",
+  "occupationName",
+  "rejectionNote",
+  "identityDocumentType",
+  "identityDocumentNumber",
+  "identityDocumentIssueDate",
+  "identityDocumentExpireDate",
+  "arcNumber",
+  "arcExpiryDate",
+  "addressLine",
+  "provinceId",
+  "provinceName",
+  "cityId",
+  "cityName",
+  "districtId",
+  "districtName",
+  "subdistrictId",
+  "subdistrictName",
+  "postalCode",
+  "rt",
+  "rw",
+  "isPhotocopy",
+] as const;
+
+function normalizeDraftValue(value: unknown): unknown {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed === "" ? undefined : trimmed;
+  }
+  return value;
+}
+
+function isLeftDraftDirty(current: KycLeftEditDraft, initial: KycLeftEditDraft): boolean {
+  for (const key of LEFT_DRAFT_KEYS) {
+    const a = normalizeDraftValue(current[key]);
+    const b = normalizeDraftValue(initial[key]);
+    if (a !== b) return true;
+  }
+  return false;
+}
+
 export function useKycSubmissionDetailPageLogic({
   id,
 }: KycSubmissionDetailQueryParams): UseKycSubmissionDetailPageLogicReturn {
@@ -116,9 +171,9 @@ export function useKycSubmissionDetailPageLogic({
 
   const [leftDraft, setLeftDraft] = useState<KycLeftEditDraft>({});
 
-  useEffect(() => {
-    if (!detail) return;
-    setLeftDraft({
+  const initialLeftDraft = useMemo<KycLeftEditDraft>(() => {
+    if (!detail) return {};
+    return {
       fullname: detail.fullname,
       gender: detail.gender,
       birthDate: detail.birthDate,
@@ -152,58 +207,32 @@ export function useKycSubmissionDetailPageLogic({
       rt: detail.rt,
       rw: detail.rw,
       isPhotocopy: detail.isPhotocopy,
+    };
+  }, [detail]);
+
+  const leftDraftDirty = useMemo(() => isLeftDraftDirty(leftDraft, initialLeftDraft), [initialLeftDraft, leftDraft]);
+
+  useEffect(() => {
+    if (!detail) return;
+    setLeftDraft({
+      ...initialLeftDraft,
     });
     setIsLeftEditEnabled(false);
-  }, [detail]);
+  }, [detail, initialLeftDraft]);
 
   const onConfirmEnableEdit = useCallback(() => {
     setIsLeftEditEnabled(true);
   }, []);
 
   const onCancelLeftEdit = useCallback(() => {
-    if (detail) {
-      setLeftDraft({
-        fullname: detail.fullname,
-        gender: detail.gender,
-        birthDate: detail.birthDate,
-        countryCode: detail.countryCode,
-        mobile: detail.mobile,
-        email: detail.email,
-        nationality: detail.nationality,
-        religion: detail.religion,
-        birthPlace: detail.birthPlace,
-        motherName: detail.motherName,
-        marriageStatus: detail.marriageStatus,
-        occupationId: detail.occupationId,
-        occupationName: detail.occupationName,
-        rejectionNote: detail.rejectionNote,
-        identityDocumentType: detail.identityDocumentType,
-        identityDocumentNumber: detail.identityDocumentNumber,
-        identityDocumentIssueDate: detail.identityDocumentIssueDate,
-        identityDocumentExpireDate: detail.identityDocumentExpireDate,
-        arcNumber: detail.arcNumber,
-        arcExpiryDate: detail.arcExpiryDate,
-        addressLine: detail.addressLine,
-        provinceId: detail.provinceId !== undefined ? String(detail.provinceId) : undefined,
-        provinceName: detail.provinceName,
-        cityId: detail.cityId !== undefined ? String(detail.cityId) : undefined,
-        cityName: detail.cityName,
-        districtId: detail.districtId !== undefined ? String(detail.districtId) : undefined,
-        districtName: detail.districtName,
-        subdistrictId: detail.subdistrictId !== undefined ? String(detail.subdistrictId) : undefined,
-        subdistrictName: detail.subdistrictName,
-        postalCode: detail.postalCode,
-        rt: detail.rt,
-        rw: detail.rw,
-        isPhotocopy: detail.isPhotocopy,
-      });
-    }
+    setLeftDraft({ ...initialLeftDraft });
     setIsLeftEditEnabled(false);
-  }, [detail]);
+  }, [initialLeftDraft]);
 
   const updateSubmissionMutation = useUpdateVerificationSubmissionMutation();
   const onSaveLeftEdit = useCallback(() => {
     if (!detail) return;
+    if (!leftDraftDirty) return;
 
     const parseNumber = (value?: string): number | undefined => {
       if (!value) return undefined;
@@ -282,7 +311,7 @@ export function useKycSubmissionDetailPageLogic({
         },
       },
     );
-  }, [detail, leftDraft, updateSubmissionMutation]);
+  }, [detail, leftDraft, leftDraftDirty, updateSubmissionMutation]);
 
   const normalizedStatus = String(detail?.status ?? "pending").toLowerCase();
   const availableStatusValues = new Set(EPL_STATUS_OPTIONS.map((item) => item.value));
@@ -348,6 +377,7 @@ export function useKycSubmissionDetailPageLogic({
     onCancelLeftEdit,
     onSaveLeftEdit,
     isSavingLeftEdit: updateSubmissionMutation.isPending,
+    isLeftDraftDirty: leftDraftDirty,
     leftDraft,
     setLeftDraft,
     currentStatus,

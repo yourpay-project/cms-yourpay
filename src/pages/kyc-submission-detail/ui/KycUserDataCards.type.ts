@@ -12,6 +12,7 @@ export interface KycUserDataCardsProps {
   ) => void;
   isEditable: boolean;
   isSaving: boolean;
+  isDirty: boolean;
   onOpenEnableEditConfirm: () => void;
   onUpdateDataFromOcr: () => void;
   onCancelEdit: () => void;

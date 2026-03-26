@@ -8,6 +8,7 @@ export interface KycUserDataCardsFooterActionsProps {
   draft: KycLeftEditDraft;
   isEditable: boolean;
   isSaving: boolean;
+  isDirty: boolean;
   onCancelEdit: () => void;
   onSaveEdit: () => void;
 }

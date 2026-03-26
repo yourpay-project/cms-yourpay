@@ -12,6 +12,7 @@ export const KycUserDataCardsFooterActions: FC<KycUserDataCardsFooterActionsProp
   draft,
   isEditable,
   isSaving,
+  isDirty,
   onCancelEdit,
   onSaveEdit,
 }) => {
@@ -31,7 +32,7 @@ export const KycUserDataCardsFooterActions: FC<KycUserDataCardsFooterActionsProp
           <Button type="button" variant="outline" className="h-9" onClick={onCancelEdit} disabled={isSaving}>
             Cancel
           </Button>
-          <Button type="button" className="h-9" onClick={onSaveEdit} disabled={isSaving}>
+          <Button type="button" className="h-9" onClick={onSaveEdit} disabled={isSaving || !isDirty}>
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
         </div>

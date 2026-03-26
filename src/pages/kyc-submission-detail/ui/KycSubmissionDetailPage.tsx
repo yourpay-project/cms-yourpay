@@ -68,6 +68,7 @@ const KycSubmissionDetailPage: FC = () => {
             setDraft={logic.setLeftDraft}
             isEditable={!logic.isLeftLocked}
             isSaving={logic.isSavingLeftEdit}
+            isDirty={logic.isLeftDraftDirty}
             onOpenEnableEditConfirm={() => {
               open("KYC_ENABLE_EDIT_CONFIRM_MODAL", {
                 onConfirm: logic.onConfirmEnableEdit,

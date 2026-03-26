@@ -24,6 +24,7 @@ export const KycUserDataCards: FC<KycUserDataCardsProps> = ({
   setDraft,
   isEditable,
   isSaving,
+  isDirty,
   onOpenEnableEditConfirm,
   onUpdateDataFromOcr,
   onCancelEdit,
@@ -76,6 +77,7 @@ export const KycUserDataCards: FC<KycUserDataCardsProps> = ({
           draft={draft}
           isEditable={isEditable}
           isSaving={isSaving}
+          isDirty={isDirty}
           onCancelEdit={onCancelEdit}
           onSaveEdit={onSaveEdit}
         />
