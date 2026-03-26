@@ -12,7 +12,10 @@ export const useThemeEffect = (): void => {
     const resolve = (): "light" | "dark" => {
       if (theme === "dark") return "dark";
       if (theme === "light") return "light";
-      return media.matches ? "dark" : "light";
+      if (media.matches) {
+        return "dark";
+      }
+      return "light";
     };
 
     const apply = (): void => {
