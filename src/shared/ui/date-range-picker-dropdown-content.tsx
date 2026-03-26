@@ -41,31 +41,41 @@ export const DateRangePickerDropdownContent: FC<DateRangePickerDropdownContentPr
     onPresetCancel,
   } = props;
 
+  let presetsNode: React.ReactNode = null;
+  if (presets && presets.length > 0) {
+    presetsNode = (
+      <>
+        <p className="text-xs font-medium text-muted-foreground">Presets</p>
+        <div className="grid grid-cols-2 gap-1">
+          {presets.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              className="rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+              onClick={() => {
+                const r = p.getRange();
+                onPresetApply(r.from, r.to, p.label);
+                onPresetCancel();
+              }}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  const customHeaderClassName = cn(
+    "pt-1 text-xs font-medium text-muted-foreground",
+    !presets?.length && "pt-0"
+  );
+
   return (
     <div className="space-y-3 pr-1">
-      {presets && presets.length > 0 ? (
-        <>
-          <p className="text-xs font-medium text-muted-foreground">Presets</p>
-          <div className="grid grid-cols-2 gap-1">
-            {presets.map((p) => (
-              <button
-                key={p.label}
-                type="button"
-                className="rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
-                onClick={() => {
-                  const r = p.getRange();
-                  onPresetApply(r.from, r.to, p.label);
-                  onPresetCancel();
-                }}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
+      {presetsNode}
 
-      <p className={cn("pt-1 text-xs font-medium text-muted-foreground", !presets?.length && "pt-0")}>
+      <p className={customHeaderClassName}>
         Custom
       </p>
 

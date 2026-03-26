@@ -19,11 +19,26 @@ const UserListPage: FC = () => {
 
   if (filters.isError) {
     const apiError = filters.error instanceof ApiClientError ? filters.error : null;
-    const message =
-      apiError?.status === 403
-        ? "You do not have permission to view YourPay customers. Please check your CMS role/permissions."
-        : "Failed to load customers. Please try again.";
+    let message = "Failed to load customers. Please try again.";
+    if (apiError?.status === 403) {
+      message = "You do not have permission to view YourPay customers. Please check your CMS role/permissions.";
+    }
     return <p className="text-sm text-destructive">{message}</p>;
+  }
+
+  let filtersCardNode: React.ReactNode = null;
+  if (filters.hasBackendFilters) {
+    filtersCardNode = (
+      <UserListFiltersCard
+        filtersOpen={filters.filtersOpen}
+        setFiltersOpen={filters.setFiltersOpen}
+        badges={filters.badges}
+        handleResetFilters={filters.handleResetFilters}
+        optionFilterFields={filters.optionsFilterFields}
+        selectedFilterValues={filters.selectedFilterValues}
+        onChangeFilter={filters.handleChangeFilter}
+      />
+    );
   }
 
   return (
@@ -32,17 +47,7 @@ const UserListPage: FC = () => {
         <h2 className="text-xl font-semibold">User Yourpay</h2>
       </div>
 
-      {filters.hasBackendFilters ? (
-        <UserListFiltersCard
-          filtersOpen={filters.filtersOpen}
-          setFiltersOpen={filters.setFiltersOpen}
-          badges={filters.badges}
-          handleResetFilters={filters.handleResetFilters}
-          optionFilterFields={filters.optionsFilterFields}
-          selectedFilterValues={filters.selectedFilterValues}
-          onChangeFilter={filters.handleChangeFilter}
-        />
-      ) : null}
+      {filtersCardNode}
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div className="flex w-full justify-center md:w-auto md:justify-start">

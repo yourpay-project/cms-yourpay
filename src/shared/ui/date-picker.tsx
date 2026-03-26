@@ -77,6 +77,37 @@ export const DatePicker: FC<DatePickerProps> = ({
     setCustomDate(toYYYYMMDD(next));
   };
 
+  const leadingIconNode = (
+    <CalendarIcon
+      className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
+      aria-hidden
+    />
+  );
+
+  let inlineClearNode: React.ReactNode = null;
+  if (allowClear && hasValue) {
+    inlineClearNode = (
+      <Button type="button" variant="ghost" size="sm" onClick={handleClear}>
+        Clear
+      </Button>
+    );
+  }
+
+  let trailingClearNode: React.ReactNode = null;
+  if (allowClear && hasValue) {
+    trailingClearNode = (
+      <button
+        type="button"
+        onClick={handleClear}
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none disabled:cursor-not-allowed"
+        aria-label={`Clear ${label}`}
+        disabled={disabled}
+      >
+        <X className="h-4 w-4" aria-hidden />
+      </button>
+    );
+  }
+
   return (
     <div className={cn("relative", className)}>
       <label htmlFor={triggerId} className="mb-1 block text-xs text-muted-foreground">
@@ -96,12 +127,7 @@ export const DatePicker: FC<DatePickerProps> = ({
             <DropdownFieldTrigger
               ref={triggerRef}
               id={triggerId}
-              leading={
-                <CalendarIcon
-                  className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
-                  aria-hidden
-                />
-              }
+              leading={leadingIconNode}
               label={displayText}
               aria-label={label}
               disabled={disabled}
@@ -126,11 +152,7 @@ export const DatePicker: FC<DatePickerProps> = ({
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                 <div className="flex gap-2">
-                  {allowClear && hasValue ? (
-                    <Button type="button" variant="ghost" size="sm" onClick={handleClear}>
-                      Clear
-                    </Button>
-                  ) : null}
+                  {inlineClearNode}
                 </div>
                 <div className="flex gap-2">
                   <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
@@ -145,17 +167,7 @@ export const DatePicker: FC<DatePickerProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {allowClear && hasValue ? (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none disabled:cursor-not-allowed"
-            aria-label={`Clear ${label}`}
-            disabled={disabled}
-          >
-            <X className="h-4 w-4" aria-hidden />
-          </button>
-        ) : null}
+        {trailingClearNode}
       </div>
     </div>
   );

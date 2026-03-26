@@ -32,12 +32,13 @@ export class ErrorBoundary extends Component<
 
   override render(): ReactNode {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
       return (
-        this.props.fallback ?? (
-          <p className="text-sm text-destructive">
-            Something went wrong. Please try again.
-          </p>
-        )
+        <p className="text-sm text-destructive">
+          Something went wrong. Please try again.
+        </p>
       );
     }
     return this.props.children;
