@@ -47,7 +47,8 @@ export const UserDetailCollapsibleCard: FC<UserDetailCollapsibleCardProps> = ({
     <Card className={className} style={style}>
       <CardHeader
         className={cn(
-          "flex cursor-pointer select-none flex-row items-center justify-between space-y-0 rounded-t-lg py-4",
+          "flex cursor-pointer select-none flex-row items-center justify-between space-y-0 py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          open ? "rounded-t-lg" : "rounded-lg",
           headerClassName
         )}
         style={headerStyle}

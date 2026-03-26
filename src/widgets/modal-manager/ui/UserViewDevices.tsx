@@ -4,7 +4,7 @@ import { useCustomerDevicesQuery } from "@/entities/user";
 import { formatDateTime, formatDeviceTitle, formatOperatingSystem } from "@/shared/lib";
 import { UserDetailCollapsibleCard, UserDetailFieldGrid, type UserDetailFieldItem } from "@/entities/user";
 import { Badge } from "@/shared/ui";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 
 import type { UserViewDevicesProps } from "./UserViewDevices.type";
 
@@ -65,12 +65,19 @@ export const UserViewDevices: FC<UserViewDevicesProps> = ({
               },
             ];
 
+            let statusIcon = <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />;
+            if (normalizedStatus === "PENDING") {
+              statusIcon = <AlertTriangle className="h-4 w-4 shrink-0 text-warning" aria-hidden />;
+            } else if (normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE") {
+              statusIcon = <XCircle className="h-4 w-4 shrink-0 text-destructive" aria-hidden />;
+            }
+
             return (
               <UserDetailCollapsibleCard
                 key={device.id}
                 title={
-                  <div className="flex min-w-0 items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+                  <div className="flex min-w-0 items-center gap-2">
+                    {statusIcon}
                     <div className="min-w-0">
                       <div className="truncate">{formatDeviceTitle(device.deviceBrand, device.deviceModel)}</div>
                       <div className="truncate text-xs font-normal text-muted-foreground">
