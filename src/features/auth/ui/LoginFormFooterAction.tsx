@@ -9,6 +9,9 @@ interface LoginFormFooterActionProps {
 
 /**
  * Footer action section (Google sign-in button).
+ *
+ * @param props - {@link LoginFormFooterActionProps}
+ * @returns Google sign-in action button.
  */
 export const LoginFormFooterAction: FC<LoginFormFooterActionProps> = ({
   isPending,

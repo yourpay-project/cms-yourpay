@@ -13,6 +13,9 @@ interface SidebarDashboardSectionProps {
 
 /**
  * Renders dashboard shortcut item and its divider.
+ *
+ * @param props - {@link SidebarDashboardSectionProps}
+ * @returns Dashboard section or null when no dashboard item exists.
  */
 export const SidebarDashboardSection: FC<SidebarDashboardSectionProps> = ({
   dashboardItem,

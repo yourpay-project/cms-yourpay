@@ -17,6 +17,9 @@ interface LoginFormContentProps {
 
 /**
  * Content composition for login card: credentials and footer.
+ *
+ * @param props - {@link LoginFormContentProps}
+ * @returns Login card content (credentials section + footer).
  */
 export const LoginFormContent: FC<LoginFormContentProps> = ({
   isUsernamePasswordEnabled,

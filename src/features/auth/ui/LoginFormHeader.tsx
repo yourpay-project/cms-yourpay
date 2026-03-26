@@ -4,6 +4,8 @@ import { BRAND_LOGO_URL } from "@/shared/config";
 
 /**
  * Static header block for login card.
+ *
+ * @returns Login card header (logo + title).
  */
 export const LoginFormHeader: FC = () => {
   return (

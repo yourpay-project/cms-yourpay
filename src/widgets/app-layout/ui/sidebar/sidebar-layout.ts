@@ -25,6 +25,12 @@ const SIDEBAR_LAYOUT_BY_VIEW: Record<"collapsed" | "expanded", SidebarLayoutView
   },
 };
 
+/**
+ * Resolves layout classes for the sidebar based on collapsed state.
+ *
+ * @param collapsed - Whether sidebar is in collapsed (icon-only) mode.
+ * @returns Layout view configuration for sizing and className strings.
+ */
 export function getSidebarLayoutView(collapsed: boolean): SidebarLayoutView {
   let key: "collapsed" | "expanded" = "expanded";
   if (collapsed) {

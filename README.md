@@ -409,7 +409,7 @@ For navigation inside components, use **TanStack Router hooks**:
 
 **Auth UI (features/auth/ui):**
 
-- `LoginForm` – email/password form with Google button.
+- `LoginForm` – email/password form with Google button. The UI is intentionally composed from small sections (`LoginFormHeader`, `LoginFormContent`, `LoginFormCredentialsSection`, `LoginFormFooter`) to keep each component focused and within repo size guidelines while preserving behavior.
 - `ProtectedRoute` – renders children only when authenticated; otherwise navigates to `/login`.
 - `LoginRedirect` – for `/login`; if already authenticated, redirects to `/`.
 - `Can` – conditional renderer based on permissions/roles (wrapping `useCan`).
@@ -427,6 +427,7 @@ For navigation inside components, use **TanStack Router hooks**:
   - Renders navigation groups from `model/nav-config.tsx` (which maps icons onto `shared/config` navigation data).
   - Respects RBAC via `useCan`.
   - Uses `framer-motion` width animation for smooth desktop collapse/expand.
+  - Internally split into small UI sections (`SidebarDashboardSection`, `SidebarNavGroups`) and a layout resolver (`getSidebarLayoutView`) for readability.
   - Supports:
     - **Pinned section** (max 5 items) that stays fixed at the top.
     - **Search** input (with icon) for filtering non‑pinned items by label.

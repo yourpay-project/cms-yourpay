@@ -19,6 +19,9 @@ interface LoginFormCredentialsSectionProps {
 
 /**
  * Username/password credential section for login form.
+ *
+ * @param props - {@link LoginFormCredentialsSectionProps}
+ * @returns Credentials form section (inputs + submit + divider).
  */
 export const LoginFormCredentialsSection: FC<LoginFormCredentialsSectionProps> = ({
   isPending,

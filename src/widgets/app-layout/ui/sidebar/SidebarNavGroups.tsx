@@ -14,6 +14,9 @@ interface SidebarNavGroupsProps {
 
 /**
  * Renders grouped sidebar navigation items.
+ *
+ * @param props - {@link SidebarNavGroupsProps}
+ * @returns Navigation groups list for the sidebar.
  */
 export const SidebarNavGroups: FC<SidebarNavGroupsProps> = ({
   collapsed,

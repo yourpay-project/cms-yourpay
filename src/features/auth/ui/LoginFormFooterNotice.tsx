@@ -2,6 +2,8 @@ import type { FC } from "react";
 
 /**
  * Access policy notice shown under footer action.
+ *
+ * @returns Access restriction notice for operators.
  */
 export const LoginFormFooterNotice: FC = () => {
   return (

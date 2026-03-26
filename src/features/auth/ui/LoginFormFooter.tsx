@@ -9,6 +9,9 @@ interface LoginFormFooterProps {
 
 /**
  * Footer container for login actions and notice.
+ *
+ * @param props - {@link LoginFormFooterProps}
+ * @returns Login footer section (Google button + notice).
  */
 export const LoginFormFooter: FC<LoginFormFooterProps> = ({
   isPending,
