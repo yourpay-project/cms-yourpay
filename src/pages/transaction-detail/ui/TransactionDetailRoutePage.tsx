@@ -4,7 +4,7 @@ import { ErrorBoundary } from "@/shared/ui";
 import { getNavTitle } from "@/shared/config";
 import TransactionDetailPage from "./TransactionDetailPage";
 
-export function TransactionDetailRoutePage(): JSX.Element {
+export function TransactionDetailRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
