@@ -61,7 +61,8 @@ export const InputMain: FC<InputMainProps> = ({
           disabled && "cursor-not-allowed opacity-50",
           readOnly && "cursor-not-allowed",
           !readOnly && "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0",
-          readOnly ? "bg-muted/20" : "bg-background",
+          // Match other "locked" controls (SelectDropdown/DatePicker) visual density.
+          readOnly ? "bg-muted/35" : "bg-background",
         )}
       >
         {startIcon && (
@@ -95,6 +96,7 @@ export const InputMain: FC<InputMainProps> = ({
               "peer h-full w-full bg-transparent text-sm text-foreground placeholder-transparent",
               "border-none p-0 outline-none focus:ring-0",
               readOnly && "cursor-default pointer-events-none",
+              readOnly && "text-muted-foreground",
               size !== "sm" && label && "pt-4",
               className,
               "[&:-webkit-autofill]:shadow-[0_0_0_1000px_hsl(var(--background))_inset]",
