@@ -466,6 +466,8 @@ For navigation inside components, use **TanStack Router hooks**:
   - `modal/*` – centralized modal contract + store (`ModalRegistryProps`, `ModalType`, `useModalStore`).
 - `shared/ui/*`
   - shadcn/ui components wired with Tailwind theme tokens (Button, Card, DropdownMenu, Input, Skeleton, PageSkeleton, ThemeToggle, **Table** primitives).
+  - `tooltip.tsx` – shared Tooltip primitives (`TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent`) used for consistent hover/focus hints across the app.
+  - `image-with-loader.tsx` – `ImageWithLoader` wrapper to standardize skeleton-first image rendering until the image loads.
   - **RouteFallback** – full-page loading fallback for `Suspense` when lazy-loading route components.
   - **ErrorBoundary** – isolates widget/page crashes to prevent total app failure.
 

@@ -37,6 +37,7 @@ export {
 export { Input, type InputProps } from "./input";
 export { FileDropzone, type FileDropzoneProps } from "./file-dropzone";
 export { Skeleton } from "./skeleton";
+export { ImageWithLoader, type ImageWithLoaderProps } from "./image-with-loader";
 export { PageSkeleton } from "./page-skeleton";
 export { RouteFallback } from "./route-fallback";
 export { ErrorBoundary } from "./error-boundary";
@@ -109,6 +110,7 @@ export type { SelectDropdownOption, SelectDropdownProps } from "./select-dropdow
 export { LabeledSelectField, type LabeledSelectFieldProps } from "./labeled-select-field";
 export { DatePicker, type DatePickerProps } from "./date-picker";
 export { DateRangePicker, type DateRangePickerProps, type DateRangePickerPreset } from "./date-range-picker";
+export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "./tooltip";
 
 export {
   Dialog,
