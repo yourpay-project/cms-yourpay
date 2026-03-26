@@ -1,21 +1,10 @@
 import type { FC } from "react";
 import { useMemo } from "react";
-import { Loader2 } from "lucide-react";
-import { Button } from "@/shared/ui";
+import { toKycVerificationCheckItems } from "@/widgets/modal-manager";
 import { KycVerificationCheckItem } from "./KycVerificationCheckItem";
 import type { KycVerificationCheckProps } from "./KycVerificationCheck.type";
 import { KycVerificationCheckDocumentPreview } from "./KycVerificationCheckDocumentPreview";
-
-const VERIFICATION_CHECK_LABELS: Record<string, string> = {
-  aml: "AML",
-  arc_unique: "ARC Unique",
-  ktp_data_feedback: "KTP Data Feedback",
-  ktp_data_valid: "KTP Data Valid",
-  ktp_unique: "KTP Unique",
-  passport_unique: "Passport Unique",
-  selfie_liveness_valid: "Selfie Liveness",
-  similar_photo: "Photo Similarity",
-};
+import { KycVerificationCheckActions } from "./KycVerificationCheckActions";
 
 interface KycVerificationResultsProps {
   hasItems: boolean;
@@ -68,36 +57,11 @@ export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
   selfieDocument,
   verification,
 }) => {
-  const checkItems = useMemo(() => {
-    if (!verification) return [];
-
-    const entries = [
-      { key: "aml", fallbackLabel: "AML", item: verification.aml },
-      { key: "arc_unique", fallbackLabel: "ARC Unique", item: verification.arc_unique },
-      { key: "ktp_data_feedback", fallbackLabel: "KTP Data Feedback", item: verification.ktp_data_feedback },
-      { key: "ktp_data_valid", fallbackLabel: "KTP Data Valid", item: verification.ktp_data_valid },
-      { key: "ktp_unique", fallbackLabel: "KTP Unique", item: verification.ktp_unique },
-      { key: "passport_unique", fallbackLabel: "Passport Unique", item: verification.passport_unique },
-      { key: "selfie_liveness_valid", fallbackLabel: "Selfie Liveness", item: verification.selfie_liveness_valid },
-      { key: "similar_photo", fallbackLabel: "Photo Similarity", item: verification.similar_photo },
-    ];
-
-    return entries
-      .filter((entry) => Boolean(entry.item))
-      .map((entry) => ({
-        key: entry.key,
-        label: VERIFICATION_CHECK_LABELS[entry.key] ?? entry.fallbackLabel,
-        status: entry.item?.status,
-        score: entry.item?.score,
-        failedReason: entry.item?.failedReason,
-      }));
-  }, [verification]);
+  const checkItems = useMemo(() => toKycVerificationCheckItems(verification), [verification]);
 
   // `open` is controlled by ModalContainer; this content renders body + actions.
   void open;
   const hasCheckItems = checkItems.length > 0;
-  const runLabel = isRunning ? "Running..." : "Run Verification Checks";
-  const runIcon = isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null;
 
   return (
     <div className="space-y-5">
@@ -121,21 +85,11 @@ export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
         <KycVerificationResults hasItems={hasCheckItems} checkItems={checkItems} />
       </div>
 
-      <div className="flex items-center justify-end gap-2 pb-5 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>
-          Close
-        </Button>
-        <Button
-          type="button"
-          onClick={() => {
-            void onRunChecks?.();
-          }}
-          disabled={Boolean(isRunning)}
-        >
-          {runIcon}
-          {runLabel}
-        </Button>
-      </div>
+      <KycVerificationCheckActions
+        isRunning={isRunning}
+        onClose={onClose}
+        onRunChecks={onRunChecks}
+      />
     </div>
   );
 };
