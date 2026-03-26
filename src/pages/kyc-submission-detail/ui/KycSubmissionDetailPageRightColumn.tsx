@@ -9,8 +9,8 @@ import type { KycSubmissionDetailPageRightColumnProps } from "./KycSubmissionDet
  */
 export const KycSubmissionDetailPageRightColumn: FC<KycSubmissionDetailPageRightColumnProps> = (props) => {
   return (
-    <div className="w-full min-w-0 max-w-full shrink-0 overflow-x-hidden md:w-96 md:min-h-0 md:shrink-0 md:pl-1">
-      <div className="flex flex-col gap-4">
+    <div className="w-full min-w-0 max-w-full shrink-0 overflow-x-hidden xl:flex xl:w-96 xl:min-h-0 xl:shrink-0 xl:flex-col xl:pl-1">
+      <div className="flex flex-col gap-4 xl:min-h-0 xl:flex-1">
         <DocumentImagesCard
           idDocument={props.idDocumentPreview}
           selfieDocument={props.selfieDocumentPreview}

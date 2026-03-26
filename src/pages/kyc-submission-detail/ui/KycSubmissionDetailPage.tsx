@@ -59,8 +59,8 @@ const KycSubmissionDetailPage: FC = () => {
         }}
       />
 
-      <div className="flex w-full min-w-0 max-w-full flex-col gap-4 overflow-x-hidden md:min-h-0 md:flex-1 md:flex-row md:gap-4 md:overflow-y-auto md:pr-1">
-        <div className="w-full min-w-0 max-w-full overflow-x-hidden pr-0 md:min-h-0 md:flex-1">
+      <div className="flex w-full min-w-0 max-w-full flex-col gap-4 overflow-x-hidden md:overflow-y-auto md:pr-1 xl:min-h-0 xl:flex-1 xl:flex-row xl:gap-4 xl:overflow-hidden xl:pr-0">
+        <div className="w-full min-w-0 max-w-full shrink-0 overflow-x-hidden pr-0 xl:min-h-0 xl:shrink xl:flex-1 xl:overflow-y-auto xl:pr-1">
           <KycUserDataCards
             countryCode={detail.countryCode}
             submissionStatus={logic.currentStatus}
