@@ -40,31 +40,8 @@ export const DateRangePickerDropdownContent: FC<DateRangePickerDropdownContentPr
     onPresetApply,
     onPresetCancel,
   } = props;
-
-  let presetsNode: React.ReactNode = null;
-  if (presets && presets.length > 0) {
-    presetsNode = (
-      <>
-        <p className="text-xs font-medium text-muted-foreground">Presets</p>
-        <div className="grid grid-cols-2 gap-1">
-          {presets.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              className="rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
-              onClick={() => {
-                const r = p.getRange();
-                onPresetApply(r.from, r.to, p.label);
-                onPresetCancel();
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-      </>
-    );
-  }
+  const presetItems = presets ?? [];
+  const hasPresets = presetItems.length > 0;
 
   const customHeaderClassName = cn(
     "pt-1 text-xs font-medium text-muted-foreground",
@@ -73,7 +50,27 @@ export const DateRangePickerDropdownContent: FC<DateRangePickerDropdownContentPr
 
   return (
     <div className="space-y-3 pr-1">
-      {presetsNode}
+      {hasPresets ? (
+        <>
+          <p className="text-xs font-medium text-muted-foreground">Presets</p>
+          <div className="grid grid-cols-2 gap-1">
+            {presetItems.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                className="rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+                onClick={() => {
+                  const r = p.getRange();
+                  onPresetApply(r.from, r.to, p.label);
+                  onPresetCancel();
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <p className={customHeaderClassName}>
         Custom
