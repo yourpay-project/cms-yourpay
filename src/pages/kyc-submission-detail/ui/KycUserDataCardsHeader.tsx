@@ -14,6 +14,18 @@ export const KycUserDataCardsHeader: FC<KycUserDataCardsHeaderProps> = ({
   onUpdateDataFromOcr,
   onOpenEnableEditConfirm,
 }) => {
+  const enableEditButtonNode = isEditable ? null : (
+    <Button
+      type="button"
+      variant="default"
+      size="sm"
+      className="h-8 shrink-0"
+      onClick={onOpenEnableEditConfirm}
+    >
+      Enable Edit
+    </Button>
+  );
+
   return (
     <CardHeader className="py-4">
       <div className="flex min-w-0 flex-col gap-3">
@@ -32,17 +44,7 @@ export const KycUserDataCardsHeader: FC<KycUserDataCardsHeaderProps> = ({
               <FileText className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">Update data from OCR</span>
             </Button>
-            {!isEditable ? (
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                className="h-8 shrink-0"
-                onClick={onOpenEnableEditConfirm}
-              >
-                Enable Edit
-              </Button>
-            ) : null}
+            {enableEditButtonNode}
           </div>
         </div>
       </div>
