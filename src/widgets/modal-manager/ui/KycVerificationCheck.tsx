@@ -96,14 +96,8 @@ export const KycVerificationCheck: FC<KycVerificationCheckProps> = ({
   // `open` is controlled by ModalContainer; this content renders body + actions.
   void open;
   const hasCheckItems = checkItems.length > 0;
-  let runLabel = "Run Verification Checks";
-  if (isRunning) {
-    runLabel = "Running...";
-  }
-  let runIcon: React.ReactNode = null;
-  if (isRunning) {
-    runIcon = <Loader2 className="h-4 w-4 animate-spin" />;
-  }
+  const runLabel = isRunning ? "Running..." : "Run Verification Checks";
+  const runIcon = isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null;
 
   return (
     <div className="space-y-5">
