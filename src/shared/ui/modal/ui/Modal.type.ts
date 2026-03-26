@@ -33,16 +33,12 @@ export interface ModalProps extends ModalFooterProps {
    */
   children?: ReactNode;
   /**
-   * Explicit width (e.g. "520px" or 520).
-   * If you prefer Tailwind width classes, pass them through `className` instead.
-   */
-  width?: string | number;
-  /**
    * Whether the modal should be vertically centered.
    */
   centered?: boolean;
   /**
    * Additional className for the modal content container.
+   * Use this to override width constraints (e.g. `max-w-[800px]`).
    */
   className?: string;
 }

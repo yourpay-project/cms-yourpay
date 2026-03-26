@@ -49,18 +49,10 @@ export const Modal: React.FC<ModalProps> = ({
   okText,
   cancelText,
   children,
-  width = "520px",
   centered,
   className,
 }) => {
   const { visible, handleVisibilityChange } = useModalAnimation({ open });
-
-  let contentWidth = "520px";
-  if (typeof width === "number") {
-    contentWidth = `${width}px`;
-  } else if (typeof width === "string" && width) {
-    contentWidth = width;
-  }
 
   if (!visible) {
     return null;
@@ -104,9 +96,8 @@ export const Modal: React.FC<ModalProps> = ({
                     animate="visible"
                     exit="hidden"
                     transition={springTransition}
-                    style={{ width: contentWidth }}
                     className={cn(
-                      "relative max-h-[80vh] rounded-xl bg-card text-foreground shadow-xl shadow-black/15",
+                      "relative w-full max-w-[520px] max-h-[80vh] rounded-xl bg-card text-foreground shadow-xl shadow-black/15",
                       "flex flex-col overflow-hidden",
                       className
                     )}
