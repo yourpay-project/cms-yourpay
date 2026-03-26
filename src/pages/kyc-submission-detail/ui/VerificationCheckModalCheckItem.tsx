@@ -29,6 +29,25 @@ export const VerificationCheckModalCheckItem: FC<VerificationCheckModalCheckItem
     iconClass = "text-destructive";
   }
 
+  let scoreNode: React.ReactNode = null;
+  if (typeof score === "number") {
+    scoreNode = (
+      <span>
+        Score: <span className="font-medium text-foreground">{score}</span>
+      </span>
+    );
+  }
+
+  let failedReasonNode: React.ReactNode = null;
+  if (failedReason) {
+    failedReasonNode = (
+      <p className="text-xs leading-snug text-destructive">
+        <span className="font-medium">Reason: </span>
+        {failedReason}
+      </p>
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -45,18 +64,9 @@ export const VerificationCheckModalCheckItem: FC<VerificationCheckModalCheckItem
           <span>
             Status: <span className="font-medium text-foreground">{status ?? "—"}</span>
           </span>
-          {typeof score === "number" ? (
-            <span>
-              Score: <span className="font-medium text-foreground">{score}</span>
-            </span>
-          ) : null}
+          {scoreNode}
         </div>
-        {failedReason ? (
-          <p className="text-xs leading-snug text-destructive">
-            <span className="font-medium">Reason: </span>
-            {failedReason}
-          </p>
-        ) : null}
+        {failedReasonNode}
       </div>
     </div>
   );
