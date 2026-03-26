@@ -18,6 +18,7 @@ export interface UseDocumentImageTransformsResult {
   selfieRotation: number;
   changeScale: (docKey: DocKey, delta: number) => void;
   rotate: (docKey: DocKey) => void;
+  rotateLeft: (docKey: DocKey) => void;
   reset: (docKey: DocKey) => void;
 }
 
@@ -46,6 +47,14 @@ export function useDocumentImageTransforms(): UseDocumentImageTransformsResult {
     setSelfieRotation((prev) => prev + 90);
   }, []);
 
+  const rotateLeft = useCallback((docKey: DocKey) => {
+    if (docKey === "id") {
+      setIdRotation((prev) => prev - 90);
+      return;
+    }
+    setSelfieRotation((prev) => prev - 90);
+  }, []);
+
   const reset = useCallback((docKey: DocKey) => {
     if (docKey === "id") {
       setIdScale(1);
@@ -63,6 +72,7 @@ export function useDocumentImageTransforms(): UseDocumentImageTransformsResult {
     selfieRotation,
     changeScale,
     rotate,
+    rotateLeft,
     reset,
   };
 }
