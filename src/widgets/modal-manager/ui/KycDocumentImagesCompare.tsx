@@ -1,17 +1,13 @@
 import type { FC } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/shared/ui";
-import { ImageViewerToolbar } from "@/shared/ui";
-
 import type { KycDocumentImagesCompareProps, KycDocumentImagesCompareItem } from "./KycDocumentImagesCompare.type";
-import { KycDocumentImagesDraggableScrollViewport } from "./KycDocumentImagesDraggableScrollViewport";
+import { KycDocumentImagesCompareCard } from "./KycDocumentImagesCompareCard";
 import type { DocumentImagesDocKey } from "./KycDocumentImagesSinglePreview.type";
-import {
-  applyDocumentImageScaleDelta,
-  toDocumentImageHeightPercent,
-} from "./document-images-transform-utils";
+import { applyDocumentImageScaleDelta } from "./document-images-transform-utils";
 
+/** Compare view for transformed KYC document images. */
 export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
   onClose,
   open,
@@ -72,8 +68,6 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
     onReset(docKey);
   };
 
-  const renderedItems = useMemo(() => localItems, [localItems]);
-
   return (
     <div className="-mx-6 -my-2 flex max-h-[85vh] flex-col">
       <div className="shrink-0 px-6 pb-4 pt-5">
@@ -84,48 +78,17 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
 
       <div className="flex-1 overflow-x-hidden overflow-y-auto px-6">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {renderedItems.map((item) => {
-            const heightPercent = toDocumentImageHeightPercent(item.scale);
-            const imageNode = item.imageUrl ? (
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
-                style={{
-                  height: `${heightPercent}%`,
-                  width: "auto",
-                  transform: `rotate(${item.rotation}deg)`,
-                  transformOrigin: "center center",
-                }}
-                draggable={false}
-              />
-            ) : (
-              <div className="flex h-[18rem] items-center justify-center text-sm text-muted-foreground">
-                Image unavailable
-              </div>
-            );
-
-            return (
-              <div key={item.docKey} className="space-y-2">
-                <div className="text-sm font-medium text-foreground">{item.title}</div>
-
-              <div className="relative h-[40vh] min-h-[18rem] overflow-hidden rounded-md border border-border bg-muted/20 p-2">
-                <KycDocumentImagesDraggableScrollViewport scale={item.scale} className="h-full overflow-auto">
-                  {imageNode}
-                </KycDocumentImagesDraggableScrollViewport>
-
-                <ImageViewerToolbar
-                  title={item.title}
-                  onZoomIn={() => onZoomIn(item.docKey)}
-                  onZoomOut={() => onZoomOut(item.docKey)}
-                  onRotateRight={() => onRotateLocal(item.docKey)}
-                  onRotateLeft={() => onRotateLeftLocal(item.docKey)}
-                  onReset={() => onResetLocal(item.docKey)}
-                />
-              </div>
-              </div>
-            );
-          })}
+          {localItems.map((item) => (
+            <KycDocumentImagesCompareCard
+              key={item.docKey}
+              item={item}
+              onZoomIn={onZoomIn}
+              onZoomOut={onZoomOut}
+              onRotateRight={onRotateLocal}
+              onRotateLeft={onRotateLeftLocal}
+              onReset={onResetLocal}
+            />
+          ))}
         </div>
       </div>
 

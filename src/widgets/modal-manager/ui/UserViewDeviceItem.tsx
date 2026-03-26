@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import type { CustomerDeviceItem } from "@/entities/user";
 import { formatDateTime, formatDeviceTitle, formatOperatingSystem } from "@/shared/lib";
 import { UserDetailCollapsibleCard, UserDetailFieldGrid, type UserDetailFieldItem } from "@/entities/user";
@@ -9,16 +9,43 @@ export interface UserViewDeviceItemProps {
   device: CustomerDeviceItem;
 }
 
+const DEVICE_STATUS_VARIANT_BY_VALUE: Record<
+  string,
+  "success" | "warning" | "destructive" | "default"
+> = {
+  ACTIVE: "success",
+  PENDING: "warning",
+  BLOCKED: "destructive",
+  INACTIVE: "destructive",
+};
+
+const DEVICE_STATUS_ICON_BY_VALUE: Record<string, ReactNode> = {
+  ACTIVE: <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />,
+  PENDING: <AlertTriangle className="h-4 w-4 shrink-0 text-warning" aria-hidden />,
+  BLOCKED: <XCircle className="h-4 w-4 shrink-0 text-destructive" aria-hidden />,
+  INACTIVE: <XCircle className="h-4 w-4 shrink-0 text-destructive" aria-hidden />,
+};
+
+/**
+ * Renders one registered device row card in the customer devices modal.
+ *
+ * @param props Device payload for the item card.
+ * @returns Collapsible device card with normalized status and detail fields.
+ */
 export const UserViewDeviceItem: FC<UserViewDeviceItemProps> = ({ device }) => {
   const normalizedStatus = String(device.status ?? "").trim().toUpperCase();
-  let statusVariant: "success" | "warning" | "destructive" | "default" = "default";
-
-  if (normalizedStatus === "ACTIVE") {
-    statusVariant = "success";
-  } else if (normalizedStatus === "PENDING") {
-    statusVariant = "warning";
-  } else if (normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE") {
-    statusVariant = "destructive";
+  const statusVariant = DEVICE_STATUS_VARIANT_BY_VALUE[normalizedStatus] ?? "default";
+  const statusIcon =
+    DEVICE_STATUS_ICON_BY_VALUE[normalizedStatus] ?? (
+      <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />
+    );
+  const statusLabel = normalizedStatus || "-";
+  const signatureLabel = device.deviceSignature || "-";
+  const cardAriaTitle = formatDeviceTitle(device.deviceBrand, device.deviceModel);
+  const isDefaultOpen = String(device.status ?? "").toLowerCase() === "active";
+  let locationLabel = "-";
+  if (device.geoLat != null && device.geoLng != null) {
+    locationLabel = `${device.geoLat}, ${device.geoLng}`;
   }
 
   const fields: UserDetailFieldItem[] = [
@@ -28,7 +55,7 @@ export const UserViewDeviceItem: FC<UserViewDeviceItemProps> = ({ device }) => {
       value: (
         <div className="flex w-full justify-end">
           <Badge variant={statusVariant} className="inline-flex uppercase">
-            {normalizedStatus || "-"}
+            {statusLabel}
           </Badge>
         </div>
       ),
@@ -38,18 +65,8 @@ export const UserViewDeviceItem: FC<UserViewDeviceItemProps> = ({ device }) => {
       value: formatOperatingSystem(device.osName, device.osVersion),
     },
     { label: "App Version", value: device.appVersion },
-    {
-      label: "Location",
-      value: device.geoLat != null && device.geoLng != null ? `${device.geoLat}, ${device.geoLng}` : "-",
-    },
+    { label: "Location", value: locationLabel },
   ];
-
-  let statusIcon = <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />;
-  if (normalizedStatus === "PENDING") {
-    statusIcon = <AlertTriangle className="h-4 w-4 shrink-0 text-warning" aria-hidden />;
-  } else if (normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE") {
-    statusIcon = <XCircle className="h-4 w-4 shrink-0 text-destructive" aria-hidden />;
-  }
 
   return (
     <UserDetailCollapsibleCard
@@ -58,16 +75,16 @@ export const UserViewDeviceItem: FC<UserViewDeviceItemProps> = ({ device }) => {
           <span className="pt-1.5">{statusIcon}</span>
           <div className="min-w-0">
             <div className="truncate">
-              {formatDeviceTitle(device.deviceBrand, device.deviceModel)}
+              {cardAriaTitle}
             </div>
             <div className="truncate text-xs font-normal text-muted-foreground">
-              Signature: {device.deviceSignature || "-"}
+              Signature: {signatureLabel}
             </div>
           </div>
         </div>
       }
-      ariaTitle={formatDeviceTitle(device.deviceBrand, device.deviceModel)}
-      defaultOpen={String(device.status ?? "").toLowerCase() === "active"}
+      ariaTitle={cardAriaTitle}
+      defaultOpen={isDefaultOpen}
       className="border-border/80 bg-muted/20"
       headerClassName="bg-muted/35"
       contentClassName="pt-4"
