@@ -9,6 +9,14 @@ export interface UserViewDeviceItemProps {
   device: CustomerDeviceItem;
 }
 
+function toDeviceLocationLabel(device: CustomerDeviceItem): string {
+  if (device.geoLat == null || device.geoLng == null) {
+    return "-";
+  }
+
+  return `${device.geoLat}, ${device.geoLng}`;
+}
+
 const DEVICE_STATUS_VARIANT_BY_VALUE: Record<
   string,
   "success" | "warning" | "destructive" | "default"
@@ -43,10 +51,7 @@ export const UserViewDeviceItem: FC<UserViewDeviceItemProps> = ({ device }) => {
   const signatureLabel = device.deviceSignature || "-";
   const cardAriaTitle = formatDeviceTitle(device.deviceBrand, device.deviceModel);
   const isDefaultOpen = String(device.status ?? "").toLowerCase() === "active";
-  let locationLabel = "-";
-  if (device.geoLat != null && device.geoLng != null) {
-    locationLabel = `${device.geoLat}, ${device.geoLng}`;
-  }
+  const locationLabel = toDeviceLocationLabel(device);
 
   const fields: UserDetailFieldItem[] = [
     { label: "Last Login", value: formatDateTime(device.lastLoginAt, false) },
