@@ -25,12 +25,32 @@ export const SidebarItem: FC<SidebarItemProps> = ({
   canShowPin,
   onTogglePinned,
 }) => {
+  let layoutClassName = "h-9 gap-3 px-3 text-xs";
+  if (collapsed) {
+    layoutClassName = "mx-auto h-9 w-9 justify-center p-0 text-[0px]";
+  }
+
   const baseItemClass = cn(
     "group flex items-center rounded-md font-medium transition-colors [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
-    collapsed
-      ? "mx-auto h-9 w-9 justify-center p-0 text-[0px]"
-      : "h-9 gap-3 px-3 text-xs"
+    layoutClassName
   );
+
+  let activeCollapsedBorderClassName = "";
+  if (collapsed) {
+    activeCollapsedBorderClassName = "border-l-0";
+  }
+
+  let pinAriaLabel = "Pin to top";
+  let pinIconNode = <Pin className="h-3.5 w-3.5" />;
+  if (pinnedItem) {
+    pinAriaLabel = "Unpin from top";
+    pinIconNode = <PinOff className="h-3.5 w-3.5" />;
+  }
+
+  let pinOpacityClassName = "opacity-0 group-hover:opacity-100";
+  if (pinnedItem) {
+    pinOpacityClassName = "opacity-100";
+  }
 
   return (
     <Link
@@ -45,7 +65,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         className: cn(
           baseItemClass,
           "border-l-2 border-primary bg-primary/10 text-foreground",
-          collapsed ? "border-l-0" : ""
+          activeCollapsedBorderClassName
         ),
       }}
       title={item.label}
@@ -62,10 +82,10 @@ export const SidebarItem: FC<SidebarItemProps> = ({
                 {canShowPin && (
                   <button
                     type="button"
-                    aria-label={pinnedItem ? "Unpin from top" : "Pin to top"}
+                    aria-label={pinAriaLabel}
                     className={cn(
                       "inline-flex h-6 w-6 items-center justify-center rounded transition-opacity hover:bg-background/40",
-                      pinnedItem ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+                      pinOpacityClassName,
                       isActive && "opacity-100"
                     )}
                     onClick={(event) => {
@@ -74,11 +94,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
                       onTogglePinned(item.to);
                     }}
                   >
-                    {pinnedItem ? (
-                      <PinOff className="h-3.5 w-3.5" />
-                    ) : (
-                      <Pin className="h-3.5 w-3.5" />
-                    )}
+                    {pinIconNode}
                   </button>
                 )}
               </span>

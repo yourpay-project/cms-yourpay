@@ -26,21 +26,30 @@ export const InputAdornmentRow: FC<InputAdornmentRowProps> = ({
   endIcon,
   handleClear,
 }) => {
+  const showClearButton = allowClear && hasValue && !disabled && !readOnly;
+  const clearButtonNode = showClearButton ? (
+    <button
+      type="button"
+      onClick={handleClear}
+      className="text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <X className="h-4 w-4" aria-hidden="true" />
+    </button>
+  ) : null;
+
+  let endAdornment = endIcon;
+  if (status) {
+    endAdornment = statusIcon[status];
+  }
+  const endAdornmentNode =
+    endIcon || status ? (
+      <span className="shrink-0 text-muted-foreground">{endAdornment}</span>
+    ) : null;
+
   return (
     <div className={cn("flex items-center gap-2", size !== "sm" && "mt-2")}>
-      {allowClear && hasValue && !disabled && !readOnly ? (
-        <button
-          type="button"
-          onClick={handleClear}
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <X className="h-4 w-4" aria-hidden="true" />
-        </button>
-      ) : null}
-
-      {endIcon || status ? (
-        <span className="shrink-0 text-muted-foreground">{status ? statusIcon[status] : endIcon}</span>
-      ) : null}
+      {clearButtonNode}
+      {endAdornmentNode}
     </div>
   );
 };

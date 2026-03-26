@@ -42,8 +42,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
 }) => {
   // If consumer doesn't provide `aria-describedby`, Radix should compute it from <DialogDescription />.
   // Passing `aria-describedby={undefined}` forces Radix to think it's missing.
-  const ariaDescribedByProps =
-    ariaDescribedBy != null ? ({ "aria-describedby": ariaDescribedBy } as const) : {};
+  let ariaDescribedByProps: { "aria-describedby"?: string } = {};
+  if (ariaDescribedBy != null) {
+    ariaDescribedByProps = { "aria-describedby": ariaDescribedBy };
+  }
 
   return (
     <DialogPortal>
