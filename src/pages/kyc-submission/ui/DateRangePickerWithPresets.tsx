@@ -36,12 +36,12 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
     setCustomTo(to);
   }, [open, from, to]);
 
-  let displayText = "Select date range";
-  if (presetLabel != null && presetLabel !== "") {
-    displayText = presetLabel;
-  } else if (from && to) {
-    displayText = `${from} – ${to}`;
-  }
+  const displayText =
+    presetLabel != null && presetLabel !== ""
+      ? presetLabel
+      : from && to
+        ? `${from} – ${to}`
+        : "Select date range";
 
   const hasValue = !!(from && to);
 
@@ -65,20 +65,6 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
       aria-hidden
     />
   );
-
-  let clearNode: React.ReactNode = null;
-  if (hasValue) {
-    clearNode = (
-      <button
-        type="button"
-        onClick={handleClear}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
-        aria-label="Clear date range"
-      >
-        <X className="h-4 w-4" />
-      </button>
-    );
-  }
 
   return (
     <div className={cn("relative", className)}>
@@ -106,7 +92,16 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
             />
           </DropdownMenuContent>
         </DropdownMenu>
-        {clearNode}
+        {hasValue ? (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+            aria-label="Clear date range"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : null}
       </div>
     </div>
   );
