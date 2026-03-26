@@ -9,7 +9,7 @@ import FeeConfigPage from "./FeeConfigPage";
  * Route-level page for `/fee-config`.
  * Wraps fee configuration list in AppLayout and ProtectedRoute.
  */
-export function FeeConfigRoutePage(): JSX.Element {
+export function FeeConfigRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
