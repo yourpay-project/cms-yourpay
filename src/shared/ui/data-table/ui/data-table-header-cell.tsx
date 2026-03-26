@@ -34,8 +34,16 @@ export function DataTableHeaderCell<TData, TValue>({
   const { column, header } = context;
   const canSort = column.getCanSort();
   const sortDir = column.getIsSorted();
-  const ariaSort =
-    sortDir === false ? undefined : sortDir === "asc" ? "ascending" : "descending";
+  let ariaSort: "ascending" | "descending" | undefined = undefined;
+  if (sortDir === "asc") ariaSort = "ascending";
+  else if (sortDir === "desc") ariaSort = "descending";
+
+  let sortIcon: React.ReactNode = <ArrowUpDown className="h-4 w-4" />;
+  if (sortDir === "asc") {
+    sortIcon = <ArrowUp className="h-4 w-4" />;
+  } else if (sortDir === "desc") {
+    sortIcon = <ArrowDown className="h-4 w-4" />;
+  }
 
   return (
     <div className={cn("flex flex-col gap-1", className)}>
@@ -49,13 +57,7 @@ export function DataTableHeaderCell<TData, TValue>({
             aria-label={sortDir ? `Sort ${sortDir}` : "Sort"}
             aria-sort={ariaSort}
           >
-            {sortDir === "asc" ? (
-              <ArrowUp className="h-4 w-4" />
-            ) : sortDir === "desc" ? (
-              <ArrowDown className="h-4 w-4" />
-            ) : (
-              <ArrowUpDown className="h-4 w-4" />
-            )}
+            {sortIcon}
           </button>
         )}
       </div>

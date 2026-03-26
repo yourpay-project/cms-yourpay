@@ -76,40 +76,45 @@ export const UserViewWallets: FC<UserViewWalletsProps> = ({
     };
   }, [wallets]);
 
+  let content: React.ReactNode = null;
+  if (query.isLoading) {
+    content = <p className="text-sm text-muted-foreground">Loading wallets...</p>;
+  } else if (query.isError) {
+    content = <p className="text-sm text-destructive">Failed to load wallets.</p>;
+  } else if ((wallets?.length ?? 0) === 0) {
+    content = <p className="text-sm text-muted-foreground">No wallets found for this customer.</p>;
+  } else {
+    content = (
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
+          <p className="mb-3 text-sm font-semibold text-foreground">Customer Wallets (IDR Balance)</p>
+          <div className="space-y-3">
+            {idrWallets.length > 0 ? (
+              idrWallets.map((wallet) => renderWalletCard(wallet))
+            ) : (
+              <p className="text-sm text-muted-foreground">No IDR wallets.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
+          <p className="mb-3 text-sm font-semibold text-foreground">Yourpoin Balance</p>
+          <div className="space-y-3">
+            {yourpoinWallets.length > 0 ? (
+              yourpoinWallets.map((wallet) => renderWalletCard(wallet))
+            ) : (
+              <p className="text-sm text-muted-foreground">No Yourpoin wallets.</p>
+            )}
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="-mx-6 -mr-6 max-h-[70vh] overflow-y-auto pb-2 pr-6">
       <div className="space-y-3 px-6">
-        {query.isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading wallets...</p>
-        ) : query.isError ? (
-          <p className="text-sm text-destructive">Failed to load wallets.</p>
-        ) : (wallets?.length ?? 0) === 0 ? (
-          <p className="text-sm text-muted-foreground">No wallets found for this customer.</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
-              <p className="mb-3 text-sm font-semibold text-foreground">Customer Wallets (IDR Balance)</p>
-              <div className="space-y-3">
-                {idrWallets.length > 0 ? (
-                  idrWallets.map((wallet) => renderWalletCard(wallet))
-                ) : (
-                  <p className="text-sm text-muted-foreground">No IDR wallets.</p>
-                )}
-              </div>
-            </section>
-
-            <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
-              <p className="mb-3 text-sm font-semibold text-foreground">Yourpoin Balance</p>
-              <div className="space-y-3">
-                {yourpoinWallets.length > 0 ? (
-                  yourpoinWallets.map((wallet) => renderWalletCard(wallet))
-                ) : (
-                  <p className="text-sm text-muted-foreground">No Yourpoin wallets.</p>
-                )}
-              </div>
-            </section>
-          </div>
-        )}
+        {content}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from "react";
 
 import { SearchInput } from "@/shared/ui";
-import { normalizeCode } from "@/shared/lib";
+import { IdentityAccessMethodItem } from "./IdentityAccessMethodItem";
 
 export interface EditIdentityAccessModalBodyProps {
   search: string;
@@ -60,37 +60,15 @@ export const EditIdentityAccessModalBody: FC<EditIdentityAccessModalBodyProps> =
           renderEmptyState()
         ) : (
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-            {filteredOptions.map((option) => {
-              const key = normalizeCode(option.code);
-              const isChecked = selectedCodeSet.has(key) || option.isDefault;
-              const isDisabled = option.isDefault;
-
-              return (
-                <label
-                  key={option.code}
-                  className={`flex items-start gap-2 rounded-md border border-border/70 px-2.5 py-2 ${
-                    isDisabled ? "cursor-not-allowed bg-muted/20" : "cursor-pointer hover:bg-muted/30"
-                  }`}
-                  aria-disabled={isDisabled}
-                >
-                  <input
-                    id={`identity-access-method-${key}`}
-                    name="identity_access_methods"
-                    value={key}
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => onToggleCode(option.code)}
-                    className={`mt-0.5 h-4 w-4 accent-primary ${
-                      isDisabled ? "pointer-events-none opacity-100" : ""
-                    }`}
-                  />
-                  <span className="text-sm text-foreground">
-                    {option.code}
-                    {option.isDefault ? " (Default)" : ""}
-                  </span>
-                </label>
-              );
-            })}
+            {filteredOptions.map((option) => (
+              <IdentityAccessMethodItem
+                key={option.code}
+                code={option.code}
+                isDefault={option.isDefault}
+                selectedCodeSet={selectedCodeSet}
+                onToggleCode={onToggleCode}
+              />
+            ))}
           </div>
         )}
       </div>

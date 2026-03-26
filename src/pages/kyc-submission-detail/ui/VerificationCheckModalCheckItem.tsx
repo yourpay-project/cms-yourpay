@@ -18,9 +18,16 @@ function statusTone(status?: string): "ok" | "fail" | "neutral" {
  */
 export const VerificationCheckModalCheckItem: FC<VerificationCheckModalCheckItemProps> = ({ label, status, score, failedReason }) => {
   const tone = statusTone(status);
-  const Icon = tone === "ok" ? CheckCircle2 : tone === "fail" ? AlertCircle : HelpCircle;
-  const iconClass =
-    tone === "ok" ? "text-success" : tone === "fail" ? "text-destructive" : "text-muted-foreground";
+  let Icon = HelpCircle;
+  let iconClass = "text-muted-foreground";
+
+  if (tone === "ok") {
+    Icon = CheckCircle2;
+    iconClass = "text-success";
+  } else if (tone === "fail") {
+    Icon = AlertCircle;
+    iconClass = "text-destructive";
+  }
 
   return (
     <div

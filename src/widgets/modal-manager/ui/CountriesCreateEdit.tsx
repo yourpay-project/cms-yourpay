@@ -95,6 +95,10 @@ export const CountriesCreateEdit: FC<CountriesCreateEditProps> = ({
     onClose();
   };
 
+  let submitButtonLabel = "Create";
+  if (mode === "edit") submitButtonLabel = "Update";
+  if (isSubmitting) submitButtonLabel = "Saving...";
+
   return (
     <div className="space-y-4">
       <div className="space-y-1 pb-1">
@@ -122,7 +126,7 @@ export const CountriesCreateEdit: FC<CountriesCreateEditProps> = ({
           Cancel
         </Button>
         <Button type="button" onClick={() => void onSubmit()} disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : mode === "edit" ? "Update" : "Create"}
+          {submitButtonLabel}
         </Button>
       </div>
     </div>

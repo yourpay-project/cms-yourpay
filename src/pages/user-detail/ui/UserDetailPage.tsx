@@ -11,6 +11,22 @@ import { UserDetailActionButtons } from "./UserDetailActionButtons";
 import { UserDetailCollapsibleCard, UserDetailFieldGrid } from "@/entities/user";
 import { IdentityAccessBadges } from "./IdentityAccessBadges";
 
+type StatusVariant = "success" | "warning" | "destructive" | "default";
+
+function toStatusVariant(normalizedStatus: string): StatusVariant {
+  switch (normalizedStatus) {
+    case "ACTIVE":
+      return "success";
+    case "PENDING":
+      return "warning";
+    case "BLOCKED":
+    case "INACTIVE":
+      return "destructive";
+    default:
+      return "default";
+  }
+}
+
 /**
  * Route-level content page for customer detail.
  */
@@ -39,14 +55,7 @@ const UserDetailPage: FC = () => {
 
   const rawStatus = String(detail.access.status ?? "").trim();
   const normalizedStatus = rawStatus.toUpperCase() || "-";
-  const statusVariant =
-    normalizedStatus === "ACTIVE"
-      ? "success"
-      : normalizedStatus === "PENDING"
-        ? "warning"
-        : normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE"
-          ? "destructive"
-          : "default";
+  const statusVariant = toStatusVariant(normalizedStatus);
 
   return (
     <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4 pt-8 md:pt-10">

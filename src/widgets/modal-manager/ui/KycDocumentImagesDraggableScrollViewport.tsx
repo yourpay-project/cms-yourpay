@@ -36,6 +36,11 @@ export const KycDocumentImagesDraggableScrollViewport: FC<KycDocumentImagesDragg
   const [isDragging, setIsDragging] = useState(false);
   const shouldEnableDrag = useMemo(() => scale > 1, [scale]);
 
+  let cursorClassName = "";
+  if (shouldEnableDrag) {
+    cursorClassName = isDragging ? "cursor-grabbing" : "cursor-grab";
+  }
+
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!shouldEnableDrag || !viewportRef.current) return;
     const target = event.target as HTMLElement;
@@ -70,7 +75,7 @@ export const KycDocumentImagesDraggableScrollViewport: FC<KycDocumentImagesDragg
   return (
     <div
       ref={viewportRef}
-      className={`${className ?? ""} ${shouldEnableDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""}`.trim()}
+      className={[className, cursorClassName].filter(Boolean).join(" ")}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerEnd}
