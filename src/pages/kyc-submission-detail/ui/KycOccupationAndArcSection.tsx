@@ -19,15 +19,8 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
   onOccupationChange,
 }) => {
   if (isIndonesia) return null;
-  let arcExpiryInputType: "date" | "text" = "text";
-  if (isEditable) {
-    arcExpiryInputType = "date";
-  }
-
-  let arcExpiryValue = draft.arcExpiryDate ?? "";
-  if (isEditable) {
-    arcExpiryValue = toDateInputValue(draft.arcExpiryDate);
-  }
+  const arcExpiryInputType: "date" | "text" = isEditable ? "date" : "text";
+  const arcExpiryValue = isEditable ? toDateInputValue(draft.arcExpiryDate) : (draft.arcExpiryDate ?? "");
 
   return (
     <>

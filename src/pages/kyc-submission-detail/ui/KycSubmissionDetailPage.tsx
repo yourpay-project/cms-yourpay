@@ -36,8 +36,8 @@ const KycSubmissionDetailPage: FC = () => {
   if (!detail) return <p className="text-sm text-muted-foreground">KYC submission detail is unavailable.</p>;
 
   const canCheckProgress = Boolean(detail.arcNumber && detail.idDocument?.imageUrl && detail.selfieDocument?.imageUrl);
-  const idDocumentUploadLabel =
-    String(detail.countryCode ?? "").toUpperCase() === "ID" ? "Update KTP Photo" : "Update ID Document Photo";
+  const isIndonesiaCountry = String(detail.countryCode ?? "").toUpperCase() === "ID";
+  const idDocumentUploadLabel = isIndonesiaCountry ? "Update KTP Photo" : "Update ID Document Photo";
 
   return (
     <div className="box-border flex w-full min-w-0 max-w-full flex-col gap-4 md:min-h-0 md:flex-1 md:overflow-hidden">
