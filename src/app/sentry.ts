@@ -38,7 +38,10 @@ const SENTRY_ENABLED =
 const parseRate = (raw: unknown, fallback: number) => {
   if (typeof raw !== "string" || raw.trim() === "") return fallback;
   const n = Number.parseFloat(raw);
-  return Number.isFinite(n) ? n : fallback;
+  if (Number.isFinite(n)) {
+    return n;
+  }
+  return fallback;
 };
 
 if (SENTRY_ENABLED) {
@@ -46,16 +49,20 @@ if (SENTRY_ENABLED) {
   const replaysSessionSampleRate = parseRate(REPLAYS_SESSION_SAMPLE_RATE_RAW, 0);
   const replaysOnErrorSampleRate = parseRate(REPLAYS_ON_ERROR_SAMPLE_RATE_RAW, 0);
 
+  const integrations: unknown[] = [];
+
+  if (tracesSampleRate > 0) {
+    integrations.push(Sentry.browserTracingIntegration());
+  }
+  if (replaysSessionSampleRate > 0 || replaysOnErrorSampleRate > 0) {
+    integrations.push(Sentry.replayIntegration());
+  }
+
   Sentry.init({
     dsn: SENTRY_DSN,
     release: APP_VERSION,
     environment: APP_ENV ?? import.meta.env.MODE,
-    integrations: [
-      ...(tracesSampleRate > 0 ? [Sentry.browserTracingIntegration()] : []),
-      ...(replaysSessionSampleRate > 0 || replaysOnErrorSampleRate > 0
-        ? [Sentry.replayIntegration()]
-        : []),
-    ],
+    integrations,
     tracesSampleRate,
     replaysSessionSampleRate,
     replaysOnErrorSampleRate,

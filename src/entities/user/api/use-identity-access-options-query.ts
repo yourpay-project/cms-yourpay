@@ -53,7 +53,12 @@ export function useIdentityAccessOptionsQuery() {
       }
 
       return Array.from(uniqueMap.values()).sort((a, b) => {
-        if (a.isDefault !== b.isDefault) return a.isDefault ? -1 : 1;
+        if (a.isDefault !== b.isDefault) {
+          if (a.isDefault) {
+            return -1;
+          }
+          return 1;
+        }
         return a.code.localeCompare(b.code);
       });
     },
