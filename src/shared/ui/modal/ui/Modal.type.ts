@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import type { ModalFooterProps } from "./ModalFooter";
 
@@ -41,5 +41,10 @@ export interface ModalProps extends ModalFooterProps {
    * Use this to override width constraints (e.g. `max-w-[800px]`).
    */
   className?: string;
+  /**
+   * Optional inline style for dynamic size values
+   * (e.g. dynamic max width from runtime config).
+   */
+  style?: CSSProperties;
 }
 

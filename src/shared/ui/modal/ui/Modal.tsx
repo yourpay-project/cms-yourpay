@@ -51,6 +51,7 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   centered,
   className,
+  style,
 }) => {
   const { visible, handleVisibilityChange } = useModalAnimation({ open });
 
@@ -101,6 +102,7 @@ export const Modal: React.FC<ModalProps> = ({
                       "flex flex-col overflow-hidden",
                       className
                     )}
+                    style={style}
                   >
                     {/*
                      * Keep Radix DialogTitle/DialogDescription as direct children for reliable
