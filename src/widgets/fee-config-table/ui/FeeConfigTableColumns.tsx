@@ -51,7 +51,10 @@ export function getFeeConfigTableColumns(params: {
       meta: { align: "center" as const },
       cell: ({ getValue }) => {
         const raw = String(getValue() ?? "").toLowerCase();
-        return raw === "percentage" ? "percentage" : "fixed";
+        if (raw === "percentage") {
+          return "percentage";
+        }
+        return "fixed";
       },
     },
     {
@@ -60,7 +63,10 @@ export function getFeeConfigTableColumns(params: {
       meta: { align: "center" as const },
       cell: ({ getValue }) => {
         const raw = String(getValue() ?? "").toLowerCase();
-        return raw === "inclusive" ? "inclusive" : "exclusive";
+        if (raw === "inclusive") {
+          return "inclusive";
+        }
+        return "exclusive";
       },
     },
     {
@@ -69,10 +75,12 @@ export function getFeeConfigTableColumns(params: {
       meta: { align: "center" as const },
       cell: ({ row }) => {
         const isActive = row.original.isActive;
-        const label = isActive ? "Active" : "Inactive";
-        const badgeClassName = isActive
-          ? "bg-success/15 text-success border border-success/30"
-          : "bg-muted text-muted-foreground border-border";
+        let label = "Inactive";
+        let badgeClassName = "bg-muted text-muted-foreground border-border";
+        if (isActive) {
+          label = "Active";
+          badgeClassName = "bg-success/15 text-success border border-success/30";
+        }
 
         return (
           <span

@@ -58,7 +58,10 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
 
     return Array.from(optionMap.values()).sort((a, b) => {
       if (a.isDefault !== b.isDefault) {
-        return a.isDefault ? -1 : 1;
+        if (a.isDefault) {
+          return -1;
+        }
+        return 1;
       }
       return a.code.localeCompare(b.code);
     });
@@ -111,8 +114,12 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
   };
 
   const onSubmit = (): void => {
+    let selectedLabel = selectedCodes.join(", ");
+    if (!selectedLabel) {
+      selectedLabel = "-";
+    }
     toast.info(`TODO: submit identity access update for ${customerId}`, {
-      description: `Selected: ${selectedCodes.join(", ") || "-"}`,
+      description: `Selected: ${selectedLabel}`,
     });
     onClose();
   };

@@ -34,7 +34,10 @@ export function getKycSubmissionTableColumns(): ColumnDef<KycSubmission, unknown
       meta: { align: "center" as const },
       cell: ({ getValue }) => {
         const v = getValue<string | undefined>();
-        return v ? v.toUpperCase() : "-";
+        if (v) {
+          return v.toUpperCase();
+        }
+        return "-";
       },
     },
     {
@@ -94,12 +97,13 @@ export function getKycSubmissionTableColumns(): ColumnDef<KycSubmission, unknown
       meta: { align: "left" as const },
       cell: ({ getValue }) => {
         const v = String(getValue() ?? "").trim();
-        return v ? (
+        if (!v) {
+          return "-";
+        }
+        return (
           <span className="max-w-[200px] truncate block" title={v}>
             {v}
           </span>
-        ) : (
-          "-"
         );
       },
     },

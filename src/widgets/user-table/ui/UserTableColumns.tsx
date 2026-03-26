@@ -41,10 +41,12 @@ export function getUserTableColumns(): ColumnDef<User, unknown>[] {
       meta: { align: "center" },
       cell: ({ getValue }) => {
         const value = getValue<boolean | undefined>();
-        const label = value ? "Active" : "Inactive";
-        const badgeClassName = value
-          ? "bg-success/15 text-success border border-success/30"
-          : "bg-muted text-muted-foreground";
+        let label = "Inactive";
+        let badgeClassName = "bg-muted text-muted-foreground";
+        if (value) {
+          label = "Active";
+          badgeClassName = "bg-success/15 text-success border border-success/30";
+        }
 
         return (
           <span
@@ -61,7 +63,10 @@ export function getUserTableColumns(): ColumnDef<User, unknown>[] {
       meta: { align: "center" },
       cell: ({ getValue }) => {
         const value = getValue<string | undefined>() ?? "";
-        return value ? value.toUpperCase() : "-";
+        if (value) {
+          return value.toUpperCase();
+        }
+        return "-";
       },
     },
     {
@@ -70,7 +75,10 @@ export function getUserTableColumns(): ColumnDef<User, unknown>[] {
       meta: { align: "center" },
       cell: ({ getValue }) => {
         const value = getValue<string | undefined>() ?? "";
-        return value ? String(value).toUpperCase() : "-";
+        if (value) {
+          return String(value).toUpperCase();
+        }
+        return "-";
       },
     },
     {
