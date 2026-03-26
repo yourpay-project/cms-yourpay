@@ -13,31 +13,11 @@ const TransactionsPage: FC = () => {
 
   if (filters.isError) {
     const apiError = filters.error instanceof ApiClientError ? filters.error : null;
-    let message = "Failed to load transactions. Please try again.";
-    if (apiError?.status === 403) {
-      message = "You do not have permission to view transactions.";
-    }
+    const message =
+      apiError?.status === 403
+        ? "You do not have permission to view transactions."
+        : "Failed to load transactions. Please try again.";
     return <p className="text-sm text-destructive">{message}</p>;
-  }
-
-  let filtersCardNode: React.ReactNode = null;
-  if (filters.hasBackendFilters) {
-    filtersCardNode = (
-      <TransactionsFiltersCard
-        filtersOpen={filters.filtersOpen}
-        setFiltersOpen={filters.setFiltersOpen}
-        badges={filters.badges}
-        handleResetFilters={filters.handleResetFilters}
-        gridProps={{
-          optionsFilterFields: filters.optionsFilterFields,
-          selectedFilterValues: filters.selectedFilterValues,
-          handleChangeFilter: filters.handleChangeFilter,
-          dateRangeDefinitions: filters.dateRangeDefinitions,
-          dateRanges: filters.dateRanges,
-          setDateRange: filters.setDateRange,
-        }}
-      />
-    );
   }
 
   return (
@@ -46,7 +26,22 @@ const TransactionsPage: FC = () => {
         <h2 className="text-xl font-semibold">Transactions</h2>
       </div>
 
-      {filtersCardNode}
+      {filters.hasBackendFilters ? (
+        <TransactionsFiltersCard
+          filtersOpen={filters.filtersOpen}
+          setFiltersOpen={filters.setFiltersOpen}
+          badges={filters.badges}
+          handleResetFilters={filters.handleResetFilters}
+          gridProps={{
+            optionsFilterFields: filters.optionsFilterFields,
+            selectedFilterValues: filters.selectedFilterValues,
+            handleChangeFilter: filters.handleChangeFilter,
+            dateRangeDefinitions: filters.dateRangeDefinitions,
+            dateRanges: filters.dateRanges,
+            setDateRange: filters.setDateRange,
+          }}
+        />
+      ) : null}
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div className="flex w-full justify-center md:w-auto md:justify-start">
