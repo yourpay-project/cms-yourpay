@@ -37,10 +37,7 @@ export const InputAdornmentRow: FC<InputAdornmentRowProps> = ({
     </button>
   ) : null;
 
-  let endAdornment = endIcon;
-  if (status) {
-    endAdornment = statusIcon[status];
-  }
+  const endAdornment = status ? statusIcon[status] : endIcon;
   const endAdornmentNode =
     endIcon || status ? (
       <span className="shrink-0 text-muted-foreground">{endAdornment}</span>
