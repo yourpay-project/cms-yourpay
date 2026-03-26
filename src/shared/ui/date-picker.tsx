@@ -1,12 +1,13 @@
 import type { FC, MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Calendar as CalendarIcon, X } from "lucide-react";
-import { parseISO } from "date-fns";
-import { Button, Calendar, DropdownFieldTrigger, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/shared/ui";
+import { DropdownFieldTrigger, DropdownMenu, DropdownMenuTrigger } from "@/shared/ui";
 import { cn } from "@/shared/lib/utils";
 
 import type { DatePickerProps } from "./date-picker.type";
 import { formatDateDisplay, toYYYYMMDD } from "./date-picker.lib";
+import { DatePickerMenuContent } from "./date-picker-menu-content";
+import { resolveSelectedDate, shouldShowClearAction } from "./date-picker-view-model";
 
 /**
  * Generic single date picker using a dropdown + shadcn-style Calendar.
@@ -63,10 +64,7 @@ export const DatePicker: FC<DatePickerProps> = ({
     setOpen(false);
   };
 
-  const selectedDate = useMemo(() => {
-    if (!customDate) return undefined;
-    return parseISO(customDate);
-  }, [customDate]);
+  const selectedDate = useMemo(() => resolveSelectedDate(customDate), [customDate]);
 
   // `Calendar` is controlled via `selected` and `onSelect`.
   const handleSelect = (next: Date | undefined) => {
@@ -84,17 +82,9 @@ export const DatePicker: FC<DatePickerProps> = ({
     />
   );
 
-  let inlineClearNode: React.ReactNode = null;
-  if (allowClear && hasValue) {
-    inlineClearNode = (
-      <Button type="button" variant="ghost" size="sm" onClick={handleClear}>
-        Clear
-      </Button>
-    );
-  }
-
   let trailingClearNode: React.ReactNode = null;
-  if (allowClear && hasValue) {
+  const canShowClearAction = shouldShowClearAction(allowClear, hasValue);
+  if (canShowClearAction) {
     trailingClearNode = (
       <button
         type="button"
@@ -135,36 +125,20 @@ export const DatePicker: FC<DatePickerProps> = ({
             />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="start" sideOffset={4} className="w-[min(360px,100vw)] p-3" onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            triggerRef.current?.blur();
-          }}>
-            <div className="space-y-2">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleSelect}
-                captionLayout="label"
-                numberOfMonths={1}
-                className="w-full [--cell-size:1.5rem] text-sm"
-                disabled={disabled}
-              />
-
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="flex gap-2">
-                  {inlineClearNode}
-                </div>
-                <div className="flex gap-2">
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="button" size="sm" onClick={handleApply} disabled={disabled}>
-                    Apply
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </DropdownMenuContent>
+          <DatePickerMenuContent
+            disabled={disabled}
+            allowClear={allowClear}
+            hasValue={hasValue}
+            selectedDate={selectedDate}
+            onSelectDate={handleSelect}
+            onClear={handleClear}
+            onCancel={() => setOpen(false)}
+            onApply={handleApply}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              triggerRef.current?.blur();
+            }}
+          />
         </DropdownMenu>
 
         {trailingClearNode}
