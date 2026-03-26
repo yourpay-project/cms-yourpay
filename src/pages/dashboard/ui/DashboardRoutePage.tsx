@@ -11,7 +11,7 @@ import DashboardPage from './DashboardPage';
  * - Uses the shared AppLayout widget
  * - Keeps widget subtree isolated with an ErrorBoundary
  */
-export function DashboardRoutePage(): JSX.Element {
+export function DashboardRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>

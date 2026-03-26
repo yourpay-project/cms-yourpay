@@ -24,7 +24,7 @@ export function DataTablePagination({
   onPreviousPage,
   onNextPage,
   onLastPage,
-}: DataTablePaginationProps): JSX.Element {
+}: DataTablePaginationProps): React.JSX.Element {
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="text-sm text-muted-foreground">

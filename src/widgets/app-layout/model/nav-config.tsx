@@ -3,9 +3,9 @@ import { navGroups as baseNavGroups } from '@/shared/config';
 import type { NavGroupConfig } from './nav-types';
 import { navIcons } from './nav-icons';
 
-const iconByKey: Record<string, JSX.Element> = navIcons as unknown as Record<
+const iconByKey: Record<string, React.JSX.Element> = navIcons as unknown as Record<
   string,
-  JSX.Element
+  React.JSX.Element
 >;
 
 /**

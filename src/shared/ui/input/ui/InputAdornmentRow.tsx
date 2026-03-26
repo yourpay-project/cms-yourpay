@@ -5,7 +5,7 @@ import { cn } from "@/shared/lib/utils";
 
 import type { InputAdornmentRowProps } from "./InputAdornmentRow.type";
 
-type StatusIconMap = Record<"error" | "warning" | "success", JSX.Element>;
+type StatusIconMap = Record<"error" | "warning" | "success", React.JSX.Element>;
 
 const statusIcon: StatusIconMap = {
   error: <CircleAlert className="h-4 w-4 text-destructive" aria-hidden="true" />,

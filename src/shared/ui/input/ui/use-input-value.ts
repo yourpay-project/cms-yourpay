@@ -9,7 +9,7 @@ interface UseInputValueOptions {
 }
 
 interface UseInputValueResult {
-  innerRef: React.RefObject<HTMLInputElement>;
+  innerRef: React.RefObject<HTMLInputElement | null>;
   currentValue: string | number;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleClear: () => void;
@@ -17,7 +17,22 @@ interface UseInputValueResult {
 }
 
 /**
- * Handles controlled and uncontrolled input value state, including clear logic.
+ * Custom hook to handle controlled and uncontrolled input value states,
+ * including logic for clearing the input field.
+ *
+ * This hook simplifies the process of syncing internal component state with
+ * external parent state, managing edge cases where the input is disabled
+ * or read-only to prevent unintended value mutations.
+ *
+ * @param options - Configuration options for the input value state.
+ * @param options.value - The controlled external value.
+ * @param options.defaultValue - The initial uncontrolled value.
+ * @param options.disabled - Whether the input is visually and functionally disabled.
+ * @param options.readOnly - Whether the input is functional but read-only.
+ * @param options.onChange - External change handler to push state up.
+ *
+ * @returns The resolved current value, change/clear handlers, and a reference 
+ *          to the underlying input element for DOM focus management.
  */
 export function useInputValue(options: UseInputValueOptions): UseInputValueResult {
   const { value, defaultValue, disabled, readOnly, onChange } = options;

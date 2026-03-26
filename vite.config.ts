@@ -14,16 +14,21 @@ export default defineConfig(() => {
 
   return {
     plugins: [
-      react(),
+      react({
+        // @ts-expect-error: 'babel' is valid in plugin-react but types may drift
+        babel: {
+          plugins: [["babel-plugin-react-compiler", {}]],
+        },
+      }),
       ...(enableSentryUpload
         ? [
-            sentryVitePlugin({
-              org: sentryOrg,
-              project: sentryProject,
-              authToken: sentryAuthToken,
-              release: { name: sentryRelease },
-            }),
-          ]
+          sentryVitePlugin({
+            org: sentryOrg,
+            project: sentryProject,
+            authToken: sentryAuthToken,
+            release: { name: sentryRelease },
+          }),
+        ]
         : []),
     ],
     build: {

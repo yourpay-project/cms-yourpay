@@ -29,7 +29,7 @@ export function DataTable<TData, TValue>({
   className,
   tableClassName,
   rowCount,
-}: DataTableProps<TData, TValue>): JSX.Element {
+}: DataTableProps<TData, TValue>): React.JSX.Element {
   const {
     table,
     canPreviousPage,

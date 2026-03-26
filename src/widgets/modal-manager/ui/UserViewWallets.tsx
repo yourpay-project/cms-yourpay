@@ -28,7 +28,7 @@ function formatWalletName(wallet: CustomerWalletItem): string {
   return "Wallet";
 }
 
-function renderWalletField(label: string, value?: string): JSX.Element {
+function renderWalletField(label: string, value?: string): React.JSX.Element {
   return (
     <div className="space-y-1">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -39,7 +39,7 @@ function renderWalletField(label: string, value?: string): JSX.Element {
   );
 }
 
-function renderWalletCard(wallet: CustomerWalletItem): JSX.Element {
+function renderWalletCard(wallet: CustomerWalletItem): React.JSX.Element {
   const balance = wallet.formattedBalance ?? (wallet.balance != null ? String(wallet.balance) : undefined);
 
   return (

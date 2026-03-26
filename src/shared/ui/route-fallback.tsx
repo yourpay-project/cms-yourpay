@@ -10,7 +10,7 @@ export interface RouteFallbackProps {
  * Full-page loading fallback for React Suspense (e.g. when lazy-loading route components).
  * Uses semantic tokens for theme compatibility.
  */
-export function RouteFallback({ className }: RouteFallbackProps): JSX.Element {
+export function RouteFallback({ className }: RouteFallbackProps): React.JSX.Element {
   return (
     <div
       className={cn(

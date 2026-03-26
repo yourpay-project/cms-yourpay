@@ -26,7 +26,7 @@ export function SelectionHeader({ table }: SelectionHeaderProps): React.ReactEle
         type="checkbox"
         aria-label="Select all rows on page"
         checked={isAllSelected}
-        ref={(el) => el && (el.indeterminate = isSomeSelected)}
+        ref={(el) => { if (el) el.indeterminate = isSomeSelected; }}
         onChange={toggleHandler as (e: React.ChangeEvent<HTMLInputElement>) => void}
         className={cn(
           "h-4 w-4 rounded border-border bg-background text-primary",

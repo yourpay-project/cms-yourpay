@@ -4,7 +4,7 @@ import { getNavTitle } from "@/shared/config";
 import { AppLayout } from "@/widgets/app-layout";
 import TransactionsPage from "./TransactionsPage";
 
-export function TransactionsRoutePage(): JSX.Element {
+export function TransactionsRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>

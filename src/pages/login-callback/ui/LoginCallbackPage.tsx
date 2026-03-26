@@ -6,7 +6,7 @@ import { useLoginCallback } from '../model';
  * UI for `/login/callback`.
  * Delegates all side effects and networking to `useLoginCallback`.
  */
-const LoginCallbackPage = (): JSX.Element | null => {
+const LoginCallbackPage = (): React.JSX.Element | null => {
   const { status } = useLoginCallback();
 
   if (status === 'error') return null;

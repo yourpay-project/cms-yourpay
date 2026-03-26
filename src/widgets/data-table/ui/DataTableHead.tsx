@@ -10,7 +10,7 @@ export interface DataTableHeadProps<TData> {
 }
 
 /** Renders table header rows from the table instance's header groups. */
-export function DataTableHead<TData>({ table }: DataTableHeadProps<TData>): JSX.Element {
+export function DataTableHead<TData>({ table }: DataTableHeadProps<TData>): React.JSX.Element {
   return (
     <TableHeader className="sticky top-0 z-20 bg-card">
       {table.getHeaderGroups().map((headerGroup) => (

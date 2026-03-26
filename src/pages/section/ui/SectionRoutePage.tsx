@@ -9,7 +9,7 @@ import { AppLayout } from '@/widgets/app-layout';
  * Route-level page for sidebar sections that are not implemented yet.
  * Renders a placeholder inside the standard AppLayout.
  */
-export function SectionRoutePage(): JSX.Element {
+export function SectionRoutePage(): React.JSX.Element {
   const location = useLocation();
   const pathname = location.pathname;
   const title = getNavTitle(pathname);
