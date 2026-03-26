@@ -94,10 +94,7 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
     const a = toNormalizedSorted(selectedCodes);
     const b = toNormalizedSorted(initialSelectedCodes);
     if (a.length !== b.length) return true;
-    for (let i = 0; i < a.length; i += 1) {
-      if (a[i] !== b[i]) return true;
-    }
-    return false;
+    return !a.every((code, index) => code === b[index]);
   }, [initialSelectedCodes, selectedCodes]);
 
   const onToggleCode = (code: string): void => {
