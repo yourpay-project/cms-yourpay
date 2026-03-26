@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { useModalStore } from "@/shared/lib/modal";
+import { cn } from "@/shared/lib";
 import { Modal } from "@/shared/ui/modal";
 import { MODAL_COMPONENT_REGISTRY, MODAL_SHELL_CONFIG } from "../model/modal-registry";
 import { ModalGlobalLoadingOverlay } from "./ModalGlobalLoadingOverlay";
@@ -24,6 +25,14 @@ export const ModalContainer: FC = () => {
   }
 
   const shellConfig = MODAL_SHELL_CONFIG[modalType as ModalKey];
+  let widthClassName = "max-w-[520px]";
+  if (shellConfig.width != null) {
+    if (typeof shellConfig.width === "number") {
+      widthClassName = `max-w-[${shellConfig.width}px]`;
+    } else {
+      widthClassName = `max-w-[${shellConfig.width}]`;
+    }
+  }
 
   const ResolvedModal = MODAL_COMPONENT_REGISTRY[modalType as ModalKey] as FC<
     Record<string, unknown> & { open: boolean; onClose: () => void; onCloseAll: () => void }
@@ -46,8 +55,7 @@ export const ModalContainer: FC = () => {
           title={shellConfig.title ?? null}
           description={shellConfig.description}
           centered={shellConfig.centered}
-          width={shellConfig.width}
-          className={shellConfig.className}
+          className={cn(widthClassName, shellConfig.className)}
         >
           <ResolvedModal
             {...(resolvedProps as Record<string, unknown>)}
