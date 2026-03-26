@@ -1,9 +1,13 @@
 import type { FC } from "react";
 import { useMemo, useRef, useState } from "react";
+import { cn } from "@/shared/lib";
 
 export interface KycDocumentImagesDraggableScrollViewportProps {
+  /** Current image scale; drag is enabled only when zoomed in. */
   scale: number;
+  /** Additional wrapper class names. */
   className?: string;
+  /** Scrollable viewport content. */
   children: React.ReactNode;
 }
 
@@ -11,6 +15,9 @@ export interface KycDocumentImagesDraggableScrollViewportProps {
  * Lightweight drag-to-scroll wrapper.
  *
  * Keeps native scrolling behavior while allowing pointer drag when zoomed.
+ *
+ * @param props Wrapper props and scrollable content.
+ * @returns Drag-aware viewport container.
  */
 export const KycDocumentImagesDraggableScrollViewport: FC<KycDocumentImagesDraggableScrollViewportProps> = ({
   scale,
@@ -35,11 +42,8 @@ export const KycDocumentImagesDraggableScrollViewport: FC<KycDocumentImagesDragg
 
   const [isDragging, setIsDragging] = useState(false);
   const shouldEnableDrag = useMemo(() => scale > 1, [scale]);
-
-  let cursorClassName = "";
-  if (shouldEnableDrag) {
-    cursorClassName = isDragging ? "cursor-grabbing" : "cursor-grab";
-  }
+  const dragCursorClassName = isDragging ? "cursor-grabbing" : "cursor-grab";
+  const cursorClassName = shouldEnableDrag ? dragCursorClassName : "";
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!shouldEnableDrag || !viewportRef.current) return;
@@ -75,7 +79,7 @@ export const KycDocumentImagesDraggableScrollViewport: FC<KycDocumentImagesDragg
   return (
     <div
       ref={viewportRef}
-      className={[className, cursorClassName].filter(Boolean).join(" ")}
+      className={cn(className, cursorClassName)}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerEnd}

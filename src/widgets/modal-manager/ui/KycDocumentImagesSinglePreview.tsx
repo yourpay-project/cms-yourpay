@@ -12,6 +12,55 @@ import {
   toDocumentImageHeightPercent,
 } from "./document-images-transform-utils";
 
+interface SinglePreviewImageContentProps {
+  imageUrl?: string;
+  title: string;
+  heightPercent: number;
+  rotation: number;
+}
+
+/**
+ * Image content section for single preview modal viewport.
+ *
+ * @param props Image source and transform view-model.
+ * @returns Image element or unavailable state.
+ */
+const SinglePreviewImageContent: FC<SinglePreviewImageContentProps> = ({
+  imageUrl,
+  title,
+  heightPercent,
+  rotation,
+}) => {
+  if (!imageUrl) {
+    return (
+      <div className="flex h-[40vh] items-center justify-center text-sm text-muted-foreground">
+        Image unavailable
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={title}
+      className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
+      style={{
+        height: `${heightPercent}%`,
+        width: "auto",
+        transform: `rotate(${rotation}deg)`,
+        transformOrigin: "center center",
+      }}
+      draggable={false}
+    />
+  );
+};
+
+/**
+ * Single-document enlarged preview with local zoom/rotate controls.
+ *
+ * @param props Active document state and transform handlers.
+ * @returns Single preview modal content.
+ */
 export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewProps> = ({
   onClose,
   open,
@@ -66,24 +115,7 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
 
   // Normal view should stretch by height; zoom expands layout inside the scroll viewport.
   const heightPercent = useMemo(() => toDocumentImageHeightPercent(scale), [scale]);
-  const imageNode = activeDocument?.imageUrl ? (
-    <img
-      src={activeDocument.imageUrl}
-      alt={activeTitle}
-      className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
-      style={{
-        height: `${heightPercent}%`,
-        width: "auto",
-        transform: `rotate(${rotation}deg)`,
-        transformOrigin: "center center",
-      }}
-      draggable={false}
-    />
-  ) : (
-    <div className="flex h-[40vh] items-center justify-center text-sm text-muted-foreground">
-      Image unavailable
-    </div>
-  );
+  const imageUrl = activeDocument?.imageUrl;
 
   return (
     <div className="-mx-6 -my-2 flex max-h-[85vh] flex-col overflow-y-auto overflow-x-hidden">
@@ -97,7 +129,12 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
         <div className="px-6">
           <div className="relative h-[60vh] min-h-[40vh] overflow-hidden rounded-md border border-border bg-muted/20 p-3">
             <KycDocumentImagesDraggableScrollViewport scale={scale} className="h-full overflow-auto">
-              {imageNode}
+              <SinglePreviewImageContent
+                imageUrl={imageUrl}
+                title={activeTitle}
+                heightPercent={heightPercent}
+                rotation={rotation}
+              />
             </KycDocumentImagesDraggableScrollViewport>
 
             <ImageViewerToolbar
