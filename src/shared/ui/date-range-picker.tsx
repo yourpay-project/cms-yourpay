@@ -57,8 +57,14 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
   const hasValue = Boolean(from && to);
 
   const selectedRange = useMemo(() => {
-    const fromDate = customFrom ? parseISO(customFrom) : undefined;
-    const toDate = customTo ? parseISO(customTo) : undefined;
+    let fromDate: Date | undefined = undefined;
+    if (customFrom) {
+      fromDate = parseISO(customFrom);
+    }
+    let toDate: Date | undefined = undefined;
+    if (customTo) {
+      toDate = parseISO(customTo);
+    }
     if (!fromDate) return undefined;
     return { from: fromDate, to: toDate };
   }, [customFrom, customTo]);

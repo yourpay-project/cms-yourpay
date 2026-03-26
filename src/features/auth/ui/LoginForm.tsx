@@ -43,20 +43,35 @@ export const LoginForm: FC<LoginFormProps> = ({
     window.location.href = getGoogleAuthUrl();
   };
 
-  const passwordType = isPasswordVisible ? "text" : "password";
-  const passwordToggleAriaLabel = isPasswordVisible ? "Hide password" : "Show password";
-  const passwordToggleIconNode = isPasswordVisible ? (
-    <EyeOff className="h-4 w-4" aria-hidden="true" />
-  ) : (
+  let passwordType = "password";
+  let passwordToggleAriaLabel = "Show password";
+  let passwordToggleIconNode: React.ReactNode = (
     <Eye className="h-4 w-4" aria-hidden="true" />
   );
 
-  const submitLeadingNode = isPending ? (
-    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-  ) : null;
+  if (isPasswordVisible) {
+    passwordType = "text";
+    passwordToggleAriaLabel = "Hide password";
+    passwordToggleIconNode = <EyeOff className="h-4 w-4" aria-hidden="true" />;
+  }
+
+  let submitLeadingNode: React.ReactNode = null;
+  if (isPending) {
+    submitLeadingNode = <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
+  }
 
   let usernamePasswordFormNode: React.ReactNode = null;
   if (isUsernamePasswordEnabled) {
+    let emailStatus: "error" | undefined = undefined;
+    if (errors.email) {
+      emailStatus = "error";
+    }
+
+    let passwordStatus: "error" | undefined = undefined;
+    if (errors.password) {
+      passwordStatus = "error";
+    }
+
     usernamePasswordFormNode = (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
@@ -67,7 +82,7 @@ export const LoginForm: FC<LoginFormProps> = ({
             autoComplete="email"
             label="Email"
             allowClear
-            status={errors.email ? "error" : undefined}
+            status={emailStatus}
             helperText={errors.email?.message}
             {...register("email")}
           />
@@ -79,7 +94,7 @@ export const LoginForm: FC<LoginFormProps> = ({
             type={passwordType}
             autoComplete="current-password"
             label="Password"
-            status={errors.password ? "error" : undefined}
+            status={passwordStatus}
             helperText={errors.password?.message}
             endIcon={
               <button

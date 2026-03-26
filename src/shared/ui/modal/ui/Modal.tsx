@@ -54,14 +54,21 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const { visible, handleVisibilityChange } = useModalAnimation({ open });
 
-  const contentWidth =
-    typeof width === "number" ? `${width}px` : width || "520px";
+  let contentWidth = "520px";
+  if (typeof width === "number") {
+    contentWidth = `${width}px`;
+  } else if (typeof width === "string" && width) {
+    contentWidth = width;
+  }
 
   if (!visible) {
     return null;
   }
 
-  const wrapperAlignClassName = centered ? "items-center" : "items-start";
+  let wrapperAlignClassName = "items-start";
+  if (centered) {
+    wrapperAlignClassName = "items-center";
+  }
 
   const headerNode =
     title != null || description != null ? (
