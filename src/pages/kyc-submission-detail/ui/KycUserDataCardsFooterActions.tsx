@@ -16,27 +16,31 @@ export const KycUserDataCardsFooterActions: FC<KycUserDataCardsFooterActionsProp
   onCancelEdit,
   onSaveEdit,
 }) => {
+  const rejectionNoteNode = showRejectionNote ? (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-muted-foreground">Rejection Note</span>
+      <div className="min-h-[3rem] select-text rounded-md border border-input bg-muted/20 px-3 py-2.5 text-sm leading-relaxed text-foreground">
+        {draft.rejectionNote?.trim() ? draft.rejectionNote : "—"}
+      </div>
+    </div>
+  ) : null;
+
+  const saveLabel = isSaving ? "Saving..." : "Save Changes";
+  const footerActionsNode = isEditable ? (
+    <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
+      <Button type="button" variant="outline" className="h-9" onClick={onCancelEdit} disabled={isSaving}>
+        Cancel
+      </Button>
+      <Button type="button" className="h-9" onClick={onSaveEdit} disabled={isSaving || !isDirty}>
+        {saveLabel}
+      </Button>
+    </div>
+  ) : null;
+
   return (
     <>
-      {showRejectionNote ? (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Rejection Note</span>
-          <div className="min-h-[3rem] select-text rounded-md border border-input bg-muted/20 px-3 py-2.5 text-sm leading-relaxed text-foreground">
-            {draft.rejectionNote?.trim() ? draft.rejectionNote : "—"}
-          </div>
-        </div>
-      ) : null}
-
-      {isEditable ? (
-        <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
-          <Button type="button" variant="outline" className="h-9" onClick={onCancelEdit} disabled={isSaving}>
-            Cancel
-          </Button>
-          <Button type="button" className="h-9" onClick={onSaveEdit} disabled={isSaving || !isDirty}>
-            {isSaving ? "Saving..." : "Save Changes"}
-          </Button>
-        </div>
-      ) : null}
+      {rejectionNoteNode}
+      {footerActionsNode}
     </>
   );
 };
