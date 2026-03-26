@@ -9,7 +9,7 @@ import UserDetailPage from "./UserDetailPage";
  *
  * @returns Protected customer detail route with app layout and error boundary.
  */
-export function UserDetailRoutePage(): JSX.Element {
+export function UserDetailRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
