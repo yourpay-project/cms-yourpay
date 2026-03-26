@@ -18,11 +18,41 @@ const KycSubmissionPage: FC = () => {
 
   if (filters.isError) {
     const apiError = filters.error instanceof ApiClientError ? filters.error : null;
-    const message =
-      apiError?.status === 403
-        ? "You do not have permission to view KYC submissions."
-        : "Failed to load KYC submissions. Please try again.";
+    let message = "Failed to load KYC submissions. Please try again.";
+    if (apiError?.status === 403) {
+      message = "You do not have permission to view KYC submissions.";
+    }
     return <p className="text-sm text-destructive">{message}</p>;
+  }
+
+  let filtersCardNode: React.ReactNode = null;
+  if (filters.hasBackendFilters) {
+    filtersCardNode = (
+      <KycSubmissionFiltersCard
+        filtersOpen={filters.filtersOpen}
+        setFiltersOpen={filters.setFiltersOpen}
+        badges={filters.badges}
+        handleResetFilters={filters.handleResetFilters}
+        optionsFilterFields={filters.optionsFilterFields}
+        selectedOptionFilterValues={filters.selectedOptionFilterValues}
+        handleChangeOptionFilter={filters.handleChangeOptionFilter}
+        createdAtLabel={filters.createdAtLabel}
+        updatedAtLabel={filters.updatedAtLabel}
+        kycFrom={filters.kycFrom}
+        kycTo={filters.kycTo}
+        kycPresetLabel={filters.kycPresetLabel}
+        setKycFrom={filters.setKycFrom}
+        setKycTo={filters.setKycTo}
+        setKycPresetLabel={filters.setKycPresetLabel}
+        lastUpdateFrom={filters.lastUpdateFrom}
+        lastUpdateTo={filters.lastUpdateTo}
+        lastUpdatePresetLabel={filters.lastUpdatePresetLabel}
+        setLastUpdateFrom={filters.setLastUpdateFrom}
+        setLastUpdateTo={filters.setLastUpdateTo}
+        setLastUpdatePresetLabel={filters.setLastUpdatePresetLabel}
+        resetPageIndex={filters.resetPageIndex}
+      />
+    );
   }
 
   return (
@@ -31,32 +61,7 @@ const KycSubmissionPage: FC = () => {
         <h2 className="text-xl font-semibold">KYC Submissions{filters.pageTitleSuffix}</h2>
       </div>
 
-      {filters.hasBackendFilters ? (
-        <KycSubmissionFiltersCard
-          filtersOpen={filters.filtersOpen}
-          setFiltersOpen={filters.setFiltersOpen}
-          badges={filters.badges}
-          handleResetFilters={filters.handleResetFilters}
-          optionsFilterFields={filters.optionsFilterFields}
-          selectedOptionFilterValues={filters.selectedOptionFilterValues}
-          handleChangeOptionFilter={filters.handleChangeOptionFilter}
-          createdAtLabel={filters.createdAtLabel}
-          updatedAtLabel={filters.updatedAtLabel}
-          kycFrom={filters.kycFrom}
-          kycTo={filters.kycTo}
-          kycPresetLabel={filters.kycPresetLabel}
-          setKycFrom={filters.setKycFrom}
-          setKycTo={filters.setKycTo}
-          setKycPresetLabel={filters.setKycPresetLabel}
-          lastUpdateFrom={filters.lastUpdateFrom}
-          lastUpdateTo={filters.lastUpdateTo}
-          lastUpdatePresetLabel={filters.lastUpdatePresetLabel}
-          setLastUpdateFrom={filters.setLastUpdateFrom}
-          setLastUpdateTo={filters.setLastUpdateTo}
-          setLastUpdatePresetLabel={filters.setLastUpdatePresetLabel}
-          resetPageIndex={filters.resetPageIndex}
-        />
-      ) : null}
+      {filtersCardNode}
 
       <div className="flex flex-wrap items-end justify-end gap-3">
         <KycSubmissionSearchBar
