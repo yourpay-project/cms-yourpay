@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { cn } from "@/shared/lib/utils";
-import { ModalFooter } from "./ModalFooter";
 import { useModalAnimation } from "./useModalAnimation";
 import type { ModalProps } from "./Modal.type";
+import { resolveModalProps } from "./modal-view-model";
+import { ModalCloseButton } from "./ModalCloseButton";
 
 /** Framer Motion variants shared between overlay and content for consistency. */
 const overlayVariants = {
@@ -53,49 +53,24 @@ export const Modal: React.FC<ModalProps> = ({
   className,
 }) => {
   const { visible, handleVisibilityChange } = useModalAnimation({ open });
-
-  let contentWidth = "520px";
-  if (typeof width === "number") {
-    contentWidth = `${width}px`;
-  } else if (typeof width === "string" && width) {
-    contentWidth = width;
-  }
+  const { contentWidth, wrapperAlignClassName, headerNode, footerNode } = resolveModalProps({
+    open,
+    onCancel,
+    onOk,
+    confirmLoading,
+    title,
+    description,
+    footer,
+    okText,
+    cancelText,
+    children,
+    width,
+    centered,
+    className,
+  });
 
   if (!visible) {
     return null;
-  }
-
-  let wrapperAlignClassName = "items-start";
-  if (centered) {
-    wrapperAlignClassName = "items-center";
-  }
-
-  const headerNode =
-    title != null || description != null ? (
-      <div className="pt-5 px-6 pb-4">
-        {title != null ? (
-          <h2 className="text-base font-semibold">{title}</h2>
-        ) : null}
-        {description != null ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-    ) : null;
-
-  let footerNode: React.ReactNode = (
-    <ModalFooter
-      okText={okText}
-      cancelText={cancelText}
-      confirmLoading={confirmLoading}
-      onCancel={onCancel}
-      onOk={onOk}
-    />
-  );
-
-  if (footer === null) {
-    footerNode = null;
-  } else if (footer !== undefined) {
-    footerNode = <div className="px-6 pb-5 pt-4">{footer}</div>;
   }
 
   return (
@@ -157,14 +132,7 @@ export const Modal: React.FC<ModalProps> = ({
 
                     {footerNode}
 
-                    <button
-                      type="button"
-                      onClick={onCancel}
-                      className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      aria-label="Close"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+                    <ModalCloseButton onCancel={onCancel} />
                   </motion.div>
                 </Dialog.Content>
               </div>
