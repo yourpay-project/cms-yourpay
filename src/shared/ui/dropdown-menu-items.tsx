@@ -4,13 +4,20 @@ import { Check, Circle } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
 
+interface DropdownMenuContentProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content> {
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Content>>;
+}
+
 /**
  * Dropdown content panel (Radix) for `DropdownMenu`.
  */
-export const DropdownMenuContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+export const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
+  className,
+  sideOffset = 4,
+  ref,
+  ...props
+}) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
@@ -23,19 +30,25 @@ export const DropdownMenuContent = React.forwardRef<
       {...props}
     />
   </DropdownMenuPrimitive.Portal>
-));
+);
 
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
+
+interface DropdownMenuItemProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> {
+  inset?: boolean;
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item>>;
+}
 
 /**
  * Dropdown item row (Radix) for `DropdownMenu`.
  */
-export const DropdownMenuItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
+export const DropdownMenuItem: React.FC<DropdownMenuItemProps> = ({
+  className,
+  inset,
+  ref,
+  ...props
+}) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
@@ -45,14 +58,22 @@ export const DropdownMenuItem = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
-export const DropdownMenuCheckboxItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
+interface DropdownMenuCheckboxItemProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> {
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>>;
+}
+
+export const DropdownMenuCheckboxItem: React.FC<DropdownMenuCheckboxItemProps> = ({
+  className,
+  children,
+  checked,
+  ref,
+  ...props
+}) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
@@ -69,14 +90,21 @@ export const DropdownMenuCheckboxItem = React.forwardRef<
     </span>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
-));
+);
 
 DropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName;
 
-export const DropdownMenuRadioItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
+interface DropdownMenuRadioItemProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> {
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>>;
+}
+
+export const DropdownMenuRadioItem: React.FC<DropdownMenuRadioItemProps> = ({
+  className,
+  children,
+  ref,
+  ...props
+}) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
@@ -92,7 +120,6 @@ export const DropdownMenuRadioItem = React.forwardRef<
     </span>
     {children}
   </DropdownMenuPrimitive.RadioItem>
-));
+);
 
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;
-
