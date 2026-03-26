@@ -15,6 +15,7 @@ export interface KycDocumentImagesCompareData {
   items: KycDocumentImagesCompareItem[];
   onChangeScale: (docKey: DocumentImagesDocKey, delta: number) => void;
   onRotate: (docKey: DocumentImagesDocKey) => void;
+  onRotateLeft: (docKey: DocumentImagesDocKey) => void;
   onReset: (docKey: DocumentImagesDocKey) => void;
 }
 

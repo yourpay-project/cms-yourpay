@@ -12,6 +12,7 @@ export interface KycDocumentImagesSinglePreviewData {
   activeRotation: number;
   onChangeScale: (docKey: DocumentImagesDocKey, delta: number) => void;
   onRotate: (docKey: DocumentImagesDocKey) => void;
+  onRotateLeft: (docKey: DocumentImagesDocKey) => void;
   onReset: (docKey: DocumentImagesDocKey) => void;
 }
 

@@ -1,8 +1,8 @@
 import type { FC } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { House, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 
 import { Button } from "@/shared/ui";
+import { ImageViewerToolbar } from "@/shared/ui";
 
 import type { KycDocumentImagesSinglePreviewProps } from "./KycDocumentImagesSinglePreview.type";
 import { KycDocumentImagesDraggableScrollViewport } from "./KycDocumentImagesDraggableScrollViewport";
@@ -30,6 +30,7 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
   activeRotation,
   onChangeScale,
   onRotate,
+  onRotateLeft,
   onReset,
 }) => {
   const wasOpenRef = useRef(open);
@@ -60,6 +61,11 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
     onRotate(docKey);
   };
 
+  const rotateLeft = (docKey: DocumentImagesDocKey): void => {
+    setRotation((prev) => prev - 90);
+    onRotateLeft(docKey);
+  };
+
   const reset = (docKey: DocumentImagesDocKey): void => {
     setScale(1);
     setRotation(0);
@@ -70,12 +76,11 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
   const heightPercent = useMemo(() => Math.max(25, Math.round(scale * 100)), [scale]);
 
   return (
-    <div className="-mx-6 -my-2">
+    <div className="-mx-6 -my-2 flex max-h-[85vh] flex-col overflow-y-auto overflow-x-hidden">
       <div className="space-y-4">
         <div className="px-6 pt-5">
           <div className="space-y-1">
             <h3 className="text-base font-semibold text-foreground">{activeTitle}</h3>
-            <p className="text-sm text-muted-foreground">Use zoom/rotate to inspect the document image.</p>
           </div>
         </div>
 
@@ -102,45 +107,14 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
               )}
             </KycDocumentImagesDraggableScrollViewport>
 
-            <div className="pointer-events-none absolute bottom-3 left-3 z-10">
-              <div
-                className="pointer-events-auto flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm"
-                data-no-drag="true"
-              >
-                <button
-                  type="button"
-                  className="rounded p-2 text-foreground transition-colors hover:bg-muted"
-                  onClick={() => zoomIn(activeDocKey)}
-                  aria-label="Zoom in"
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  className="rounded p-2 text-foreground transition-colors hover:bg-muted"
-                  onClick={() => zoomOut(activeDocKey)}
-                  aria-label="Zoom out"
-                >
-                  <ZoomOut className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  className="rounded p-2 text-foreground transition-colors hover:bg-muted"
-                  onClick={() => rotate(activeDocKey)}
-                  aria-label="Rotate"
-                >
-                  <RotateCw className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  className="rounded p-2 text-foreground transition-colors hover:bg-muted"
-                  onClick={() => reset(activeDocKey)}
-                  aria-label="Reset"
-                >
-                  <House className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
+            <ImageViewerToolbar
+              title={activeTitle}
+              onZoomIn={() => zoomIn(activeDocKey)}
+              onZoomOut={() => zoomOut(activeDocKey)}
+              onRotateRight={() => rotate(activeDocKey)}
+              onRotateLeft={() => rotateLeft(activeDocKey)}
+              onReset={() => reset(activeDocKey)}
+            />
           </div>
         </div>
 
