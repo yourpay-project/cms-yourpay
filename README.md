@@ -1,6 +1,6 @@
 # YourPay CMS (React + Vite)
 
-YourPay CMS is an internal console for content, operations, and reporting, built with **React 18**, **Vite**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **TanStack Query/Router**, and **Zustand**.  
+YourPay CMS is an internal console for content, operations, and reporting, built with **React 19**, **Vite**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **TanStack Query/Router**, **Framer Motion**, and **Zustand**.
 The codebase follows **Feature‑Sliced Design (FSD)** as enforced by `.cursorrules`.
 
 This document is written for **new engineers** joining the project. It explains how the repository is structured, how data and routing work, and how to safely add new features.
@@ -154,7 +154,7 @@ The Vite dev server prints a local URL (commonly `http://localhost:5173`). Use t
 ## 2. Tech Stack Overview
 
 - **Runtime / Framework**
-  - React 18
+  - React 19
   - Vite (build + dev server)
 - **Language**
   - TypeScript (strict, no `any`)
@@ -422,11 +422,11 @@ For navigation inside components, use **TanStack Router hooks**:
 - `ui/Nav.tsx`
   - App title, global loading indicator, sidebar toggle, theme toggle, and user menu (email + logout).
 - `ui/MobileSidebar.tsx`
-  - Mobile overlay sidebar with `@react-spring/web` enter/exit animation (backdrop fade + panel slide).
+  - Mobile overlay sidebar with `framer-motion` enter/exit animation (backdrop fade + panel slide).
 - `ui/Sidebar.tsx`
   - Renders navigation groups from `model/nav-config.tsx` (which maps icons onto `shared/config` navigation data).
   - Respects RBAC via `useCan`.
-  - Uses `@react-spring/web` width animation for smooth desktop collapse/expand.
+  - Uses `framer-motion` width animation for smooth desktop collapse/expand.
   - Supports:
     - **Pinned section** (max 5 items) that stays fixed at the top.
     - **Search** input (with icon) for filtering non‑pinned items by label.
