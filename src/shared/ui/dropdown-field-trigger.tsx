@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import * as React from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/shared/lib";
@@ -11,6 +11,8 @@ export interface DropdownFieldTriggerProps extends ButtonHTMLAttributes<HTMLButt
   leading?: ReactNode;
   trailing?: ReactNode;
   iconOnly?: boolean;
+  /** React 19: ref is a standard prop, no forwardRef needed. */
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 /**
@@ -21,35 +23,40 @@ export interface DropdownFieldTriggerProps extends ButtonHTMLAttributes<HTMLButt
  * @param props - {@link DropdownFieldTriggerProps}
  * @returns Button-shaped trigger for dropdown/select controls
  */
-export const DropdownFieldTrigger = forwardRef<HTMLButtonElement, DropdownFieldTriggerProps>(
-  ({ label, leading, trailing, iconOnly = false, className, type = "button", ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        type={type}
-        className={cn(
-          iconOnly
-            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border bg-transparent px-0 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
-            : "flex h-9 w-full items-center gap-2 rounded-md px-3 text-left text-sm font-normal text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50 disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent disabled:focus-visible:bg-transparent",
-          className
+export const DropdownFieldTrigger: React.FC<DropdownFieldTriggerProps> = ({
+  label,
+  leading,
+  trailing,
+  iconOnly = false,
+  className,
+  type = "button",
+  ref,
+  ...props
+}) => {
+  return (
+    <button
+      ref={ref}
+      type={type}
+      className={cn(
+        iconOnly
+          ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border bg-transparent px-0 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+          : "flex h-9 w-full items-center gap-2 rounded-md px-3 text-left text-sm font-normal text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50 disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent disabled:focus-visible:bg-transparent",
+        className
+      )}
+      {...props}
+    >
+      {leading}
+      {!iconOnly && label ? <span className="truncate">{label}</span> : null}
+      <span className={cn("shrink-0 pointer-events-none", !iconOnly && "ml-auto")}>
+        {trailing ?? (
+          <ChevronDown
+            className="h-4 w-4 text-muted-foreground dark:text-muted-foreground"
+            aria-hidden
+          />
         )}
-        {...props}
-      >
-        {leading}
-        {!iconOnly && label ? <span className="truncate">{label}</span> : null}
-        <span className={cn("shrink-0 pointer-events-none", !iconOnly && "ml-auto")}>
-          {trailing ?? (
-            <ChevronDown
-              className="h-4 w-4 text-muted-foreground dark:text-muted-foreground"
-              aria-hidden
-            />
-          )}
-        </span>
-      </button>
-    );
-  }
-);
+      </span>
+    </button>
+  );
+};
 
 DropdownFieldTrigger.displayName = "DropdownFieldTrigger";
-
-
