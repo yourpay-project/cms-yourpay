@@ -1,59 +1,14 @@
 import type { FC } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Button } from "@/shared/ui";
-import { ImageViewerToolbar } from "@/shared/ui";
-
 import type { KycDocumentImagesSinglePreviewProps } from "./KycDocumentImagesSinglePreview.type";
-import { KycDocumentImagesDraggableScrollViewport } from "./KycDocumentImagesDraggableScrollViewport";
 import type { DocumentImagesDocKey } from "./KycDocumentImagesSinglePreview.type";
 import {
   applyDocumentImageScaleDelta,
   toDocumentImageHeightPercent,
 } from "./document-images-transform-utils";
-
-interface SinglePreviewImageContentProps {
-  imageUrl?: string;
-  title: string;
-  heightPercent: number;
-  rotation: number;
-}
-
-/**
- * Image content section for single preview modal viewport.
- *
- * @param props Image source and transform view-model.
- * @returns Image element or unavailable state.
- */
-const SinglePreviewImageContent: FC<SinglePreviewImageContentProps> = ({
-  imageUrl,
-  title,
-  heightPercent,
-  rotation,
-}) => {
-  if (!imageUrl) {
-    return (
-      <div className="flex h-[40vh] items-center justify-center text-sm text-muted-foreground">
-        Image unavailable
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={imageUrl}
-      alt={title}
-      className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
-      style={{
-        height: `${heightPercent}%`,
-        width: "auto",
-        transform: `rotate(${rotation}deg)`,
-        transformOrigin: "center center",
-      }}
-      draggable={false}
-    />
-  );
-};
+import { SinglePreviewViewport } from "./SinglePreviewViewport";
+import { SinglePreviewFooter } from "./SinglePreviewFooter";
 
 /**
  * Single-document enlarged preview with local zoom/rotate controls.
@@ -126,33 +81,21 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
           </div>
         </div>
 
-        <div className="px-6">
-          <div className="relative h-[60vh] min-h-[40vh] overflow-hidden rounded-md border border-border bg-muted/20 p-3">
-            <KycDocumentImagesDraggableScrollViewport scale={scale} className="h-full overflow-auto">
-              <SinglePreviewImageContent
-                imageUrl={imageUrl}
-                title={activeTitle}
-                heightPercent={heightPercent}
-                rotation={rotation}
-              />
-            </KycDocumentImagesDraggableScrollViewport>
+        <SinglePreviewViewport
+          title={activeTitle}
+          imageUrl={imageUrl}
+          scale={scale}
+          rotation={rotation}
+          heightPercent={heightPercent}
+          docKey={activeDocKey}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onRotateRight={rotate}
+          onRotateLeft={rotateLeft}
+          onReset={reset}
+        />
 
-            <ImageViewerToolbar
-              title={activeTitle}
-              onZoomIn={() => zoomIn(activeDocKey)}
-              onZoomOut={() => zoomOut(activeDocKey)}
-              onRotateRight={() => rotate(activeDocKey)}
-              onRotateLeft={() => rotateLeft(activeDocKey)}
-              onReset={() => reset(activeDocKey)}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end px-6 pb-5 pt-0">
-          <Button type="button" variant="outline" onClick={onClose}>
-            Close
-          </Button>
-        </div>
+        <SinglePreviewFooter onClose={onClose} />
       </div>
     </div>
   );
