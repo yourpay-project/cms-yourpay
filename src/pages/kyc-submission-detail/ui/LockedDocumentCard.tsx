@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Button, Card } from "@/shared/ui";
+import { Button, Card, ImageWithLoader } from "@/shared/ui";
 import { Lock } from "lucide-react";
 
 import type { KycDocumentImage } from "@/entities/kyc-submission";
@@ -21,11 +21,10 @@ export const LockedDocumentCard: FC<LockedDocumentCardProps> = ({ document, onEd
       <div className="relative w-full overflow-hidden rounded-md bg-muted/40">
         <div className="aspect-[4/3] w-full">
           {document.imageUrl ? (
-            <img
+            <ImageWithLoader
               src={document.imageUrl}
               alt={label}
               className="h-full w-full object-cover"
-              loading="lazy"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">

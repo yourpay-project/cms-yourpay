@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { House, Pencil, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 
 import type { KycDocumentImage } from "@/entities/kyc-submission";
-import { FileDropzone } from "@/shared/ui";
+import { FileDropzone, ImageWithLoader } from "@/shared/ui";
 
 import type { DocKey } from "./document-images-card-utils";
 
@@ -63,7 +63,7 @@ export const DocThumb: FC<DocThumbProps> = ({
             onClick={() => onOpenModal(docKey)}
             aria-label={`Open ${title} preview`}
           />
-          <img
+          <ImageWithLoader
             src={document?.imageUrl}
             alt={title}
             className="h-full w-full object-contain transition-transform duration-200"
