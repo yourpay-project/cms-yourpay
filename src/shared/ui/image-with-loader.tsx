@@ -54,7 +54,10 @@ export const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
     );
   }
 
-  const opacityClassName = loaded ? "" : "opacity-0";
+  let opacityClassName = "opacity-0";
+  if (loaded) {
+    opacityClassName = "";
+  }
 
   return (
     <div className={cn("relative h-full w-full", containerClassName)}>

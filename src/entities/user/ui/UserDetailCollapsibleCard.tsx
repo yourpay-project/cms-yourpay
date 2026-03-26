@@ -43,11 +43,26 @@ export const UserDetailCollapsibleCard: FC<UserDetailCollapsibleCardProps> = ({
     }
   };
 
-  const headerRoundedClassName = open ? "rounded-t-lg" : "rounded-lg";
-  const ariaLabelBase = ariaTitle ?? "section";
-  const ariaLabelPrefix = open ? "Collapse" : "Expand";
+  let headerRoundedClassName = "rounded-lg";
+  if (open) {
+    headerRoundedClassName = "rounded-t-lg";
+  }
+
+  let ariaLabelBase = "section";
+  if (ariaTitle != null) {
+    ariaLabelBase = ariaTitle;
+  }
+
+  let ariaLabelPrefix = "Expand";
+  if (open) {
+    ariaLabelPrefix = "Collapse";
+  }
   const ariaLabel = `${ariaLabelPrefix} ${ariaLabelBase}`;
-  const chevronRotationClassName = open ? "rotate-180" : "rotate-0";
+
+  let chevronRotationClassName = "rotate-0";
+  if (open) {
+    chevronRotationClassName = "rotate-180";
+  }
 
   let contentNode: ReactNode = null;
   if (open) {
