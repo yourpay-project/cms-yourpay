@@ -6,7 +6,7 @@ export type InputStatus = "error" | "warning" | "success";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix" | "size">,
-    InputSizeProps {
+  InputSizeProps {
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   prefix?: React.ReactNode;
@@ -16,5 +16,7 @@ export interface InputProps
   status?: InputStatus;
   helperText?: React.ReactNode;
   label?: React.ReactNode;
+  /** React 19: ref is a standard prop, no forwardRef needed. */
+  ref?: React.Ref<HTMLInputElement>;
 }
 
