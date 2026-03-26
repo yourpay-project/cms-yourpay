@@ -19,11 +19,15 @@ function transactionDateRangeQueryValue(from: string, to: string): string {
 function toFilterField(def: TransactionFilterDefinition): FilterField {
   return {
     key: def.key,
-    label: def.name?.trim() ? def.name : def.key,
+    label: resolveFilterTitle(def),
     type: def.type === "control" ? "control" : "options",
     options: def.options,
     allValue: allValueFromOptions(def.options),
   };
+}
+
+function resolveFilterTitle(def: TransactionFilterDefinition): string {
+  return def.name?.trim() ? def.name : def.key;
 }
 
 function buildDynamicFilters(
@@ -141,7 +145,7 @@ export function useTransactionsFilters() {
         const selected = store.filterValues[def.key] ?? allV;
         if (selected === allV || selected.trim() === "") continue;
         const optLabel = def.options.find((o) => o.value === selected)?.label ?? selected;
-        const title = def.name?.trim() ? def.name : def.key;
+        const title = resolveFilterTitle(def);
         list.push({
           id: `${def.key}:${selected}`,
           badgeKey: title,
@@ -154,7 +158,7 @@ export function useTransactionsFilters() {
       if (def.type === "date_range") {
         const slice = store.dateRanges[def.key];
         if (!slice?.from || !slice?.to) continue;
-        const title = def.name?.trim() ? def.name : def.key;
+        const title = resolveFilterTitle(def);
         const rangeLabel = slice.presetLabel ?? `${slice.from} – ${slice.to}`;
         list.push({
           id: `${def.key}:range`,
