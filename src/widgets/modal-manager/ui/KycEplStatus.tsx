@@ -49,14 +49,8 @@ export const KycEplStatus: FC<KycEplStatusProps> = ({
 
   const hasEplStatusChanged = eplStatusDraft !== currentStatus;
   const isRejected = eplStatusDraft === "rejected";
-  let submitLabel = "Save Changes";
-  if (updateMutation.isPending) {
-    submitLabel = "Saving...";
-  }
-  let submitLeadingNode: React.ReactNode = null;
-  if (updateMutation.isPending) {
-    submitLeadingNode = <Loader2 className="h-4 w-4 animate-spin" />;
-  }
+  const submitLabel = updateMutation.isPending ? "Saving..." : "Save Changes";
+  const submitLeadingNode = updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null;
 
   const selectedRejectReason = useMemo(() => {
     const reasons = rejectReasonsQuery.data ?? [];
