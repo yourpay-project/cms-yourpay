@@ -33,28 +33,39 @@ export const DropdownFieldTrigger: React.FC<DropdownFieldTriggerProps> = ({
   ref,
   ...props
 }) => {
+  const rootClassName = iconOnly
+    ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border bg-transparent px-0 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+    : "flex h-9 w-full items-center gap-2 rounded-md px-3 text-left text-sm font-normal text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50 disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent disabled:focus-visible:bg-transparent";
+
+  const labelNode =
+    !iconOnly && label ? <span className="truncate">{label}</span> : null;
+
+  const trailingNode =
+    trailing ?? (
+      <ChevronDown
+        className="h-4 w-4 text-muted-foreground dark:text-muted-foreground"
+        aria-hidden
+      />
+    );
+
+  const trailingWrapClassName = cn(
+    "shrink-0 pointer-events-none",
+    !iconOnly && "ml-auto"
+  );
+
   return (
     <button
       ref={ref}
       type={type}
       className={cn(
-        iconOnly
-          ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border bg-transparent px-0 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
-          : "flex h-9 w-full items-center gap-2 rounded-md px-3 text-left text-sm font-normal text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50 disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent disabled:focus-visible:bg-transparent",
+        rootClassName,
         className
       )}
       {...props}
     >
       {leading}
-      {!iconOnly && label ? <span className="truncate">{label}</span> : null}
-      <span className={cn("shrink-0 pointer-events-none", !iconOnly && "ml-auto")}>
-        {trailing ?? (
-          <ChevronDown
-            className="h-4 w-4 text-muted-foreground dark:text-muted-foreground"
-            aria-hidden
-          />
-        )}
-      </span>
+      {labelNode}
+      <span className={trailingWrapClassName}>{trailingNode}</span>
     </button>
   );
 };

@@ -61,6 +61,36 @@ export const Modal: React.FC<ModalProps> = ({
     return null;
   }
 
+  const wrapperAlignClassName = centered ? "items-center" : "items-start";
+
+  const headerNode =
+    title != null || description != null ? (
+      <div className="pt-5 px-6 pb-4">
+        {title != null ? (
+          <h2 className="text-base font-semibold">{title}</h2>
+        ) : null}
+        {description != null ? (
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+    ) : null;
+
+  let footerNode: React.ReactNode = (
+    <ModalFooter
+      okText={okText}
+      cancelText={cancelText}
+      confirmLoading={confirmLoading}
+      onCancel={onCancel}
+      onOk={onOk}
+    />
+  );
+
+  if (footer === null) {
+    footerNode = null;
+  } else if (footer !== undefined) {
+    footerNode = <div className="px-6 pb-5 pt-4">{footer}</div>;
+  }
+
   return (
     <Dialog.Root
       open={visible}
@@ -87,7 +117,7 @@ export const Modal: React.FC<ModalProps> = ({
               <div
                 className={cn(
                   "fixed inset-0 z-50 flex justify-center px-4 py-6",
-                  centered ? "items-center" : "items-start"
+                  wrapperAlignClassName
                 )}
               >
                 <Dialog.Content asChild>
@@ -114,32 +144,11 @@ export const Modal: React.FC<ModalProps> = ({
                       {description ?? "Dialog description"}
                     </Dialog.Description>
 
-                    {title != null || description != null ? (
-                      <div className="pt-5 px-6 pb-4">
-                        {title != null ? <h2 className="text-base font-semibold">{title}</h2> : null}
-                        {description != null ? (
-                          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-                        ) : null}
-                      </div>
-                    ) : null}
+                    {headerNode}
 
                     <div className="px-6 py-2">{children}</div>
 
-                    {footer === null
-                      ? null
-                      : footer !== undefined
-                        ? (
-                          <div className="px-6 pb-5 pt-4">{footer}</div>
-                        )
-                        : (
-                          <ModalFooter
-                            okText={okText}
-                            cancelText={cancelText}
-                            confirmLoading={confirmLoading}
-                            onCancel={onCancel}
-                            onOk={onOk}
-                          />
-                        )}
+                    {footerNode}
 
                     <button
                       type="button"
