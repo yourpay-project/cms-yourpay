@@ -9,7 +9,7 @@ import KycSubmissionPage from "./KycSubmissionPage";
  * Route-level page for `/kyc-submission`.
  * Wraps KYC list in AppLayout and ProtectedRoute.
  */
-export function KycSubmissionRoutePage(): JSX.Element {
+export function KycSubmissionRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
