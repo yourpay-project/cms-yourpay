@@ -38,6 +38,8 @@ export { Input, type InputProps } from "./input";
 export { FileDropzone, type FileDropzoneProps } from "./file-dropzone";
 export { Skeleton } from "./skeleton";
 export { ImageWithLoader, type ImageWithLoaderProps } from "./image-with-loader";
+export { ImageViewerToolbar, type ImageViewerToolbarProps } from "./image-viewer-toolbar";
+export { ImageViewerFrame, type ImageViewerFrameProps } from "./image-viewer-frame";
 export { PageSkeleton } from "./page-skeleton";
 export { RouteFallback } from "./route-fallback";
 export { ErrorBoundary } from "./error-boundary";
