@@ -20,12 +20,15 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
 }) => {
   const [search, setSearch] = useState("");
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
+  const [initialSelectedCodes, setInitialSelectedCodes] = useState<string[]>([]);
 
   const optionsQuery = useIdentityAccessOptionsQuery();
 
   useEffect(() => {
     if (!open) return;
-    setSelectedCodes(currentIdentityAccesses.map((item) => item.code));
+    const initial = currentIdentityAccesses.map((item) => item.code);
+    setSelectedCodes(initial);
+    setInitialSelectedCodes(initial);
   }, [currentIdentityAccesses, open]);
 
   const mergedOptions = useMemo(() => {
@@ -82,6 +85,18 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
     [selectedCodes],
   );
 
+  const isDirty = useMemo(() => {
+    const toNormalizedSorted = (codes: string[]) =>
+      codes.map((code) => normalizeCode(code)).sort((a, b) => a.localeCompare(b));
+    const a = toNormalizedSorted(selectedCodes);
+    const b = toNormalizedSorted(initialSelectedCodes);
+    if (a.length !== b.length) return true;
+    for (let i = 0; i < a.length; i += 1) {
+      if (a[i] !== b[i]) return true;
+    }
+    return false;
+  }, [initialSelectedCodes, selectedCodes]);
+
   const onToggleCode = (code: string): void => {
     const key = normalizeCode(code);
     if (defaultCodes.has(key)) return;
@@ -118,7 +133,7 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
         <Button type="button" variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        <Button type="button" variant="default" onClick={onSubmit}>
+        <Button type="button" variant="default" onClick={onSubmit} disabled={!isDirty}>
           Submit
         </Button>
       </div>

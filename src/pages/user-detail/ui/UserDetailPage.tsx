@@ -60,13 +60,15 @@ const UserDetailPage: FC = () => {
           <h2 className="text-xl font-semibold">Customer Detail</h2>
         </div>
 
-        <div className="flex w-full min-w-0 items-center justify-end gap-2 md:w-auto">
-          <p className="min-w-0 truncate text-sm font-medium">{fieldItems.fullName}</p>
-          <span className="text-muted-foreground">-</span>
-          <Badge variant={statusVariant} className="shrink-0">
-            {normalizedStatus}
-          </Badge>
-        </div>
+        {fieldItems.fullName !== "-" ? (
+          <div className="flex w-full min-w-0 items-center justify-end gap-2 md:ml-auto md:w-auto">
+            <p className="min-w-0 truncate text-sm font-medium">{fieldItems.fullName}</p>
+            <span className="text-muted-foreground">-</span>
+            <Badge variant={statusVariant} className="shrink-0">
+              {normalizedStatus}
+            </Badge>
+          </div>
+        ) : null}
       </div>
 
       <UserDetailActionButtons
@@ -109,7 +111,6 @@ const UserDetailPage: FC = () => {
 
         <UserDetailCollapsibleCard
           title="Personal Information"
-          defaultOpen={false}
           className="border-success/25 bg-success/5"
           headerClassName="bg-success/10"
           contentClassName="pt-4 md:pt-5"
@@ -119,7 +120,6 @@ const UserDetailPage: FC = () => {
 
         <UserDetailCollapsibleCard
           title="Access"
-          defaultOpen={false}
           className="border-warning/30 bg-warning/5"
           headerClassName="bg-warning/10"
           contentClassName="pt-4 md:pt-5"
@@ -129,7 +129,6 @@ const UserDetailPage: FC = () => {
 
         <UserDetailCollapsibleCard
           title="Metadata"
-          defaultOpen={false}
           className="border-secondary/50 bg-secondary/20"
           headerClassName="bg-secondary/35"
           contentClassName="pt-4 md:pt-5"

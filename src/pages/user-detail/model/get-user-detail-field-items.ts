@@ -1,6 +1,8 @@
+import * as React from "react";
 import type { ReactNode } from "react";
 
 import type { UserDetail } from "@/entities/user";
+import { Badge } from "@/shared/ui";
 
 import { formatDateTime, getFullName } from "../lib";
 
@@ -23,20 +25,49 @@ export interface GetUserDetailFieldItemsParams {
 export function getUserDetailFieldItems({ detail, identityAccessNode }: GetUserDetailFieldItemsParams) {
   const fullName = getFullName(detail.personalInformation.firstName, detail.personalInformation.lastName);
   const isBlocked = String(detail.access.status ?? "").toLowerCase() === "blocked";
+  const rawStatus = String(detail.access.status ?? "").trim();
+  const normalizedStatus = rawStatus.toUpperCase() || "-";
+  const statusVariant =
+    normalizedStatus === "ACTIVE"
+      ? "success"
+      : normalizedStatus === "PENDING"
+        ? "warning"
+        : normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE"
+          ? "destructive"
+          : "default";
 
   const customerFields: UserDetailFieldItemLike[] = [
     { label: "Customer ID", value: detail.id },
     { label: "User ID", value: detail.userId },
-    { label: "Identity Access", value: identityAccessNode },
+    {
+      label: "Identity Access",
+      value: React.createElement("div", { className: "flex w-full justify-end" }, identityAccessNode),
+    },
   ];
 
   const personalInformationFields: UserDetailFieldItemLike[] = [
     { label: "First Name", value: detail.personalInformation.firstName },
     { label: "Last Name", value: detail.personalInformation.lastName },
     { label: "Email", value: detail.personalInformation.email },
-    { label: "Nationality", value: detail.personalInformation.nationality },
+    {
+      label: "Nationality",
+      value: detail.personalInformation.nationality
+        ? String(detail.personalInformation.nationality).toUpperCase()
+        : detail.personalInformation.nationality,
+    },
     { label: "Phone Number", value: detail.personalInformation.phoneNumber },
-    { label: "Status", value: detail.access.status },
+    {
+      label: "Status",
+      value: React.createElement(
+        "div",
+        { className: "flex w-full justify-end" },
+        React.createElement(
+          Badge,
+          { variant: statusVariant, className: "inline-flex uppercase" },
+          normalizedStatus,
+        ),
+      ),
+    },
   ];
 
   const accessFields: UserDetailFieldItemLike[] = [
