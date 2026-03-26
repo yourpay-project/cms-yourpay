@@ -9,7 +9,7 @@ import CountriesPage from "./CountriesPage";
  * Route-level page for `/countries`.
  * Wraps countries list in AppLayout and ProtectedRoute.
  */
-export function CountriesRoutePage(): JSX.Element {
+export function CountriesRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
