@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useState } from "react";
-import { animated, useSpring } from "@react-spring/web";
+import { motion } from "framer-motion";
 import { useCan } from "@/features/auth";
 import { cn } from "@/shared/lib";
 import { useSidebarNavigationLogic, useSidebarStore } from "../model";
@@ -15,6 +15,9 @@ import type { SidebarProps } from "./Sidebar.type";
  * - Collapsible via `useSidebarStore` (state is persisted).
  * - Hides items the current user does not have permission to view.
  * - Supports pinning up to 5 frequently used items to a fixed section at the top.
+ *
+ * Animation uses `framer-motion` `motion.aside` with `animate={{ width }}` so
+ * only the `width` transform runs — GPU-friendly for 60fps in webview contexts.
  */
 export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   const { can } = useCan();
@@ -24,10 +27,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   const togglePinned = useSidebarStore((s) => s.togglePinned);
   const [search, setSearch] = useState("");
   const sidebarWidth = collapsed ? 64 : 256;
-  const sidebarSpring = useSpring({
-    width: sidebarWidth,
-    config: { tension: 220, friction: 26 },
-  });
 
   const {
     dashboardItem,
@@ -44,8 +43,9 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   });
 
   return (
-    <animated.aside
-      style={sidebarSpring}
+    <motion.aside
+      animate={{ width: sidebarWidth }}
+      transition={{ type: "spring", stiffness: 220, damping: 26 }}
       className={cn(
         "flex shrink-0 flex-col overflow-hidden border-r border-border bg-card/95 backdrop-blur-md text-card-foreground",
         className
@@ -122,7 +122,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
           </nav>
         </div>
       </div>
-    </animated.aside>
+    </motion.aside>
   );
 };
-
