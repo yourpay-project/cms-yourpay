@@ -36,14 +36,32 @@ export const IdentityAccessBadges: FC<IdentityAccessBadgesProps> = ({ items }) =
           <span className="truncate">{item.code}</span>
         );
 
+        let defaultIconNode: React.ReactNode = null;
+        if (item.isDefault) {
+          defaultIconNode = <Settings2 className="h-3.5 w-3.5 shrink-0" aria-hidden />;
+        }
+
         const contentNode = (
           <>
             {badgeNode}
-            {item.isDefault ? <Settings2 className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+            {defaultIconNode}
           </>
         );
 
-        return item.isDefault ? (
+        const badgeSpan = (
+          <span
+            key={`${item.code}-${index}`}
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${badgeClassName}`}
+          >
+            {contentNode}
+          </span>
+        );
+
+        if (!item.isDefault) {
+          return badgeSpan;
+        }
+
+        return (
           <Tooltip key={`${item.code}-${index}`}>
             <TooltipTrigger asChild>
               <span
@@ -54,13 +72,6 @@ export const IdentityAccessBadges: FC<IdentityAccessBadgesProps> = ({ items }) =
             </TooltipTrigger>
             <TooltipContent side="top">DEFAULT</TooltipContent>
           </Tooltip>
-        ) : (
-          <span
-            key={`${item.code}-${index}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${badgeClassName}`}
-          >
-            {contentNode}
-          </span>
         );
       })}
     </div>
