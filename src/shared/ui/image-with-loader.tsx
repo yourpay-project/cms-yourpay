@@ -1,7 +1,7 @@
 import * as React from "react";
+import { Loader2 } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
-import { Skeleton } from "./skeleton";
 
 export interface ImageWithLoaderProps
   extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError"> {
@@ -34,7 +34,14 @@ export const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
   return (
     <div className={cn("relative h-full w-full", containerClassName)}>
       {!loaded && !errored ? (
-        <Skeleton className={cn("absolute inset-0", skeletonClassName)} />
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center rounded-md bg-muted/20",
+            skeletonClassName,
+          )}
+        >
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden />
+        </div>
       ) : null}
       {errored ? (
         <div className="absolute inset-0 flex items-center justify-center rounded-md bg-muted/30 text-xs text-muted-foreground">
@@ -45,7 +52,11 @@ export const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
         {...imgProps}
         src={src}
         alt={alt}
-        className={cn("h-full w-full", !loaded && "opacity-0", className)}
+        className={cn(
+          "h-full w-full transition-opacity duration-200",
+          !loaded && "opacity-0",
+          className,
+        )}
         onLoad={() => setLoaded(true)}
         onError={() => setErrored(true)}
       />
