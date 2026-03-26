@@ -42,19 +42,12 @@ export const FilterCard: FC<FilterCardProps> = ({
   children,
   badgesClassName,
 }) => {
-  let toggleIconNode = (
+  const toggleIconNode = filtersOpen ? (
+    <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+  ) : (
     <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
   );
-  if (filtersOpen) {
-    toggleIconNode = (
-      <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-    );
-  }
-
-  let bodyNode: ReactNode = null;
-  if (filtersOpen) {
-    bodyNode = children;
-  }
+  const bodyNode: ReactNode = filtersOpen ? children : null;
 
   return (
     <Card className="border-border bg-card">
