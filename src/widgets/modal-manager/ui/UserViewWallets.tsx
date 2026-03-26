@@ -43,6 +43,18 @@ function valueOrDash(value?: string): string {
   return value?.trim() || "-";
 }
 
+function toWalletBalanceLabel(wallet: CustomerWalletItem): string | undefined {
+  if (wallet.formattedBalance) {
+    return wallet.formattedBalance;
+  }
+
+  if (wallet.balance == null) {
+    return undefined;
+  }
+
+  return String(wallet.balance);
+}
+
 function renderWalletField(label: string, value?: string): React.JSX.Element {
   return (
     <div className="space-y-1">
@@ -55,7 +67,7 @@ function renderWalletField(label: string, value?: string): React.JSX.Element {
 }
 
 function renderWalletCard(wallet: CustomerWalletItem): React.JSX.Element {
-  const balance = wallet.formattedBalance ?? (wallet.balance != null ? String(wallet.balance) : undefined);
+  const balance = toWalletBalanceLabel(wallet);
 
   return (
     <div key={wallet.id} className="rounded-lg border border-border/70 bg-background/30 p-3">
