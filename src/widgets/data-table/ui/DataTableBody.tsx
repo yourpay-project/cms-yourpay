@@ -14,7 +14,7 @@ export interface DataTableBodyProps<TData> {
 export function DataTableBody<TData>({
   table,
   columnCount,
-}: DataTableBodyProps<TData>): JSX.Element {
+}: DataTableBodyProps<TData>): React.JSX.Element {
   const rows = table.getRowModel().rows;
 
   return (
