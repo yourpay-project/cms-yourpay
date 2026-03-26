@@ -114,10 +114,7 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
   };
 
   const onSubmit = (): void => {
-    let selectedLabel = selectedCodes.join(", ");
-    if (!selectedLabel) {
-      selectedLabel = "-";
-    }
+    const selectedLabel = selectedCodes.join(", ") || "-";
     toast.info(`TODO: submit identity access update for ${customerId}`, {
       description: `Selected: ${selectedLabel}`,
     });
