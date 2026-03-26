@@ -1,8 +1,10 @@
 import type { FC } from "react";
 import { Link, useParams } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { ApiClientError } from "@/shared/api";
-import { Button, Card, CardContent, PageSkeleton } from "@/shared/ui";
+import { Badge, Button, Card, CardContent, PageSkeleton } from "@/shared/ui";
+import { formatDisplayDateTime } from "@/shared/lib";
 import { useTransactionDetailQuery } from "..";
 
 interface DetailFieldProps {
@@ -32,16 +34,62 @@ const TransactionDetailPage: FC = () => {
   const detail = query.data;
   if (!detail) return <p className="text-sm text-muted-foreground">Transaction detail is unavailable.</p>;
 
+  const normalizedStatus = String(detail.status ?? "").trim().toUpperCase();
+  const statusVariant =
+    normalizedStatus === "SUCCESS" || normalizedStatus === "COMPLETED"
+      ? "success"
+      : normalizedStatus === "PENDING" || normalizedStatus === "PROCESSING"
+        ? "warning"
+        : normalizedStatus === "FAILED" || normalizedStatus === "REVERSED" || normalizedStatus === "CANCELLED"
+          ? "destructive"
+          : "default";
+
+  const copyTransactionId = () => {
+    const value = detail.id ?? "";
+    if (!value) return;
+    void navigator.clipboard.writeText(value).then(() => {
+      toast.success("Transaction ID copied to clipboard.");
+    });
+  };
+
   return (
     <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Transaction Details</h2>
-        <Button asChild variant="outline" size="sm" type="button">
-          <Link to="/transactions" className="inline-flex items-center gap-1">
-            <ChevronLeft className="h-4 w-4" />
-            Back
-          </Link>
-        </Button>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <Button asChild variant="ghost" size="icon" type="button" className="h-8 w-8 shrink-0">
+            <Link to="/transactions" aria-label="Back to list">
+              <ChevronLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+          <h2 className="min-w-0 text-xl font-semibold leading-tight break-words">Transaction Details</h2>
+        </div>
+
+        <div className="flex w-full min-w-0 flex-col items-end gap-1 md:w-auto">
+          <div className="flex w-full min-w-0 items-center justify-end gap-2 md:w-auto">
+            <p className="min-w-0 truncate text-sm font-medium">{detail.transactionType || "-"}</p>
+            <span className="text-muted-foreground">-</span>
+            <Badge variant={statusVariant} className="shrink-0">
+              {normalizedStatus || "-"}
+            </Badge>
+          </div>
+
+          <div className="flex max-w-full items-center justify-end gap-1.5 text-xs text-muted-foreground">
+            <span className="truncate font-mono" title={detail.id}>
+              ID: {detail.id || "-"}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0 text-muted-foreground hover:text-foreground"
+              aria-label="Copy transaction ID"
+              onClick={copyTransactionId}
+              disabled={!detail.id}
+            >
+              <Copy className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       <Card className="border-border bg-card">
@@ -93,8 +141,8 @@ const TransactionDetailPage: FC = () => {
           <section className="space-y-3">
             <h3 className="text-sm font-semibold">Timestamps</h3>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <DetailField label="Created At" value={detail.createdAt} />
-              <DetailField label="Updated At" value={detail.updatedAt} />
+              <DetailField label="Created At" value={formatDisplayDateTime(detail.createdAt)} />
+              <DetailField label="Updated At" value={formatDisplayDateTime(detail.updatedAt)} />
             </div>
           </section>
         </CardContent>
