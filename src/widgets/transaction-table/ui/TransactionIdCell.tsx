@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { copyTransactionId, valueOrDash } from "./transaction-table-columns-view-model";
+import { copyTransactionId, valueOrDash } from "../index";
 
 interface TransactionIdCellProps {
   id: string | undefined;

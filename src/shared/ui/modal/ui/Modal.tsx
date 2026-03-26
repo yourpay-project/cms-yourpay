@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 import { useModalAnimation } from "./useModalAnimation";
 import type { ModalProps } from "./Modal.type";
-import { resolveModalProps } from "./modal-view-model";
 import { ModalCloseButton } from "./ModalCloseButton";
+import { ModalHeaderSection } from "./ModalHeaderSection";
+import { ModalFooterSection } from "./ModalFooterSection";
 
 /** Framer Motion variants shared between overlay and content for consistency. */
 const overlayVariants = {
@@ -53,21 +54,13 @@ export const Modal: React.FC<ModalProps> = ({
   className,
 }) => {
   const { visible, handleVisibilityChange } = useModalAnimation({ open });
-  const { contentWidth, wrapperAlignClassName, headerNode, footerNode } = resolveModalProps({
-    open,
-    onCancel,
-    onOk,
-    confirmLoading,
-    title,
-    description,
-    footer,
-    okText,
-    cancelText,
-    children,
-    width,
-    centered,
-    className,
-  });
+
+  let contentWidth = "520px";
+  if (typeof width === "number") {
+    contentWidth = `${width}px`;
+  } else if (typeof width === "string" && width) {
+    contentWidth = width;
+  }
 
   if (!visible) {
     return null;
@@ -99,7 +92,8 @@ export const Modal: React.FC<ModalProps> = ({
               <div
                 className={cn(
                   "fixed inset-0 z-50 flex justify-center px-4 py-6",
-                  wrapperAlignClassName
+                  centered && "items-center",
+                  !centered && "items-start",
                 )}
               >
                 <Dialog.Content asChild>
@@ -126,11 +120,18 @@ export const Modal: React.FC<ModalProps> = ({
                       {description ?? "Dialog description"}
                     </Dialog.Description>
 
-                    {headerNode}
+                    <ModalHeaderSection title={title} description={description} />
 
                     <div className="px-6 py-2">{children}</div>
 
-                    {footerNode}
+                    <ModalFooterSection
+                      footer={footer}
+                      okText={okText}
+                      cancelText={cancelText}
+                      confirmLoading={confirmLoading}
+                      onCancel={onCancel}
+                      onOk={onOk}
+                    />
 
                     <ModalCloseButton onCancel={onCancel} />
                   </motion.div>

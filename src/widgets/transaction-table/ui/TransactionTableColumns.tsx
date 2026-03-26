@@ -3,11 +3,8 @@ import { Link } from "@tanstack/react-router";
 import type { Transaction } from "@/entities/transaction";
 import { Button } from "@/shared/ui";
 import { TransactionIdCell } from "./TransactionIdCell";
-import {
-  getTransactionIdHeaderNode,
-  getTransactionStatusBadgeClassName,
-  valueOrDash,
-} from "./transaction-table-columns-view-model";
+import { TransactionIdHeader } from "./TransactionIdHeader";
+import { getTransactionStatusBadgeClassName, valueOrDash } from "../index";
 
 /** Builds transactions table columns with copy + actions affordances. */
 export function getTransactionTableColumns(): ColumnDef<Transaction, unknown>[] {
@@ -15,7 +12,7 @@ export function getTransactionTableColumns(): ColumnDef<Transaction, unknown>[] 
     {
       id: "id",
       accessorKey: "id",
-      header: () => getTransactionIdHeaderNode(),
+      header: () => <TransactionIdHeader />,
       minSize: 220,
       cell: ({ getValue }) => {
         return <TransactionIdCell id={getValue<string>()} />;
