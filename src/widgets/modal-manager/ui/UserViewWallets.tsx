@@ -5,6 +5,17 @@ import { useCustomerWalletsQuery, type CustomerWalletItem } from "@/entities/use
 
 import type { UserViewWalletsProps } from "./UserViewWallets.type";
 
+interface WalletStateMessageProps {
+  message: string;
+  className: string;
+}
+
+interface WalletGroupSectionProps {
+  title: string;
+  emptyMessage: string;
+  wallets: CustomerWalletItem[];
+}
+
 function formatWalletName(wallet: CustomerWalletItem): string {
   const fromFormatted = wallet.formattedName?.trim();
   if (fromFormatted) {
@@ -28,12 +39,16 @@ function formatWalletName(wallet: CustomerWalletItem): string {
   return "Wallet";
 }
 
+function valueOrDash(value?: string): string {
+  return value?.trim() || "-";
+}
+
 function renderWalletField(label: string, value?: string): React.JSX.Element {
   return (
     <div className="space-y-1">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
       <div className="rounded-md border border-border/70 bg-background/40 px-2.5 py-1.5 text-sm text-foreground">
-        {value?.trim() || "-"}
+        {valueOrDash(value)}
       </div>
     </div>
   );
@@ -54,8 +69,37 @@ function renderWalletCard(wallet: CustomerWalletItem): React.JSX.Element {
   );
 }
 
+const WalletStateMessage: FC<WalletStateMessageProps> = ({ message, className }) => {
+  return (
+    <div className="-mx-6 -mr-6 max-h-[70vh] overflow-y-auto pb-2 pr-6">
+      <div className="space-y-3 px-6">
+        <p className={className}>{message}</p>
+      </div>
+    </div>
+  );
+};
+
+const WalletGroupSection: FC<WalletGroupSectionProps> = ({ title, emptyMessage, wallets }) => {
+  const walletListNode =
+    wallets.length === 0 ? (
+      <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+    ) : (
+      <>{wallets.map((wallet) => renderWalletCard(wallet))}</>
+    );
+
+  return (
+    <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
+      <p className="mb-3 text-sm font-semibold text-foreground">{title}</p>
+      <div className="space-y-3">{walletListNode}</div>
+    </section>
+  );
+};
+
 /**
  * Read-only modal that displays customer wallets grouped by balance category.
+ *
+ * @param props Modal open state and selected customer id.
+ * @returns Wallet sections for loading, error, empty, or success states.
  */
 export const UserViewWallets: FC<UserViewWalletsProps> = ({
   open,
@@ -76,45 +120,46 @@ export const UserViewWallets: FC<UserViewWalletsProps> = ({
     };
   }, [wallets]);
 
-  let content: React.ReactNode = null;
   if (query.isLoading) {
-    content = <p className="text-sm text-muted-foreground">Loading wallets...</p>;
-  } else if (query.isError) {
-    content = <p className="text-sm text-destructive">Failed to load wallets.</p>;
-  } else if ((wallets?.length ?? 0) === 0) {
-    content = <p className="text-sm text-muted-foreground">No wallets found for this customer.</p>;
-  } else {
-    content = (
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
-          <p className="mb-3 text-sm font-semibold text-foreground">Customer Wallets (IDR Balance)</p>
-          <div className="space-y-3">
-            {idrWallets.length > 0 ? (
-              idrWallets.map((wallet) => renderWalletCard(wallet))
-            ) : (
-              <p className="text-sm text-muted-foreground">No IDR wallets.</p>
-            )}
-          </div>
-        </section>
-
-        <section className="rounded-lg border border-border/70 bg-muted/20 p-3">
-          <p className="mb-3 text-sm font-semibold text-foreground">Yourpoin Balance</p>
-          <div className="space-y-3">
-            {yourpoinWallets.length > 0 ? (
-              yourpoinWallets.map((wallet) => renderWalletCard(wallet))
-            ) : (
-              <p className="text-sm text-muted-foreground">No Yourpoin wallets.</p>
-            )}
-          </div>
-        </section>
-      </div>
+    return (
+      <WalletStateMessage
+        message="Loading wallets..."
+        className="text-sm text-muted-foreground"
+      />
+    );
+  }
+  if (query.isError) {
+    return (
+      <WalletStateMessage
+        message="Failed to load wallets."
+        className="text-sm text-destructive"
+      />
+    );
+  }
+  if ((wallets?.length ?? 0) === 0) {
+    return (
+      <WalletStateMessage
+        message="No wallets found for this customer."
+        className="text-sm text-muted-foreground"
+      />
     );
   }
 
   return (
     <div className="-mx-6 -mr-6 max-h-[70vh] overflow-y-auto pb-2 pr-6">
       <div className="space-y-3 px-6">
-        {content}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <WalletGroupSection
+            title="Customer Wallets (IDR Balance)"
+            emptyMessage="No IDR wallets."
+            wallets={idrWallets}
+          />
+          <WalletGroupSection
+            title="Yourpoin Balance"
+            emptyMessage="No Yourpoin wallets."
+            wallets={yourpoinWallets}
+          />
+        </div>
       </div>
     </div>
   );
