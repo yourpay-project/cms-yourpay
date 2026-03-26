@@ -1,7 +1,7 @@
 # Modal
 
 Lightweight enterprise modal component built on top of Radix UI Dialog,
-Tailwind CSS, and `@react-spring/web`.
+Tailwind CSS, and `framer-motion`.
 
 ## Public API
 
@@ -50,8 +50,8 @@ const [open, setOpen] = useState(false);
 ## Implementation notes
 
 - Uses Radix `Dialog.Root` for accessibility and focus trapping.
-- `@react-spring/web` drives scale/opacity animations for the overlay and
-  content scale/opacity.
+- `framer-motion` (`AnimatePresence` + `motion.div`) drives scale/opacity animations for the overlay and
+  content — both GPU-composited and 60fps-safe in webview environments.
 - Layout and spacing:
   - Header padding: `pt-5 px-6 pb-4`
   - Body padding: `px-6 py-2`
