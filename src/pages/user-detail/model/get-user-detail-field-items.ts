@@ -6,6 +6,26 @@ import { Badge } from "@/shared/ui";
 
 import { formatDateTime, getFullName } from "../lib";
 
+type StatusVariant = "success" | "warning" | "destructive" | "default";
+
+const STATUS_VARIANT_BY_STATUS: Record<string, StatusVariant> = {
+  ACTIVE: "success",
+  PENDING: "warning",
+  BLOCKED: "destructive",
+  INACTIVE: "destructive",
+};
+
+function toStatusVariant(normalizedStatus: string): StatusVariant {
+  return STATUS_VARIANT_BY_STATUS[normalizedStatus] ?? "default";
+}
+
+function normalizeNationality(value: unknown): unknown {
+  if (value == null) {
+    return value;
+  }
+  return String(value).toUpperCase();
+}
+
 /**
  * Field-items shape required by `UserDetailFieldGrid` (label + optional React value node).
  */
@@ -27,14 +47,7 @@ export function getUserDetailFieldItems({ detail, identityAccessNode }: GetUserD
   const isBlocked = String(detail.access.status ?? "").toLowerCase() === "blocked";
   const rawStatus = String(detail.access.status ?? "").trim();
   const normalizedStatus = rawStatus.toUpperCase() || "-";
-  const statusVariant =
-    normalizedStatus === "ACTIVE"
-      ? "success"
-      : normalizedStatus === "PENDING"
-        ? "warning"
-        : normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE"
-          ? "destructive"
-          : "default";
+  const statusVariant = toStatusVariant(normalizedStatus);
 
   const customerFields: UserDetailFieldItemLike[] = [
     { label: "Customer ID", value: detail.id },
@@ -51,9 +64,7 @@ export function getUserDetailFieldItems({ detail, identityAccessNode }: GetUserD
     { label: "Email", value: detail.personalInformation.email },
     {
       label: "Nationality",
-      value: detail.personalInformation.nationality
-        ? String(detail.personalInformation.nationality).toUpperCase()
-        : detail.personalInformation.nationality,
+      value: normalizeNationality(detail.personalInformation.nationality),
     },
     { label: "Phone Number", value: detail.personalInformation.phoneNumber },
     {
