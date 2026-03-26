@@ -40,25 +40,15 @@ export const DropdownFieldTrigger: React.FC<DropdownFieldTriggerProps> = ({
       "flex h-9 w-full items-center gap-2 rounded-md px-3 text-left text-sm font-normal text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus-visible:bg-muted/50 aria-[expanded=true]:bg-muted/50 disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent disabled:focus-visible:bg-transparent",
   } as const;
 
-  let rootClassName = ROOT_CLASS_BY_MODE.default;
-  if (iconOnly) {
-    rootClassName = ROOT_CLASS_BY_MODE.iconOnly;
-  }
-
-  let labelNode: ReactNode = null;
-  if (!iconOnly && label) {
-    labelNode = <span className="truncate">{label}</span>;
-  }
-
-  let trailingNode: ReactNode = (
+  const rootClassName = iconOnly ? ROOT_CLASS_BY_MODE.iconOnly : ROOT_CLASS_BY_MODE.default;
+  const labelNode = !iconOnly && label ? <span className="truncate">{label}</span> : null;
+  const defaultTrailingNode = (
     <ChevronDown
       className="h-4 w-4 text-muted-foreground dark:text-muted-foreground"
       aria-hidden
     />
   );
-  if (trailing !== undefined) {
-    trailingNode = trailing;
-  }
+  const trailingNode: ReactNode = trailing ?? defaultTrailingNode;
 
   const trailingWrapClassName = cn(
     "shrink-0 pointer-events-none",
