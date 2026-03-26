@@ -8,7 +8,7 @@ import KycSubmissionDetailPage from "./KycSubmissionDetailPage";
 /**
  * Route wrapper for `/kyc-submission/$id`.
  */
-export function KycSubmissionDetailRoutePage(): JSX.Element {
+export function KycSubmissionDetailRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
