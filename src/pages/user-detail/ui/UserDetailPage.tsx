@@ -3,7 +3,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 
 import { ApiClientError } from "@/shared/api";
-import { Button, PageSkeleton } from "@/shared/ui";
+import { Badge, Button, PageSkeleton } from "@/shared/ui";
 
 import { useCustomerDetailQuery, getUserDetailFieldItems } from "../model";
 import { useModalStore } from "@/widgets/modal-manager";
@@ -37,6 +37,17 @@ const UserDetailPage: FC = () => {
     identityAccessNode,
   });
 
+  const rawStatus = String(detail.access.status ?? "").trim();
+  const normalizedStatus = rawStatus.toUpperCase() || "-";
+  const statusVariant =
+    normalizedStatus === "ACTIVE"
+      ? "success"
+      : normalizedStatus === "PENDING"
+        ? "warning"
+        : normalizedStatus === "BLOCKED" || normalizedStatus === "INACTIVE"
+          ? "destructive"
+          : "default";
+
   return (
     <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4 pt-8 md:pt-10">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -46,7 +57,15 @@ const UserDetailPage: FC = () => {
               <ChevronLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <h2 className="text-xl font-semibold">{`Customer Detail (${fieldItems.fullName})`}</h2>
+          <h2 className="text-xl font-semibold">Customer Detail</h2>
+        </div>
+
+        <div className="flex w-full min-w-0 items-center justify-end gap-2 md:w-auto">
+          <p className="min-w-0 truncate text-sm font-medium">{fieldItems.fullName}</p>
+          <span className="text-muted-foreground">-</span>
+          <Badge variant={statusVariant} className="shrink-0">
+            {normalizedStatus}
+          </Badge>
         </div>
       </div>
 
