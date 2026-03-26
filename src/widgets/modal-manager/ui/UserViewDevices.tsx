@@ -76,8 +76,8 @@ export const UserViewDevices: FC<UserViewDevicesProps> = ({
               <UserDetailCollapsibleCard
                 key={device.id}
                 title={
-                  <div className="flex min-w-0 items-center gap-2">
-                    {statusIcon}
+                  <div className="flex min-w-0 gap-2">
+                    <span className="pt-1.5">{statusIcon}</span>
                     <div className="min-w-0">
                       <div className="truncate">{formatDeviceTitle(device.deviceBrand, device.deviceModel)}</div>
                       <div className="truncate text-xs font-normal text-muted-foreground">
