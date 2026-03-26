@@ -84,8 +84,10 @@ export function useDataTable<TData>(
 
   const scrollY = scroll?.y ?? scrollHeightLegacy ?? DEFAULT_SCROLL_HEIGHT;
   const scrollX = scroll?.x;
-  const resolvedScrollHeight =
-    typeof scrollY === "number" ? `${scrollY}px` : scrollY;
+  let resolvedScrollHeight = String(scrollY);
+  if (typeof scrollY === "number") {
+    resolvedScrollHeight = `${scrollY}px`;
+  }
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const shadow = useScrollShadow(scrollRef);
@@ -111,7 +113,22 @@ export function useDataTable<TData>(
     pageCountProp != null &&
     paginationProp != null &&
     onPaginationChange != null;
-  const paginationState = isServerPagination ? paginationProp! : clientPagination;
+  let paginationState = clientPagination;
+  if (isServerPagination) {
+    paginationState = paginationProp!;
+  }
+
+  let resolvedPageCount: number | undefined = undefined;
+  if (isServerPagination) {
+    resolvedPageCount = pageCountProp;
+  }
+
+  let paginationRowModelOptions: {
+    getPaginationRowModel?: ReturnType<typeof getPaginationRowModel>;
+  } = {};
+  if (!isServerPagination) {
+    paginationRowModelOptions = { getPaginationRowModel: getPaginationRowModel() };
+  }
 
   React.useEffect(() => {
     if (selection?.rowSelection != null) {
@@ -121,17 +138,22 @@ export function useDataTable<TData>(
 
   const onColumnVisibilityChange = React.useCallback(
     (updater: React.SetStateAction<VisibilityState>) => {
-      setColumnVisibility((prev) =>
-        typeof updater === "function" ? updater(prev) : updater
-      );
+      setColumnVisibility((prev) => {
+        if (typeof updater === "function") {
+          return updater(prev);
+        }
+        return updater;
+      });
     },
     []
   );
 
   const onRowSelectionChange = React.useCallback(
     (updater: React.SetStateAction<RowSelectionState>) => {
-      const next =
-        typeof updater === "function" ? updater(rowSelection) : updater;
+      let next: RowSelectionState = updater;
+      if (typeof updater === "function") {
+        next = updater(rowSelection);
+      }
       setRowSelection(next);
       selection?.onSelectionChange?.(next);
     },
@@ -140,17 +162,22 @@ export function useDataTable<TData>(
 
   const onColumnPinningChange = React.useCallback(
     (updater: React.SetStateAction<ColumnPinningState>) => {
-      setColumnPinning((prev) =>
-        typeof updater === "function" ? updater(prev) : updater
-      );
+      setColumnPinning((prev) => {
+        if (typeof updater === "function") {
+          return updater(prev);
+        }
+        return updater;
+      });
     },
     []
   );
 
   const onPaginationChangeInternal = React.useCallback(
     (updater: React.SetStateAction<{ pageIndex: number; pageSize: number }>) => {
-      const next =
-        typeof updater === "function" ? updater(paginationState) : updater;
+      let next = updater;
+      if (typeof updater === "function") {
+        next = updater(paginationState);
+      }
       if (isServerPagination && onPaginationChange) {
         onPaginationChange(next);
       } else {
@@ -179,13 +206,11 @@ export function useDataTable<TData>(
     onColumnPinningChange,
     onPaginationChange: onPaginationChangeInternal,
     manualPagination: isServerPagination,
-    pageCount: isServerPagination ? pageCountProp : undefined,
+    pageCount: resolvedPageCount,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    ...(isServerPagination
-      ? {}
-      : { getPaginationRowModel: getPaginationRowModel() }),
+    ...paginationRowModelOptions,
     getExpandedRowModel: getExpandedRowModel(),
     getSubRows: expandable?.getSubRows as (row: TData) => TData[] | undefined,
     getRowCanExpand: expandable?.getRowCanExpand,
@@ -194,9 +219,12 @@ export function useDataTable<TData>(
   });
 
   React.useEffect(() => {
-    const pageCount = isServerPagination
-      ? (pageCountProp ?? 0)
-      : Math.ceil((table.getRowCount() || 0) / paginationState.pageSize) || 1;
+    let pageCount = 1;
+    if (isServerPagination) {
+      pageCount = pageCountProp ?? 0;
+    } else {
+      pageCount = Math.ceil((table.getRowCount() || 0) / paginationState.pageSize) || 1;
+    }
     onChange?.({
       pagination: {
         pageIndex: paginationState.pageIndex,
@@ -220,28 +248,47 @@ export function useDataTable<TData>(
 
   const loadingVariant = loading?.loadingVariant ?? "skeleton";
   const skeletonRows = loading?.skeletonRowCount ?? DEFAULT_SKELETON_ROW_COUNT;
-  const emptyMsg =
-    empty?.emptyMessage ??
-    (typeof locale?.emptyText === "string" ? locale.emptyText : undefined) ??
-    DEFAULT_EMPTY_MESSAGE;
+  let localeEmptyText: string | undefined = undefined;
+  if (typeof locale?.emptyText === "string") {
+    localeEmptyText = locale.emptyText;
+  }
+
+  const emptyMsg = empty?.emptyMessage ?? localeEmptyText ?? DEFAULT_EMPTY_MESSAGE;
   const visibleColumns = table.getVisibleLeafColumns().length;
   const sizeClasses = SIZE_CLASSES[size];
   const currentPageData = table.getRowModel().rows.map((r) => r.original);
-  const titleNode =
-    typeof title === "function" ? title(currentPageData) : title ?? null;
-  const footerNode =
-    typeof footer === "function" ? footer(currentPageData) : footer ?? null;
+  let titleNode: React.ReactNode = null;
+  if (typeof title === "function") {
+    titleNode = title(currentPageData);
+  } else if (title != null) {
+    titleNode = title;
+  }
+
+  let footerNode: React.ReactNode = null;
+  if (typeof footer === "function") {
+    footerNode = footer(currentPageData);
+  } else if (footer != null) {
+    footerNode = footer;
+  }
 
   const scrollStyle = React.useMemo<React.CSSProperties>(
-    () => ({
-      height: "auto",
-      minHeight: 0,
-      maxHeight: resolvedScrollHeight,
-      ...(scrollX != null &&
-        scrollX !== true && {
-          minWidth: typeof scrollX === "number" ? `${scrollX}px` : scrollX,
-        }),
-    }),
+    () => {
+      const baseStyle: React.CSSProperties = {
+        height: "auto",
+        minHeight: 0,
+        maxHeight: resolvedScrollHeight,
+      };
+
+      if (scrollX != null && scrollX !== true) {
+        let minWidth: string = String(scrollX);
+        if (typeof scrollX === "number") {
+          minWidth = `${scrollX}px`;
+        }
+        return { ...baseStyle, minWidth };
+      }
+
+      return baseStyle;
+    },
     [scrollX, resolvedScrollHeight]
   );
 
