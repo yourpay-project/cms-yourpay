@@ -21,6 +21,56 @@ type TransactionsGridItem =
   | { type: "options"; key: string; field: FilterField }
   | { type: "date_range"; key: string; definition: TransactionFilterDefinition };
 
+interface TransactionsGridItemRowProps {
+  item: TransactionsGridItem;
+  selectedFilterValues: Record<string, string>;
+  dateRanges: Record<string, { from: string; to: string; presetLabel: string | null }>;
+  handleChangeFilter: (key: string, value: string) => void;
+  setDateRange: (key: string, from: string, to: string, presetLabel?: string | null) => void;
+}
+
+const TransactionsGridItemRow: FC<TransactionsGridItemRowProps> = ({
+  item,
+  selectedFilterValues,
+  dateRanges,
+  handleChangeFilter,
+  setDateRange,
+}) => {
+  if (item.type === "options") {
+    const { field } = item;
+    return (
+      <FilterSelectWithClear
+        label={field.label}
+        value={selectedFilterValues[field.key] ?? field.allValue}
+        options={field.options}
+        onChange={(value) => handleChangeFilter(field.key, value)}
+        onClear={() => handleChangeFilter(field.key, field.allValue)}
+        allValue={field.allValue}
+      />
+    );
+  }
+
+  const { definition } = item;
+  const slice = dateRanges[definition.key];
+  const from = slice?.from ?? "";
+  const to = slice?.to ?? "";
+  const presetLabel = slice?.presetLabel ?? null;
+  const label = definition.name?.trim() ? definition.name : definition.key;
+
+  return (
+    <DateRangePicker
+      label={label}
+      from={from}
+      to={to}
+      presetLabel={presetLabel}
+      presets={TRANSACTION_DATE_RANGE_PRESETS}
+      onRangeChange={(nextFrom, nextTo, nextPreset) => {
+        setDateRange(definition.key, nextFrom, nextTo, nextPreset ?? null);
+      }}
+    />
+  );
+};
+
 /**
  * SDUI-driven filter grid: option selects from API metadata + `date_range` fields.
  */
@@ -53,47 +103,16 @@ export const TransactionsFiltersGrid: FC<TransactionsFiltersGridProps> = ({
 
   return (
     <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-      {gridItems.map((item) => {
-        switch (item.type) {
-          case "options": {
-            const { field } = item;
-            return (
-              <FilterSelectWithClear
-                key={item.key}
-                label={field.label}
-                value={selectedFilterValues[field.key] ?? field.allValue}
-                options={field.options}
-                onChange={(value) => handleChangeFilter(field.key, value)}
-                onClear={() => handleChangeFilter(field.key, field.allValue)}
-                allValue={field.allValue}
-              />
-            );
-          }
-          case "date_range": {
-            const { definition } = item;
-            const slice = dateRanges[definition.key];
-            const from = slice?.from ?? "";
-            const to = slice?.to ?? "";
-            const presetLabel = slice?.presetLabel ?? null;
-            const label = definition.name?.trim() ? definition.name : definition.key;
-            return (
-              <DateRangePicker
-                key={item.key}
-                label={label}
-                from={from}
-                to={to}
-                presetLabel={presetLabel}
-                presets={TRANSACTION_DATE_RANGE_PRESETS}
-                onRangeChange={(nextFrom, nextTo, nextPreset) => {
-                  setDateRange(definition.key, nextFrom, nextTo, nextPreset ?? null);
-                }}
-              />
-            );
-          }
-          default:
-            return null;
-        }
-      })}
+      {gridItems.map((item) => (
+        <TransactionsGridItemRow
+          key={item.key}
+          item={item}
+          selectedFilterValues={selectedFilterValues}
+          dateRanges={dateRanges}
+          handleChangeFilter={handleChangeFilter}
+          setDateRange={setDateRange}
+        />
+      ))}
     </div>
   );
 };
