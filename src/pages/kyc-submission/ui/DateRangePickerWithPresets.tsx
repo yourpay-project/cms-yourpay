@@ -36,12 +36,12 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
     setCustomTo(to);
   }, [open, from, to]);
 
-  const displayText =
-    presetLabel != null && presetLabel !== ""
-      ? presetLabel
-      : from && to
-        ? `${from} – ${to}`
-        : "Select date range";
+  let displayText = "Select date range";
+  if (presetLabel != null && presetLabel !== "") {
+    displayText = presetLabel;
+  } else if (from && to) {
+    displayText = `${from} – ${to}`;
+  }
 
   const hasValue = !!(from && to);
 
@@ -59,6 +59,27 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
     setOpen(false);
   };
 
+  const leadingIconNode = (
+    <Calendar
+      className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
+      aria-hidden
+    />
+  );
+
+  let clearNode: React.ReactNode = null;
+  if (hasValue) {
+    clearNode = (
+      <button
+        type="button"
+        onClick={handleClear}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+        aria-label="Clear date range"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    );
+  }
+
   return (
     <div className={cn("relative", className)}>
       <label className="mb-1 block text-xs text-muted-foreground">{label}</label>
@@ -66,12 +87,7 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <DropdownFieldTrigger
-              leading={
-                <Calendar
-                  className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
-                  aria-hidden
-                />
-              }
+              leading={leadingIconNode}
               label={displayText}
             />
           </DropdownMenuTrigger>
@@ -90,16 +106,7 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
             />
           </DropdownMenuContent>
         </DropdownMenu>
-        {hasValue ? (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-r-md border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
-            aria-label="Clear date range"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        ) : null}
+        {clearNode}
       </div>
     </div>
   );
