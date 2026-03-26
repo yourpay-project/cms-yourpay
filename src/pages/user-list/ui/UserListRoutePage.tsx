@@ -9,7 +9,7 @@ import UserListPage from './UserListPage';
  * Route-level page for `/customers`.
  * Uses AppLayout + ProtectedRoute and renders the user list feature page.
  */
-export function UserListRoutePage(): JSX.Element {
+export function UserListRoutePage(): React.JSX.Element {
   return (
     <ProtectedRoute>
       <ErrorBoundary>
