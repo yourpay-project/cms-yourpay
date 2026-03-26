@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   Button,
   Card,
@@ -15,6 +15,7 @@ import { cn } from "@/shared/lib";
 import { getGoogleAuthUrl } from "../api";
 import { loginSchema, type LoginFormValues, useLoginMutation } from "../model";
 import { GoogleIcon } from "./GoogleIcon";
+import { getPasswordToggleConfig, getSubmitLeadingNode, toFieldStatus } from "./login-form-helpers";
 
 interface LoginFormProps {
   isUsernamePasswordEnabled?: boolean;
@@ -43,34 +44,13 @@ export const LoginForm: FC<LoginFormProps> = ({
     window.location.href = getGoogleAuthUrl();
   };
 
-  let passwordType = "password";
-  let passwordToggleAriaLabel = "Show password";
-  let passwordToggleIconNode: React.ReactNode = (
-    <Eye className="h-4 w-4" aria-hidden="true" />
-  );
+  const passwordToggleConfig = getPasswordToggleConfig(isPasswordVisible);
+  const submitLeadingNode = getSubmitLeadingNode(isPending);
 
-  if (isPasswordVisible) {
-    passwordType = "text";
-    passwordToggleAriaLabel = "Hide password";
-    passwordToggleIconNode = <EyeOff className="h-4 w-4" aria-hidden="true" />;
-  }
-
-  let submitLeadingNode: React.ReactNode = null;
-  if (isPending) {
-    submitLeadingNode = <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
-  }
-
-  let usernamePasswordFormNode: React.ReactNode = null;
+  let usernamePasswordFormNode: ReactNode = null;
   if (isUsernamePasswordEnabled) {
-    let emailStatus: "error" | undefined = undefined;
-    if (errors.email) {
-      emailStatus = "error";
-    }
-
-    let passwordStatus: "error" | undefined = undefined;
-    if (errors.password) {
-      passwordStatus = "error";
-    }
+    const emailStatus = toFieldStatus(errors.email != null);
+    const passwordStatus = toFieldStatus(errors.password != null);
 
     usernamePasswordFormNode = (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -91,7 +71,7 @@ export const LoginForm: FC<LoginFormProps> = ({
           <Input
             id="password"
             size="md"
-            type={passwordType}
+            type={passwordToggleConfig.passwordType}
             autoComplete="current-password"
             label="Password"
             status={passwordStatus}
@@ -101,9 +81,9 @@ export const LoginForm: FC<LoginFormProps> = ({
                 type="button"
                 onClick={() => setIsPasswordVisible((prev) => !prev)}
                 className="flex items-center text-muted-foreground hover:text-foreground"
-                aria-label={passwordToggleAriaLabel}
+                aria-label={passwordToggleConfig.ariaLabel}
               >
-                {passwordToggleIconNode}
+                {passwordToggleConfig.icon}
               </button>
             }
             {...register("password")}
