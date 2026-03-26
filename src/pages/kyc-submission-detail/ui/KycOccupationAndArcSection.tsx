@@ -19,6 +19,15 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
   onOccupationChange,
 }) => {
   if (isIndonesia) return null;
+  let arcExpiryInputType: "date" | "text" = "text";
+  if (isEditable) {
+    arcExpiryInputType = "date";
+  }
+
+  let arcExpiryValue = draft.arcExpiryDate ?? "";
+  if (isEditable) {
+    arcExpiryValue = toDateInputValue(draft.arcExpiryDate);
+  }
 
   return (
     <>
@@ -50,11 +59,11 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
       <Input
         id="kyc-submission-arc-expiry-date"
         size="sm"
-        type={isEditable ? "date" : "text"}
+        type={arcExpiryInputType}
         label="ARC Expiry Date"
         allowClear={isEditable}
         readOnly={locked}
-        value={isEditable ? toDateInputValue(draft.arcExpiryDate) : (draft.arcExpiryDate ?? "")}
+        value={arcExpiryValue}
         onChange={(e) => setDraft((prev) => ({ ...prev, arcExpiryDate: e.target.value }))}
       />
     </>
