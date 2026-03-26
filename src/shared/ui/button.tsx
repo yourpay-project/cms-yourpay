@@ -48,7 +48,10 @@ const Button: React.FC<ButtonProps> = ({
   ref,
   ...props
 }) => {
-  const Comp = asChild ? Slot : "button";
+  let Comp: React.ElementType = "button";
+  if (asChild) {
+    Comp = Slot;
+  }
   return (
     <Comp
       className={cn(buttonVariants({ variant, size, className }))}

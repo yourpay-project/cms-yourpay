@@ -11,14 +11,24 @@ const envSchema = z.object({
   VITE_SENTRY_TRACES_SAMPLE_RATE: z
     .string()
     .optional()
-    .transform((v) => (v == null || v === '' ? undefined : Number(v)))
+    .transform((v) => {
+      if (v == null || v === "") {
+        return undefined;
+      }
+      return Number(v);
+    })
     .refine((v) => v == null || (!Number.isNaN(v) && v >= 0 && v <= 1), {
       message: 'VITE_SENTRY_TRACES_SAMPLE_RATE must be a number between 0 and 1',
     }),
   VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE: z
     .string()
     .optional()
-    .transform((v) => (v == null || v === '' ? undefined : Number(v)))
+    .transform((v) => {
+      if (v == null || v === "") {
+        return undefined;
+      }
+      return Number(v);
+    })
     .refine((v) => v == null || (!Number.isNaN(v) && v >= 0 && v <= 1), {
       message:
         'VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE must be a number between 0 and 1',
@@ -26,7 +36,12 @@ const envSchema = z.object({
   VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE: z
     .string()
     .optional()
-    .transform((v) => (v == null || v === '' ? undefined : Number(v)))
+    .transform((v) => {
+      if (v == null || v === "") {
+        return undefined;
+      }
+      return Number(v);
+    })
     .refine((v) => v == null || (!Number.isNaN(v) && v >= 0 && v <= 1), {
       message:
         'VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE must be a number between 0 and 1',
