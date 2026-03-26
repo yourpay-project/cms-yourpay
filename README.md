@@ -459,6 +459,7 @@ For navigation inside components, use **TanStack Router hooks**:
   - `utils.ts` – `cn` function combining `clsx` + `tailwind-merge`.
   - `loading-store.ts` – `useLoadingStore` for global loading flags (read in `Nav`).
   - `use-sync-global-loading.ts` – `useSyncGlobalLoading(loading)` syncs a page’s main query `isLoading` to the global store so the nav shows the spinner during initial data load.
+  - `format-display-datetime.ts` – `formatDisplayDate()` / `formatDisplayDateTime()` for consistent date + datetime display across pages (e.g. `June 24, 2025`, `Aug 08, 2022 11:53AM`).
   - `env.ts` – `validateEnv()` validates Vite env vars with Zod at startup (called in `main.tsx`).
   - `theme-store.ts` – `useThemeStore` for app theme.
   - `use-theme-effect.ts` – applies theme to `document.documentElement` and listens to system changes.

@@ -9,6 +9,7 @@ export { useDebouncedValue } from "./use-debounced-value";
 export { getFilterBadgeClassName } from "./filter-badge-colors";
 export { useModalStore, useModalData } from "./modal";
 export { formatDateOnly } from "./format-date-only";
+export { formatDisplayDate, formatDisplayDateTime } from "./format-display-datetime";
 export type { ModalType } from "./modal";
 export {
   normalizeCode,

@@ -1,5 +1,5 @@
 /**
- * Formats an ISO/RFC3339 date string to `MMM d, yyyy`.
+ * Formats an ISO/RFC3339 date string to `MMMM d, yyyy`.
  * Returns the original value when parsing fails.
  */
 export function formatDateOnly(value: string | undefined): string | undefined {
@@ -8,7 +8,7 @@ export function formatDateOnly(value: string | undefined): string | undefined {
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return value;
     return d.toLocaleDateString("en-US", {
-      month: "short",
+      month: "long",
       day: "numeric",
       year: "numeric",
     });
