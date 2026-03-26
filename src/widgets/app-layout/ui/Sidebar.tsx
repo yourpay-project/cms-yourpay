@@ -22,11 +22,17 @@ import type { SidebarProps } from "./Sidebar.type";
 export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
   const { can } = useCan();
   const collapsedState = useSidebarStore((s) => s.collapsed);
-  const collapsed = forceExpanded ? false : collapsedState;
+  let collapsed = collapsedState;
+  if (forceExpanded) {
+    collapsed = false;
+  }
   const pinned = useSidebarStore((s) => s.pinned);
   const togglePinned = useSidebarStore((s) => s.togglePinned);
   const [search, setSearch] = useState("");
-  const sidebarWidth = collapsed ? 64 : 256;
+  let sidebarWidth = 256;
+  if (collapsed) {
+    sidebarWidth = 64;
+  }
 
   const {
     dashboardItem,
@@ -42,6 +48,34 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
     search,
   });
 
+  let dashboardWrapPaddingClass = "px-1";
+  if (collapsed) {
+    dashboardWrapPaddingClass = "px-2";
+  }
+
+  let dividerMarginClass = "mx-1";
+  if (collapsed) {
+    dividerMarginClass = "mx-2";
+  }
+
+  let navOuterClass = "mt-2 mx-0 pt-2 pb-3";
+  if (collapsed) {
+    navOuterClass = "mt-1 mx-0";
+  }
+
+  let navClassName = cn(
+    "flex flex-1 min-h-0 flex-col overflow-y-auto overflow-x-auto",
+    !collapsed && "sidebar-scroll",
+  );
+  if (collapsed) {
+    navClassName = cn(
+      navClassName,
+      "gap-1 px-2 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    );
+  } else {
+    navClassName = cn(navClassName, "gap-3 px-1 pb-4");
+  }
+
   return (
     <motion.aside
       animate={{ width: sidebarWidth }}
@@ -53,7 +87,12 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
     >
       <div className="flex flex-1 min-h-0 flex-col pt-3">
         {dashboardItem && (
-          <div className={cn("flex flex-col gap-0.5", collapsed ? "px-2" : "px-1")}>
+          <div
+            className={cn(
+              "flex flex-col gap-0.5",
+              dashboardWrapPaddingClass
+            )}
+          >
             <SidebarItem
               item={dashboardItem}
               collapsed={collapsed}
@@ -61,7 +100,13 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
               canShowPin={false}
               onTogglePinned={togglePinned}
             />
-            <div className={cn("my-2 border-t border-border/60", collapsed ? "mx-2" : "mx-1")} aria-hidden />
+            <div
+              className={cn(
+                "my-2 border-t border-border/60",
+                dividerMarginClass
+              )}
+              aria-hidden
+            />
           </div>
         )}
         <SidebarPinnedSection
@@ -82,18 +127,10 @@ export const Sidebar: FC<SidebarProps> = ({ className, forceExpanded }) => {
         <div
           className={cn(
             "relative flex min-h-0 flex-1 flex-col",
-            collapsed ? "mt-1 mx-0" : "mt-2 mx-0 pt-2 pb-3"
+            navOuterClass
           )}
         >
-          <nav
-            className={cn(
-              "flex flex-1 min-h-0 flex-col overflow-y-auto overflow-x-auto",
-              !collapsed && "sidebar-scroll",
-              collapsed
-                ? "gap-1 px-2 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                : "gap-3 px-1 pb-4"
-            )}
-          >
+          <nav className={navClassName}>
             {filteredGroups.map((group, index) => (
               <div
                 key={group.group ?? "main"}

@@ -47,7 +47,10 @@ export const Input: React.FC<InputProps> = ({
   // Bridge the external ref to the internal DOM ref maintained by useInputValue.
   React.useImperativeHandle(ref, () => innerRef.current as HTMLInputElement);
 
-  const helperStatusClass = status ? statusTextClass[status] : "text-muted-foreground";
+  let helperStatusClass = "text-muted-foreground";
+  if (status) {
+    helperStatusClass = statusTextClass[status];
+  }
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     if (readOnly) {
       event.currentTarget.blur();
