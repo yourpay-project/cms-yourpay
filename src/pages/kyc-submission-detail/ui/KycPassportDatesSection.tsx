@@ -15,7 +15,7 @@ export const KycPassportDatesSection: FC<KycPassportDatesSectionProps> = ({ draf
     <>
       <Input
         id="kyc-submission-identity-issue-date"
-        size="md"
+        size="sm"
         type={isEditable ? "date" : "text"}
         label="Issue Date"
         allowClear={isEditable}
@@ -25,7 +25,7 @@ export const KycPassportDatesSection: FC<KycPassportDatesSectionProps> = ({ draf
       />
       <Input
         id="kyc-submission-identity-expiry-date"
-        size="md"
+        size="sm"
         type={isEditable ? "date" : "text"}
         label="Expiry Date"
         allowClear={isEditable}

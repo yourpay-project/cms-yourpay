@@ -26,7 +26,7 @@ export const KycPersonalInformationCard: FC<KycPersonalInformationCardProps> = (
         <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
           <Input
             id="kyc-submission-email"
-            size="md"
+            size="sm"
             type="email"
             label="Email"
             allowClear={isEditable}
@@ -37,7 +37,7 @@ export const KycPersonalInformationCard: FC<KycPersonalInformationCardProps> = (
 
           <Input
             id="kyc-submission-birth-place"
-            size="md"
+            size="sm"
             type="text"
             label="Place of Birth"
             allowClear={isEditable}
@@ -49,7 +49,7 @@ export const KycPersonalInformationCard: FC<KycPersonalInformationCardProps> = (
           <div className="md:col-span-2">
             <Input
               id="kyc-submission-mother-name"
-              size="md"
+              size="sm"
               type="text"
               label="Mother's Name"
               allowClear={isEditable}
@@ -62,6 +62,7 @@ export const KycPersonalInformationCard: FC<KycPersonalInformationCardProps> = (
           <LabeledSelectField
             id="kyc-submission-marriage-status"
             label="Marriage Status"
+            size="sm"
             value={draft.marriageStatus ?? ""}
             onChange={(value) => setDraft((prev) => ({ ...prev, marriageStatus: value || undefined }))}
             options={KYC_MARRIAGE_STATUS_OPTIONS}
@@ -73,6 +74,7 @@ export const KycPersonalInformationCard: FC<KycPersonalInformationCardProps> = (
           <LabeledSelectField
             id="kyc-submission-nationality"
             label="Nationality"
+            size="sm"
             value={draft.nationality ?? ""}
             onChange={(value) => setDraft((prev) => ({ ...prev, nationality: value || undefined }))}
             options={KYC_NATIONALITY_OPTIONS}

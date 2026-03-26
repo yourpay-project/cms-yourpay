@@ -44,7 +44,7 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
       <div className="flex flex-col gap-1.5 md:col-span-2">
         <Input
           id="kyc-submission-address-line"
-          size="md"
+          size="sm"
           type="text"
           label="Full Address"
           allowClear={isEditable}
@@ -57,6 +57,7 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
       <LabeledSelectField
         id="kyc-address-province"
         label="Province"
+        size="sm"
         value={draft.provinceId ?? ""}
         onChange={onProvinceChange}
         options={provinceOptions}
@@ -70,6 +71,7 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
       <LabeledSelectField
         id="kyc-address-city"
         label="City"
+        size="sm"
         value={draft.cityId ?? ""}
         onChange={onCityChange}
         options={cityOptions}
@@ -83,6 +85,7 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
       <LabeledSelectField
         id="kyc-address-district"
         label="District"
+        size="sm"
         value={draft.districtId ?? ""}
         onChange={onDistrictChange}
         options={districtOptions}
@@ -96,6 +99,7 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
       <LabeledSelectField
         id="kyc-address-subdistrict"
         label="Sub District"
+        size="sm"
         value={draft.subdistrictId ?? ""}
         onChange={onSubDistrictChange}
         options={subDistrictOptions}
@@ -109,7 +113,7 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
       <div className="flex flex-col gap-1.5">
         <Input
           id="kyc-submission-postal-code"
-          size="md"
+          size="sm"
           type="text"
           label="Postal Code"
           allowClear={isEditable}
@@ -119,8 +123,8 @@ export const KycIndonesiaAddressFields: FC<KycIndonesiaAddressFieldsProps> = ({
         />
       </div>
 
-      <Input id="kyc-submission-rt" size="md" type="text" label="RT" allowClear={isEditable} readOnly={locked} value={draft.rt ?? ""} onChange={(e) => setDraft((prev) => ({ ...prev, rt: e.target.value }))} />
-      <Input id="kyc-submission-rw" size="md" type="text" label="RW" allowClear={isEditable} readOnly={locked} value={draft.rw ?? ""} onChange={(e) => setDraft((prev) => ({ ...prev, rw: e.target.value }))} />
+      <Input id="kyc-submission-rt" size="sm" type="text" label="RT" allowClear={isEditable} readOnly={locked} value={draft.rt ?? ""} onChange={(e) => setDraft((prev) => ({ ...prev, rt: e.target.value }))} />
+      <Input id="kyc-submission-rw" size="sm" type="text" label="RW" allowClear={isEditable} readOnly={locked} value={draft.rw ?? ""} onChange={(e) => setDraft((prev) => ({ ...prev, rw: e.target.value }))} />
     </div>
   );
 };

@@ -24,6 +24,7 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
         containerClassName="md:col-span-2"
         id="kyc-submission-occupation"
         label="Occupation"
+        size="sm"
         value={draft.occupationId ?? ""}
         onChange={onOccupationChange}
         options={occupationOptions}
@@ -38,7 +39,7 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
         <>
           <Input
             id="kyc-submission-arc-number"
-            size="md"
+            size="sm"
             type="text"
             label="ARC Number"
             allowClear={isEditable}
@@ -48,7 +49,7 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
           />
           <Input
             id="kyc-submission-arc-expiry-date"
-            size="md"
+            size="sm"
             type={isEditable ? "date" : "text"}
             label="ARC Expiry Date"
             allowClear={isEditable}

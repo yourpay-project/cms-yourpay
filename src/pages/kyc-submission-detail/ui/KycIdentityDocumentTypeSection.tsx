@@ -22,6 +22,7 @@ export const KycIdentityDocumentTypeSection: FC<KycIdentityDocumentTypeSectionPr
         id="kyc-submission-identity-type"
         label="Document Type"
         required
+        size="sm"
         value={draft.identityDocumentType ?? ""}
         onChange={onDocumentTypeChange}
         options={documentTypeOptions}
@@ -51,7 +52,7 @@ export const KycIdentityDocumentTypeSection: FC<KycIdentityDocumentTypeSectionPr
 
       <Input
         id="kyc-submission-identity-number"
-        size="md"
+        size="sm"
         type="text"
         label="Document Number"
         allowClear={isEditable}

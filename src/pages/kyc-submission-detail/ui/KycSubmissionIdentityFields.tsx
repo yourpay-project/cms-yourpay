@@ -22,7 +22,7 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
     <div className="flex w-full min-w-0 max-w-full flex-col gap-4 pt-1">
       <Input
         id="kyc-identity-fullname"
-        size="md"
+        size="sm"
         type="text"
         label="Name"
         allowClear={isEditable}
@@ -42,7 +42,7 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
         <div className="min-w-0 flex-1">
           <Input
             id="kyc-identity-mobile"
-            size="md"
+            size="sm"
             type="text"
             label="Mobile Number"
             allowClear={isEditable}
@@ -64,6 +64,7 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
       <LabeledSelectField
         id="kyc-identity-gender"
         label="Gender"
+        size="sm"
         value={draft.gender ?? ""}
         onChange={(value) => setDraft((prev) => ({ ...prev, gender: value || undefined }))}
         options={KYC_GENDER_OPTIONS}
@@ -75,6 +76,7 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
       <LabeledSelectField
         id="kyc-identity-religion"
         label="Religion"
+        size="sm"
         value={draft.religion ?? ""}
         onChange={(value) => setDraft((prev) => ({ ...prev, religion: value || undefined }))}
         options={KYC_RELIGION_OPTIONS}

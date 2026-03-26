@@ -40,7 +40,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             <div className="md:col-span-2">
               <Input
                 id="kyc-submission-address-line"
-                size="md"
+                size="sm"
                 type="text"
                 label="Full Address"
                 allowClear={isEditable}
@@ -51,7 +51,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             </div>
             <Input
               id="kyc-submission-province-name"
-              size="md"
+              size="sm"
               type="text"
               label="Province"
               allowClear={isEditable}
@@ -61,7 +61,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             />
             <Input
               id="kyc-submission-city-name"
-              size="md"
+              size="sm"
               type="text"
               label="City"
               allowClear={isEditable}
@@ -71,7 +71,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             />
             <Input
               id="kyc-submission-district-name"
-              size="md"
+              size="sm"
               type="text"
               label="District"
               allowClear={isEditable}
@@ -81,7 +81,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             />
             <Input
               id="kyc-submission-subdistrict-name"
-              size="md"
+              size="sm"
               type="text"
               label="Sub District"
               allowClear={isEditable}
@@ -91,7 +91,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             />
             <Input
               id="kyc-submission-postal-code"
-              size="md"
+              size="sm"
               type="text"
               label="Postal Code"
               allowClear={isEditable}
@@ -101,7 +101,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             />
             <Input
               id="kyc-submission-rt"
-              size="md"
+              size="sm"
               type="text"
               label="RT"
               allowClear={isEditable}
@@ -111,7 +111,7 @@ export const KycUserDataCardsAddressSection: FC<KycUserDataCardsAddressSectionPr
             />
             <Input
               id="kyc-submission-rw"
-              size="md"
+              size="sm"
               type="text"
               label="RW"
               allowClear={isEditable}

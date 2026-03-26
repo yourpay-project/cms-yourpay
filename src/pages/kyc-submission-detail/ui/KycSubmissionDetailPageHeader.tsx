@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronDown, ChevronLeft, Copy } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/shared/ui";
+import { Badge, Button } from "@/shared/ui";
 
 import type { KycSubmissionDetailPageHeaderProps } from "./KycSubmissionDetailPageHeader.type";
 
@@ -18,6 +18,16 @@ export const KycSubmissionDetailPageHeader: FC<KycSubmissionDetailPageHeaderProp
   isStatusEditable,
   onOpenStatusModal,
 }) => {
+  const normalizedStatus = String(currentStatus ?? "").trim().toUpperCase();
+  const statusVariant =
+    normalizedStatus === "APPROVED" || normalizedStatus === "VERIFIED"
+      ? "success"
+      : normalizedStatus === "PENDING" || normalizedStatus === "REVIEW"
+        ? "warning"
+        : normalizedStatus === "REJECTED" || normalizedStatus === "FAILED"
+          ? "destructive"
+          : "default";
+
   const copySubmissionId = () => {
     void navigator.clipboard.writeText(id).then(() => {
       toast.success("ID copied to clipboard.");
@@ -33,25 +43,32 @@ export const KycSubmissionDetailPageHeader: FC<KycSubmissionDetailPageHeaderProp
           </Link>
         </Button>
         <h2 className="min-w-0 text-xl font-semibold leading-tight break-words">
-          KYC Submission Detail{fullname ? ` (${fullname})` : ""}
+          KYC Submission Detail
         </h2>
       </div>
 
       <div className="flex w-full min-w-0 flex-col items-end gap-1 md:w-auto">
-        <button
-          type="button"
-          className={`inline-flex w-auto max-w-full items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium uppercase ${eplStatusClass} ${
-            currentStatus === "pending" ? "cursor-pointer" : "cursor-default"
-          }`}
-          onClick={() => {
-            if (currentStatus === "pending" && isStatusEditable) {
-              onOpenStatusModal();
-            }
-          }}
-        >
-          {`Status: ${currentStatus}`}
-          {currentStatus === "pending" ? <ChevronDown className="h-3 w-3" /> : null}
-        </button>
+        <div className="flex w-full min-w-0 items-center justify-end gap-2 md:w-auto">
+          {fullname ? <p className="min-w-0 truncate text-sm font-medium">{fullname}</p> : null}
+          {fullname ? <span className="text-muted-foreground">-</span> : null}
+
+          <button
+            type="button"
+            className={`inline-flex items-center gap-1 ${currentStatus === "pending" ? "cursor-pointer" : "cursor-default"}`}
+            onClick={() => {
+              if (currentStatus === "pending" && isStatusEditable) {
+                onOpenStatusModal();
+              }
+            }}
+            aria-label="Change KYC status"
+          >
+            <Badge variant={statusVariant} className={`${eplStatusClass} uppercase`}>
+              {normalizedStatus || "-"}
+            </Badge>
+            {currentStatus === "pending" ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : null}
+          </button>
+        </div>
+
         <div className="flex max-w-full items-center justify-end gap-1.5 text-xs text-muted-foreground">
           <span className="truncate font-mono" title={id}>
             ID: {id}
