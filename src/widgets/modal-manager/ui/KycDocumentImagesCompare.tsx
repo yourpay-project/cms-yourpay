@@ -20,6 +20,13 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
   const wasOpenRef = useRef(open);
   const [localItems, setLocalItems] = useState<KycDocumentImagesCompareItem[]>(items);
 
+  const updateLocalItem = (
+    docKey: DocumentImagesDocKey,
+    updater: (item: KycDocumentImagesCompareItem) => KycDocumentImagesCompareItem,
+  ): void => {
+    setLocalItems((prev) => prev.map((item) => (item.docKey === docKey ? updater(item) : item)));
+  };
+
   useEffect(() => {
     if (open && !wasOpenRef.current) {
       setLocalItems(items);
@@ -28,43 +35,33 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
   }, [items, open]);
 
   const onZoomIn = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) =>
-        it.docKey === docKey
-          ? { ...it, scale: applyDocumentImageScaleDelta(it.scale, 0.15) }
-          : it
-      ),
-    );
+    updateLocalItem(docKey, (item) => ({
+      ...item,
+      scale: applyDocumentImageScaleDelta(item.scale, 0.15),
+    }));
     onChangeScale(docKey, 0.15);
   };
 
   const onZoomOut = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) =>
-        it.docKey === docKey
-          ? { ...it, scale: applyDocumentImageScaleDelta(it.scale, -0.15) }
-          : it
-      ),
-    );
+    updateLocalItem(docKey, (item) => ({
+      ...item,
+      scale: applyDocumentImageScaleDelta(item.scale, -0.15),
+    }));
     onChangeScale(docKey, -0.15);
   };
 
   const onRotateLocal = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) => (it.docKey === docKey ? { ...it, rotation: it.rotation + 90 } : it)),
-    );
+    updateLocalItem(docKey, (item) => ({ ...item, rotation: item.rotation + 90 }));
     onRotate(docKey);
   };
 
   const onRotateLeftLocal = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) => (it.docKey === docKey ? { ...it, rotation: it.rotation - 90 } : it)),
-    );
+    updateLocalItem(docKey, (item) => ({ ...item, rotation: item.rotation - 90 }));
     onRotateLeft(docKey);
   };
 
   const onResetLocal = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) => prev.map((it) => (it.docKey === docKey ? { ...it, scale: 1, rotation: 0 } : it)));
+    updateLocalItem(docKey, (item) => ({ ...item, scale: 1, rotation: 0 }));
     onReset(docKey);
   };
 
