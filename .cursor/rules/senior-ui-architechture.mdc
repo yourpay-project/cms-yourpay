@@ -25,6 +25,7 @@ alwaysApply: false
 ## 4. Logic Derivation & Pattern Matching
 - **Centralize Repeated Logic:** Avoid copy-pasting `if/else` across multiple blocks. Move repeated branch logic to a helper function or custom hook in the `model/` segment.
 - **Dictionary Lookups:** Use `Record<string, T>` for deriving UI variants (colors, icons, badges, labels) instead of chaining `if/else` or `switch` statements.
+- **No Imperative Mutations:** DO NOT use `let` and `if/else` blocks just to format props or derive styles. Use `const` and ternary operators or nullish coalescing for simple derivations.
 - **Example Pattern:**
   ```tsx
   // GOOD: Outside render or neatly derived before JSX
@@ -37,6 +38,7 @@ alwaysApply: false
 
 ## 5. Resilience: Suspense & Error Boundaries
 - **No Blank Screens:** Large widgets or feature components MUST be wrapped in an Error Boundary.
+- **Suspense Placement:** DO NOT wrap the entire UI shell (like `<Modal>` or `<Card>`) in Suspense. Place `<Suspense>` INSIDE the shell so the UI frame renders instantly while the content loads.
 - **Skeleton Fallbacks:** Always provide a visual Skeleton while fetching data. Do not use generic text like "Loading..." if the layout structure is already known.
 
 ## 6. Clean React Logic
@@ -44,15 +46,16 @@ alwaysApply: false
 - **No Fetching in `useEffect`:** Data fetching MUST be handled by TanStack Query (`useQuery`) in the `model/` or `api/` segment. NEVER use `useEffect` for API calls.
 
 ## 7. Tailwind, Styling & Accessibility (a11y)
+- **The Tailwind JIT Trap:** NEVER use dynamic string interpolation for arbitrary Tailwind classes (e.g., `max-w-[${width}px]`). Tailwind compiler cannot read this. For highly dynamic or arbitrary values provided via props/config, use inline `style={{ maxWidth: width }}` instead.
 - **Dynamic Classes:** Always use `cn()` (from `tailwind-merge` and `clsx`) for combining conditional Tailwind classes.
 - **No Inline Styles:** Strictly forbidden to use `style={{ ... }}` unless calculating highly dynamic positional values (like cursor coordinates) that Tailwind cannot handle.
 - **Preserve a11y:** When modifying Shadcn/Radix components, DO NOT remove `aria-*` tags, `role`, or `tabIndex` properties. Keyboard navigation must remain intact.
 
-## 8. Documentation & Maintainability
-- **TSDoc Requirement:** Every exported component, complex prop interface, or helper function MUST include a TSDoc comment (`/** ... */`) explaining its purpose, `@param`, and `@returns`.
-- **Architecture Sync:** When major UI composition is restructured, update the README or architectural notes accordingly.
-
-## 9. Segment Purity (TS vs TSX Separation)
+## 8. Segment Purity (TS vs TSX Separation)
 - **Model is Pure TS:** Files in the `model/`, `lib/`, or `api/` segments MUST ALWAYS be `.ts` files. They handle pure logic, Zod schemas, state, and utility functions. NEVER put JSX or React UI code here.
 - **No JSX Helper Functions:** DO NOT write helper functions that return `ReactNode` or JSX elements (e.g., `export function getHeaderNode() { return <div>...</div> }`). 
 - **Convert to Components:** If a piece of logic requires rendering JSX (like returning an Icon, a Badge, or a Tooltip), it is a UI component. You MUST create a proper React Component (`<PascalCase />`) and place it strictly inside the `ui/` segment as a `.tsx` file.
+
+## 9. Documentation & Maintainability
+- **TSDoc Requirement:** Every exported component, complex prop interface, or helper function MUST include a TSDoc comment (`/** ... */`) explaining its purpose, `@param`, and `@returns`.
+- **Architecture Sync:** When major UI composition is restructured, update the README or architectural notes accordingly.
