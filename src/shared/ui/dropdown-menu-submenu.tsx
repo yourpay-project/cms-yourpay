@@ -4,15 +4,22 @@ import { ChevronRight } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
 
+interface DropdownMenuSubTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> {
+  inset?: boolean;
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>>;
+}
+
 /**
  * Sub-menu trigger (Radix) for `DropdownMenu`.
  */
-export const DropdownMenuSubTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
-    inset?: boolean;
-  }
->(({ className, inset, children, ...props }, ref) => (
+export const DropdownMenuSubTrigger: React.FC<DropdownMenuSubTriggerProps> = ({
+  className,
+  inset,
+  children,
+  ref,
+  ...props
+}) => (
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
@@ -25,17 +32,23 @@ export const DropdownMenuSubTrigger = React.forwardRef<
     {children}
     <ChevronRight className="ml-auto" />
   </DropdownMenuPrimitive.SubTrigger>
-));
+);
 
 DropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayName;
+
+interface DropdownMenuSubContentProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent> {
+  ref?: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubContent>>;
+}
 
 /**
  * Sub-menu content (Radix) for `DropdownMenu`.
  */
-export const DropdownMenuSubContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
+export const DropdownMenuSubContent: React.FC<DropdownMenuSubContentProps> = ({
+  className,
+  ref,
+  ...props
+}) => (
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
@@ -44,7 +57,6 @@ export const DropdownMenuSubContent = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 
 DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
-
