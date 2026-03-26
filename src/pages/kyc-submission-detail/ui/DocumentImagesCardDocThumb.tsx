@@ -58,57 +58,63 @@ export const DocThumb: FC<DocThumbProps> = ({
     event.target.value = "";
   };
 
+  let contentNode: React.ReactNode = (
+    <FileDropzone
+      label={uploadLabel}
+      description={DROPZONE_HINT}
+      accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+      disabled={!canEdit}
+      onFilesSelected={onFilesSelected}
+    />
+  );
+
+  if (hasImage) {
+    contentNode = (
+      <>
+        <div className="aspect-[4/3] w-full">
+          <ImageViewerFrame
+            src={document?.imageUrl}
+            alt={title}
+            onPreview={() => onOpenModal(docKey)}
+            previewAriaLabel={`Open ${title} preview`}
+            imageClassName="transition-transform duration-200"
+            imageStyle={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
+            toolbar={
+              <div className="flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm">
+                <ImageViewerToolbar
+                  placement="inline"
+                  title={title}
+                  onZoomIn={onZoomIn}
+                  onZoomOut={onZoomOut}
+                  onRotateRight={onRotate}
+                  onRotateLeft={onRotateLeft}
+                  onReset={onReset}
+                  onEdit={canShowEdit ? onEdit : undefined}
+                />
+              </div>
+            }
+            toolbarPlacement="bottom-center"
+          />
+        </div>
+
+        <input
+          ref={uploadInputRef}
+          type="file"
+          id={uploadInputId}
+          name={`document_images_card_upload_${docKey}`}
+          className="sr-only"
+          accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+          onChange={onHiddenInputChange}
+          aria-label={`Upload ${title}`}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="space-y-2">
       <div className="text-sm font-medium text-foreground">{title}</div>
-      {hasImage ? (
-        <>
-          <div className="aspect-[4/3] w-full">
-            <ImageViewerFrame
-              src={document?.imageUrl}
-              alt={title}
-              onPreview={() => onOpenModal(docKey)}
-              previewAriaLabel={`Open ${title} preview`}
-              imageClassName="transition-transform duration-200"
-              imageStyle={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
-              toolbar={
-                <div className="flex items-center gap-1 rounded-md border border-border/60 bg-background/90 p-1 shadow-sm backdrop-blur-sm">
-                  <ImageViewerToolbar
-                    placement="inline"
-                    title={title}
-                    onZoomIn={onZoomIn}
-                    onZoomOut={onZoomOut}
-                    onRotateRight={onRotate}
-                    onRotateLeft={onRotateLeft}
-                    onReset={onReset}
-                    onEdit={canShowEdit ? onEdit : undefined}
-                  />
-                </div>
-              }
-              toolbarPlacement="bottom-center"
-            />
-          </div>
-
-          <input
-            ref={uploadInputRef}
-            type="file"
-            id={uploadInputId}
-            name={`document_images_card_upload_${docKey}`}
-            className="sr-only"
-            accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-            onChange={onHiddenInputChange}
-            aria-label={`Upload ${title}`}
-          />
-        </>
-      ) : (
-        <FileDropzone
-          label={uploadLabel}
-          description={DROPZONE_HINT}
-          accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-          disabled={!canEdit}
-          onFilesSelected={onFilesSelected}
-        />
-      )}
+      {contentNode}
     </div>
   );
 };

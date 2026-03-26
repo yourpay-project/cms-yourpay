@@ -12,18 +12,20 @@ export const VerificationCheckModalDocumentPreviewCard: FC<VerificationCheckModa
   image,
   emptyText,
 }) => {
+  const previewNode = image?.imageUrl ? (
+    <ImageWithLoader src={image.imageUrl} alt={`${title} Preview`} className="h-full w-full object-cover" />
+  ) : (
+    <div className="flex h-full min-h-[140px] items-center justify-center text-sm text-muted-foreground">
+      {emptyText}
+    </div>
+  );
+
   return (
     <Card className="overflow-hidden border-border/80">
       <CardContent className="p-4">
         <div className="text-sm font-semibold text-foreground">{title}</div>
         <div className="mt-3 aspect-[4/3] overflow-hidden rounded-lg border border-border/60 bg-muted/30">
-          {image?.imageUrl ? (
-            <ImageWithLoader src={image.imageUrl} alt={`${title} Preview`} className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full min-h-[140px] items-center justify-center text-sm text-muted-foreground">
-              {emptyText}
-            </div>
-          )}
+          {previewNode}
         </div>
       </CardContent>
     </Card>
