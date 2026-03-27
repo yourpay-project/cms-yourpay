@@ -32,7 +32,7 @@ export const LoginCard: FC<LoginCardProps> = ({ className, appVersion, ...cardPr
   return (
     <Card {...cardProps} className={cn("w-full max-w-md", className)}>
       <LoginHeader />
-      <CardContent className="space-y-4">
+      <CardContent className="space-y">
         <LoginForm isPending={isPending} onSubmitCredentials={onSubmitCredentials} />
         <ContentSeparator orientation="horizontal" label="or" className="py-4" />
         <LoginWithGoogle isPending={isPending} onGoogleClick={handleGoogleClick} />
