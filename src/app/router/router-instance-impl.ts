@@ -173,9 +173,5 @@ const routeTree = rootRoute.addChildren([
  */
 export const router = createRouter({
   routeTree,
-  defaultPendingComponent: lazyRouteComponent(
-    () => import("@/shared/ui").then((m) => ({ default: m.RouteFallback })),
-    "default",
-  ),
 });
 

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { ApiClientError } from "@/shared/api";
-import { FilterControlButtons, PageSkeleton } from "@/shared/ui";
+import { FilterControlButtons } from "@/shared/ui";
 import { TransactionTable } from "@/widgets/transaction-table";
 import { useTransactionsFilters } from "..";
 import { TransactionsFiltersCard } from "./TransactionsFiltersCard";
@@ -8,8 +8,6 @@ import { TransactionsSearchBar } from "./TransactionsSearchBar";
 
 const TransactionsPage: FC = () => {
   const filters = useTransactionsFilters();
-
-  if (filters.isLoading) return <PageSkeleton />;
 
   if (filters.isError) {
     const apiError = filters.error instanceof ApiClientError ? filters.error : null;
@@ -20,13 +18,15 @@ const TransactionsPage: FC = () => {
     return <p className="text-sm text-destructive">{message}</p>;
   }
 
+  const isTableLoading = filters.isLoading || filters.isFetching;
+
   return (
     <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
       <div>
         <h2 className="text-xl font-semibold">Transactions</h2>
       </div>
 
-      {filters.hasBackendFilters ? (
+      {!filters.isLoading && filters.hasBackendFilters ? (
         <TransactionsFiltersCard
           filtersOpen={filters.filtersOpen}
           setFiltersOpen={filters.setFiltersOpen}
@@ -43,23 +43,25 @@ const TransactionsPage: FC = () => {
         />
       ) : null}
 
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div className="flex w-full justify-center md:w-auto md:justify-start">
-          <FilterControlButtons
-            fields={filters.controlFilterFields}
-            values={filters.selectedFilterValues}
-            onChange={filters.handleChangeFilter}
-            uppercaseLabels
-          />
+      {!filters.isLoading ? (
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex w-full justify-center md:w-auto md:justify-start">
+            <FilterControlButtons
+              fields={filters.controlFilterFields}
+              values={filters.selectedFilterValues}
+              onChange={filters.handleChangeFilter}
+              uppercaseLabels
+            />
+          </div>
+          <div className="flex w-full justify-end md:w-auto">
+            <TransactionsSearchBar
+              value={filters.searchInput}
+              onChange={filters.setSearchInput}
+              onSearchChangeResetPage={filters.resetPageIndex}
+            />
+          </div>
         </div>
-        <div className="flex w-full justify-end md:w-auto">
-          <TransactionsSearchBar
-            value={filters.searchInput}
-            onChange={filters.setSearchInput}
-            onSearchChangeResetPage={filters.resetPageIndex}
-          />
-        </div>
-      </div>
+      ) : null}
 
       <div className="min-h-0 flex-none">
         <TransactionTable
@@ -67,7 +69,7 @@ const TransactionsPage: FC = () => {
           total={filters.total}
           pageIndex={filters.pageIndex}
           pageSize={filters.pageSize}
-          isRefetching={filters.isFetching && !filters.isLoading}
+          isRefetching={isTableLoading}
           onPageChange={(nextPageIndex, nextPageSize) => {
             filters.setPageIndex(nextPageIndex);
             filters.setPageSize(nextPageSize);

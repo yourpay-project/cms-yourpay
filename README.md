@@ -518,6 +518,12 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - **`shared/ui/form/FormInput.tsx`** – smart wrapper for `Input` that maps RHF error state to `status="error"` and helper text automatically.
 - **`shared/ui/form/FormInputPassword.tsx`** – reusable password field built on `FormInput` with built-in visibility toggle.
 - **`shared/ui/form/FormSelect.tsx`** – smart wrapper for `SelectDropdown` with label/description composition, RHF controller binding, and a11y linkage (`aria-describedby`) for helper/error text.
+- **`shared/ui/form/FormDatePicker.tsx`** – smart wrapper for single-date selection fields bound through RHF controller.
+- **`shared/ui/form/FormDateRangePicker.tsx`** – smart wrapper for date-range controls that synchronizes two RHF fields (`from`/`to`).
+- **`shared/ui/form/FormCheckbox.tsx`** – smart wrapper for boolean checkbox fields (`true`/`false`).
+- **`shared/ui/form/FormRadioGroup.tsx`** – smart wrapper for single-selection radio option fields.
+- **`shared/ui/form/FormCheckboxGroup.tsx`** – smart wrapper for multi-select checkbox array fields (`string[]`).
+- **`shared/ui/GlobalMutationLoader.tsx`** – app-level overlay loader that automatically activates when any TanStack Query mutation is pending.
 - **`shared/ui/file-dropzone.tsx`** – Generic drag-and-drop file area (native `<input type="file" />`, dashed border, design tokens). Used on `pages/kyc-submission-detail` for ID/selfie uploads until an API is wired.
 - **`shared/ui/image-viewer`** – `ImageViewerFrame` and `ImageViewerToolbar` provide a standardized image preview layout with built-in zoom, rotate, and reset actions. The floating toolbar is automatically centered, and supports an optional `onEdit` callback to seamlessly show/hide an update action inside the toolbar.
 **Calendar and date picker:**
@@ -573,12 +579,12 @@ Example – server-side pagination:
   Recent modal additions follow the same rule (e.g. `COUNTRIES_CREATE_EDIT_MODAL` and `KYC_DOCUMENT_IMAGES_*`).
 
 - **Global loading**  
-  For the **first load of a page’s main data** (e.g. the initial query that fills the screen), call `useSyncGlobalLoading(isLoading)` from TanStack Query’s `isLoading`. The Nav shows the global spinner (Loader2) while that query has no data yet. When the page unmounts, global loading is cleared.
+  Global loading overlay is mutation-only via `useIsMutating` (`GlobalMutationLoader`). This blocks interaction while POST/PUT/PATCH/DELETE requests are running, and helps prevent duplicate submissions.
 
 - **Local loading**  
-  For **pagination refetch** or **in-place mutations**, keep loading local to the component:
+  For **GET queries** (initial load or refetch), keep loading local to the component:
   - **Tables:** Prefer content-level indicators (e.g. a small spinner near the page title) during pagination refetch. Avoid stacking multiple loading UIs when the page already renders a skeleton for the initial load.
-  - **Mutations (PUT/PATCH, etc.):** Use the mutation’s `isPending` and show `Loader2` on the submit button and disable it (per coding guidelines).
+  - **Mutations (PUT/PATCH, etc.):** Keep submit buttons disabled while `mutation.isPending`, but visual blocking is handled by the global mutation overlay.
 
 - **Page skeleton**  
   When the main query has no data yet (`isLoading`), the page can render `PageSkeleton` (or similar) so the layout is visible and the content area shows a skeleton instead of a blank space. Global loading in the Nav still gives a single place to see that something is loading.

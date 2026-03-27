@@ -1,0 +1,20 @@
+---
+description: Strict UX Protocol for Loading States and Mutations using TanStack Query.
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Loading & Mutation Strategy
+
+## 1. GET Requests (Queries)
+- Data fetching using `useQuery` MUST handle loading states locally. 
+- Use local `<Skeleton />` components. DO NOT use global loaders for GET requests.
+- Returning a full-page loader for GET requests is forbidden.
+
+## 2. Global Mutations (Standard POST/PUT/DELETE)
+- Standard data mutations using `useMutation` MUST NOT implement manual local loading overlays.
+- Rely on the `GlobalMutationLoader` (which uses `useIsMutating`) to block the screen.
+- You MUST still disable the submit button locally while `mutation.isPending` is true.
+
+## 3. Notes
+- The global mutation loader blocks interaction for any mutation across the app.

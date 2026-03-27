@@ -1,6 +1,5 @@
 import type { FC } from "react";
 import { ApiClientError } from "@/shared/api";
-import { PageSkeleton } from "@/shared/ui";
 import { KycSubmissionTable } from "@/widgets/kyc-submission-table";
 import { useKycSubmissionFilters } from "..";
 import { KycSubmissionFiltersCard } from "./KycSubmissionFiltersCard";
@@ -12,10 +11,6 @@ import { KycSubmissionSearchBar } from "./KycSubmissionSearchBar";
 const KycSubmissionPage: FC = () => {
   const filters = useKycSubmissionFilters();
 
-  if (filters.isLoading) {
-    return <PageSkeleton />;
-  }
-
   if (filters.isError) {
     const apiError = filters.error instanceof ApiClientError ? filters.error : null;
     const message =
@@ -25,13 +20,15 @@ const KycSubmissionPage: FC = () => {
     return <p className="text-sm text-destructive">{message}</p>;
   }
 
+  const isTableLoading = filters.isLoading || filters.isFetching;
+
   return (
     <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
       <div>
         <h2 className="text-xl font-semibold">KYC Submissions{filters.pageTitleSuffix}</h2>
       </div>
 
-      {filters.hasBackendFilters ? (
+      {!filters.isLoading && filters.hasBackendFilters ? (
         <KycSubmissionFiltersCard
           filtersOpen={filters.filtersOpen}
           setFiltersOpen={filters.setFiltersOpen}
@@ -58,13 +55,15 @@ const KycSubmissionPage: FC = () => {
         />
       ) : null}
 
-      <div className="flex flex-wrap items-end justify-end gap-3">
-        <KycSubmissionSearchBar
-          value={filters.searchInput}
-          onChange={filters.setSearchInput}
-          onSearchChangeResetPage={filters.resetPageIndex}
-        />
-      </div>
+      {!filters.isLoading ? (
+        <div className="flex flex-wrap items-end justify-end gap-3">
+          <KycSubmissionSearchBar
+            value={filters.searchInput}
+            onChange={filters.setSearchInput}
+            onSearchChangeResetPage={filters.resetPageIndex}
+          />
+        </div>
+      ) : null}
 
       <div className="min-h-0 flex-none">
         <KycSubmissionTable
@@ -72,7 +71,7 @@ const KycSubmissionPage: FC = () => {
           total={filters.total}
           pageIndex={filters.pageIndex}
           pageSize={filters.pageSize}
-          isRefetching={filters.isFetching && !filters.isLoading}
+          isRefetching={isTableLoading}
           onPageChange={(nextPageIndex, nextPageSize) => {
             filters.setPageIndex(nextPageIndex);
             filters.setPageSize(nextPageSize);

@@ -16,7 +16,7 @@ export const useLoginMutation = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: async (values: LoginFormValues) => {
       const data = await login({ username: values.email, password: values.password });
       const user = authUserSchema.parse({
@@ -42,5 +42,6 @@ export const useLoginMutation = () => {
       toast.error(message);
     },
   });
+  return mutation;
 };
 

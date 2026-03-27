@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { ApiClientError } from "@/shared/api";
-import { FilterControlButtons, PageSkeleton } from "@/shared/ui";
+import { FilterControlButtons } from "@/shared/ui";
 import { UserTable } from "@/widgets/user-table";
 import { useUserListFilters } from "..";
 import { UserListFiltersCard } from "./UserListFiltersCard";
@@ -13,10 +13,6 @@ import { UserListSearchBar } from "./UserListSearchBar";
 const UserListPage: FC = () => {
   const filters = useUserListFilters();
 
-  if (filters.isLoading) {
-    return <PageSkeleton />;
-  }
-
   if (filters.isError) {
     const apiError = filters.error instanceof ApiClientError ? filters.error : null;
     const message =
@@ -26,13 +22,15 @@ const UserListPage: FC = () => {
     return <p className="text-sm text-destructive">{message}</p>;
   }
 
+  const isTableLoading = filters.isLoading || filters.isFetching;
+
   return (
     <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
       <div>
         <h2 className="text-xl font-semibold">User Yourpay</h2>
       </div>
 
-      {filters.hasBackendFilters ? (
+      {!filters.isLoading && filters.hasBackendFilters ? (
         <UserListFiltersCard
           filtersOpen={filters.filtersOpen}
           setFiltersOpen={filters.setFiltersOpen}
@@ -44,23 +42,25 @@ const UserListPage: FC = () => {
         />
       ) : null}
 
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div className="flex w-full justify-center md:w-auto md:justify-start">
-          <FilterControlButtons
-            fields={filters.controlFilterFields}
-            values={filters.selectedFilterValues}
-            onChange={filters.handleChangeFilter}
-            uppercaseLabels
-          />
+      {!filters.isLoading ? (
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex w-full justify-center md:w-auto md:justify-start">
+            <FilterControlButtons
+              fields={filters.controlFilterFields}
+              values={filters.selectedFilterValues}
+              onChange={filters.handleChangeFilter}
+              uppercaseLabels
+            />
+          </div>
+          <div className="flex w-full justify-end md:w-auto">
+            <UserListSearchBar
+              value={filters.searchInput}
+              onChange={filters.setSearchInput}
+              onSearchChangeResetPage={filters.resetPageIndex}
+            />
+          </div>
         </div>
-        <div className="flex w-full justify-end md:w-auto">
-          <UserListSearchBar
-            value={filters.searchInput}
-            onChange={filters.setSearchInput}
-            onSearchChangeResetPage={filters.resetPageIndex}
-          />
-        </div>
-      </div>
+      ) : null}
 
       <div className="min-h-0 flex-none">
         <UserTable
@@ -68,7 +68,7 @@ const UserListPage: FC = () => {
           total={filters.total}
           pageIndex={filters.pageIndex}
           pageSize={filters.pageSize}
-          isRefetching={filters.isFetching && !filters.isLoading}
+          isRefetching={isTableLoading}
           onPageChange={(nextPageIndex, nextPageSize) => {
             filters.setPageIndex(nextPageIndex);
             filters.setPageSize(nextPageSize);

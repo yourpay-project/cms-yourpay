@@ -3,7 +3,6 @@ import { useParams } from "@tanstack/react-router";
 
 import { ApiClientError } from "@/shared/api";
 import { useModalStore } from "@/widgets/modal-manager";
-import { PageSkeleton } from "@/shared/ui";
 
 import { useKycSubmissionDetailPageLogic } from "..";
 import { eplStatusClassByValue } from "../lib/epl-status-options";
@@ -20,8 +19,6 @@ const KycSubmissionDetailPage: FC = () => {
   const { query, detail } = logic;
   const { open } = useModalStore();
 
-  if (query.isLoading) return <PageSkeleton />;
-
   if (query.isError) {
     // Helps debugging why the detail fetch fails (mapping/parsing vs HTTP).
     console.error("KYC submission detail load error:", query.error);
@@ -33,24 +30,28 @@ const KycSubmissionDetailPage: FC = () => {
     return <p className="text-sm text-destructive">{message}</p>;
   }
 
-  if (!detail) return <p className="text-sm text-muted-foreground">KYC submission detail is unavailable.</p>;
+  if (!detail && !query.isLoading) {
+    return <p className="text-sm text-muted-foreground">KYC submission detail is unavailable.</p>;
+  }
 
-  const canCheckProgress = Boolean(detail.arcNumber && detail.idDocument?.imageUrl && detail.selfieDocument?.imageUrl);
-  const isIndonesiaCountry = String(detail.countryCode ?? "").toUpperCase() === "ID";
+  const canCheckProgress = Boolean(
+    detail?.arcNumber && detail?.idDocument?.imageUrl && detail?.selfieDocument?.imageUrl,
+  );
+  const isIndonesiaCountry = String(detail?.countryCode ?? "").toUpperCase() === "ID";
   const idDocumentUploadLabel = isIndonesiaCountry ? "Update KTP Photo" : "Update ID Document Photo";
 
   return (
     <div className="box-border flex w-full min-w-0 max-w-full flex-col gap-4 md:min-h-0 md:flex-1 md:overflow-hidden">
       <KycSubmissionDetailPageHeader
-        id={detail.id}
-        fullname={detail.fullname}
+        id={detail?.id ?? id}
+        fullname={detail?.fullname}
         currentStatus={logic.currentStatus}
         eplStatusClass={eplStatusClassByValue[logic.currentStatus]}
         isStatusEditable={logic.isStatusEditable}
         onOpenStatusModal={() => {
           open("KYC_EPL_STATUS_MODAL", {
-            submissionId: detail.id,
-            countryCode: detail.countryCode,
+            submissionId: detail?.id ?? id,
+            countryCode: detail?.countryCode,
             currentStatus: logic.currentStatus,
             onSubmitted: () => {
               void query.refetch();
@@ -62,7 +63,7 @@ const KycSubmissionDetailPage: FC = () => {
       <div className="flex w-full min-w-0 max-w-full flex-col gap-4 overflow-x-hidden md:overflow-y-auto md:pr-1 xl:min-h-0 xl:flex-1 xl:flex-row xl:gap-4 xl:overflow-hidden xl:pr-0">
         <div className="w-full min-w-0 max-w-full shrink-0 overflow-x-hidden pr-0 xl:min-h-0 xl:shrink xl:flex-1 xl:overflow-y-auto xl:pr-1">
           <KycUserDataCards
-            countryCode={detail.countryCode}
+            countryCode={detail?.countryCode}
             submissionStatus={logic.currentStatus}
             draft={logic.leftDraft}
             setDraft={logic.setLeftDraft}

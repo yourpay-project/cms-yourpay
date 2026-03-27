@@ -5,7 +5,6 @@ import { useModalStore } from "@/shared/lib/modal";
 import { cn } from "@/shared/lib";
 import { Modal } from "@/shared/ui/modal";
 import { MODAL_COMPONENT_REGISTRY, MODAL_SHELL_CONFIG } from "../model/modal-registry";
-import { ModalGlobalLoadingOverlay } from "./ModalGlobalLoadingOverlay";
 import type { ModalKey } from "../model/modal-contract";
 
 /**
@@ -64,7 +63,6 @@ export const ModalContainer: FC = () => {
           />
         </Suspense>
       </Modal>
-      <ModalGlobalLoadingOverlay enabled={isOpen} />
     </>
   );
 };
