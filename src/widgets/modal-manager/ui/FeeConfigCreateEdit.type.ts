@@ -17,3 +17,13 @@ export interface FeeConfigCreateEditData {
  */
 export type FeeConfigCreateEditProps = FeeConfigCreateEditData & BaseModalCallbacks;
 
+/**
+ * Props for internal fee config form content section.
+ */
+export interface FeeConfigCreateEditFormContentProps {
+  open: boolean;
+  mode: FeeConfigCreateEditProps["mode"];
+  row: FeeConfigCreateEditProps["row"];
+  onClose: () => void;
+}
+

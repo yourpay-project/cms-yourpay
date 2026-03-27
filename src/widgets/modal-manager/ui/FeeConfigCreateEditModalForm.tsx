@@ -1,20 +1,22 @@
 import type { FC } from "react";
-import type { FieldErrors, UseFormRegister } from "react-hook-form";
 
-import { Input } from "@/shared/ui";
+import { FormInput } from "@/shared/ui/form/FormInput";
 
-import type { FeeConfigFormValues } from "@/features/fee-config";
-
+/**
+ * Props for fee config modal field grid content.
+ */
 export interface FeeConfigCreateEditModalFormProps {
-  register: UseFormRegister<FeeConfigFormValues>;
-  errors: FieldErrors<FeeConfigFormValues>;
   activeStatus: boolean;
   onActiveChange: (next: boolean) => void;
 }
 
+/**
+ * Fee config modal field set bound to RHF form context.
+ *
+ * @param props - Active status value and checkbox update handler.
+ * @returns Form field grid for creating or editing fee configurations.
+ */
 export const FeeConfigCreateEditModalForm: FC<FeeConfigCreateEditModalFormProps> = ({
-  register,
-  errors,
   activeStatus,
   onActiveChange,
 }) => {
@@ -23,48 +25,36 @@ export const FeeConfigCreateEditModalForm: FC<FeeConfigCreateEditModalFormProps>
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Input
+        <FormInput
+          name="configurationName"
           label="Configuration Name"
           placeholder="Service Charge"
-          status={errors.configurationName ? "error" : undefined}
-          helperText={errors.configurationName?.message}
-          {...register("configurationName")}
         />
-        <Input
+        <FormInput
+          name="service"
           label="Service"
           placeholder="Select a service"
-          status={errors.service ? "error" : undefined}
-          helperText={errors.service?.message}
-          {...register("service")}
         />
-        <Input label="Provider" value="Yourpay" disabled {...register("provider")} />
-        <Input
+        <FormInput name="provider" label="Provider" disabled />
+        <FormInput
+          name="currency"
           label="Currency"
           placeholder="Select currency"
-          status={errors.currency ? "error" : undefined}
-          helperText={errors.currency?.message}
-          {...register("currency")}
         />
-        <Input
+        <FormInput
+          name="feeType"
           label="Fee type"
           placeholder="fixed / percentage"
-          status={errors.feeType ? "error" : undefined}
-          helperText={errors.feeType?.message}
-          {...register("feeType")}
         />
-        <Input
+        <FormInput
+          name="feeMode"
           label="Fee mode"
           placeholder="exclusive / inclusive"
-          status={errors.feeMode ? "error" : undefined}
-          helperText={errors.feeMode?.message}
-          {...register("feeMode")}
         />
-        <Input
+        <FormInput
+          name="amount"
           label="Amount"
           placeholder="0.00"
-          status={errors.amount ? "error" : undefined}
-          helperText={errors.amount?.message}
-          {...register("amount")}
         />
         <label className="flex items-center gap-3" htmlFor={activeCheckboxId}>
           <input

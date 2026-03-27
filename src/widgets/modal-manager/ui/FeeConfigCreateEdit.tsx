@@ -1,16 +1,18 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormContext } from "react-hook-form";
 
 import { updateFeeConfigById } from "@/shared/api/fee-config";
 import { postV1OperatorsFee, type NewFeeConfigRequest } from "@/shared/api/generated";
 import { feeConfigFormSchema, type FeeConfigFormValues } from "@/features/fee-config";
 import { Button } from "@/shared/ui";
+import { Form } from "@/shared/ui/form/Form";
 
-import type { FeeConfigCreateEditProps } from "./FeeConfigCreateEdit.type";
+import type {
+  FeeConfigCreateEditFormContentProps,
+  FeeConfigCreateEditProps,
+} from "./FeeConfigCreateEdit.type";
 import { FeeConfigCreateEditModalForm } from "./FeeConfigCreateEditModalForm";
 
 const DEFAULT_VALUES: FeeConfigFormValues = {
@@ -24,28 +26,18 @@ const DEFAULT_VALUES: FeeConfigFormValues = {
   isActive: true,
 };
 
-/**
- * Centralized create/edit modal for fee config.
- */
-export const FeeConfigCreateEdit: FC<FeeConfigCreateEditProps> = ({
+const FeeConfigCreateEditFormContent: FC<FeeConfigCreateEditFormContentProps> = ({
   open,
-  onClose,
   mode,
   row,
-  onSubmitted,
+  onClose,
 }) => {
   const {
-    register,
-    handleSubmit,
     reset,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<FeeConfigFormValues>({
-    resolver: zodResolver(feeConfigFormSchema),
-    defaultValues: DEFAULT_VALUES,
-    mode: "onChange",
-  });
+    formState: { isSubmitting },
+  } = useFormContext<FeeConfigFormValues>();
 
   useEffect(() => {
     if (!open) {
@@ -74,6 +66,33 @@ export const FeeConfigCreateEdit: FC<FeeConfigCreateEditProps> = ({
     setValue("isActive", next, { shouldDirty: true, shouldValidate: true });
   };
 
+  return (
+    <>
+      <FeeConfigCreateEditModalForm activeStatus={activeStatus} onActiveChange={onActiveChange} />
+
+      <div className="flex items-center justify-end gap-2 pb-5 pt-4">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          {mode === "edit" ? "Update" : "Create"}
+        </Button>
+      </div>
+    </>
+  );
+};
+
+/**
+ * Centralized create/edit modal for fee config.
+ */
+export const FeeConfigCreateEdit: FC<FeeConfigCreateEditProps> = ({
+  open,
+  onClose,
+  mode,
+  row,
+  onSubmitted,
+}) => {
   const onSubmit = async (values: FeeConfigFormValues): Promise<void> => {
     const parsedAmount = Number(values.amount.replace(/,/g, ""));
     const basePayload = {
@@ -106,28 +125,17 @@ export const FeeConfigCreateEdit: FC<FeeConfigCreateEditProps> = ({
         <p className="text-sm text-muted-foreground">Configure fee settings for a specific service.</p>
       </div>
 
-      <FeeConfigCreateEditModalForm
-        register={register}
-        errors={errors}
-        activeStatus={activeStatus}
-        onActiveChange={onActiveChange}
-      />
-
-      <div className="flex items-center justify-end gap-2 pb-5 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button
-          type="button"
-          onClick={() => {
-            void handleSubmit(onSubmit)();
-          }}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {mode === "edit" ? "Update" : "Create"}
-        </Button>
-      </div>
+      <Form
+        schema={feeConfigFormSchema}
+        onSubmit={onSubmit}
+        formConfig={{
+          defaultValues: DEFAULT_VALUES,
+          mode: "onChange",
+        }}
+        className="space-y-4"
+      >
+        <FeeConfigCreateEditFormContent open={open} mode={mode} row={row} onClose={onClose} />
+      </Form>
     </div>
   );
 };
