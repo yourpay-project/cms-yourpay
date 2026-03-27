@@ -101,6 +101,8 @@ export {
 } from "./data-table";
 
 export { SearchInput, type SearchInputProps } from "./search-input";
+export { Separator, type SeparatorProps } from "./separator";
+export { ContentSeparator, type ContentSeparatorProps } from "./content-separator";
 export { ContentHeader, type ContentHeaderProps } from "./content-header";
 export { DetailPageHeader, type DetailPageHeaderProps } from "./detail-page-header";
 export {
