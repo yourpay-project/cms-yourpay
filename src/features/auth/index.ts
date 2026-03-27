@@ -1,4 +1,4 @@
-export { LoginForm } from "./ui/LoginForm";
+export { LoginCard } from "./ui/LoginCard";
 export { Can } from "./ui/Can";
 export { ProtectedRoute } from "./ui/ProtectedRoute";
 export { LoginRedirect } from "./ui/LoginRedirect";

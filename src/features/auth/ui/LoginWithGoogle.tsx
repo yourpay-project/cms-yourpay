@@ -1,22 +1,21 @@
 import type { FC } from "react";
+
 import { Button } from "@/shared/ui";
+
 import { GoogleIcon } from "./GoogleIcon";
 
-interface LoginFormFooterActionProps {
+interface LoginWithGoogleProps {
   isPending: boolean;
   onGoogleClick: () => void;
 }
 
 /**
- * Footer action section (Google sign-in button).
+ * Google login action section.
  *
- * @param props - {@link LoginFormFooterActionProps}
- * @returns Google sign-in action button.
+ * @param props - Action handler and pending state.
+ * @returns Google sign-in button.
  */
-export const LoginFormFooterAction: FC<LoginFormFooterActionProps> = ({
-  isPending,
-  onGoogleClick,
-}) => {
+export const LoginWithGoogle: FC<LoginWithGoogleProps> = ({ isPending, onGoogleClick }) => {
   return (
     <Button
       type="button"
@@ -30,4 +29,3 @@ export const LoginFormFooterAction: FC<LoginFormFooterActionProps> = ({
     </Button>
   );
 };
-

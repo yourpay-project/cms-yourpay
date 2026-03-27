@@ -1,13 +1,14 @@
 import type { FC } from "react";
-import { CardHeader, CardTitle } from "@/shared/ui";
+
 import { BRAND_LOGO_URL } from "@/shared/config";
+import { CardHeader, CardTitle } from "@/shared/ui";
 
 /**
- * Static header block for login card.
+ * Header section for login card.
  *
- * @returns Login card header (logo + title).
+ * @returns Brand logo and "Sign in" title.
  */
-export const LoginFormHeader: FC = () => {
+export const LoginHeader: FC = () => {
   return (
     <CardHeader className="items-center gap-3 text-center">
       <img src={BRAND_LOGO_URL} alt="YourPay" className="h-10 w-auto" />
@@ -15,4 +16,3 @@ export const LoginFormHeader: FC = () => {
     </CardHeader>
   );
 };
-

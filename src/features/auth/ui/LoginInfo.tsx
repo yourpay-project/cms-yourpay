@@ -1,13 +1,13 @@
 import type { FC } from "react";
 
 /**
- * Access policy notice shown under footer action.
+ * Access restriction notice on login card.
  *
- * @returns Access restriction notice for operators.
+ * @returns Operator-only access information.
  */
-export const LoginFormFooterNotice: FC = () => {
+export const LoginInfo: FC = () => {
   return (
-    <div className="rounded-lg border border-border bg-muted p-3">
+    <div className="rounded-lg border border-border bg-muted p-3 mt-8">
       <p className="break-words text-center text-xs leading-relaxed text-foreground">
         Access restricted to operators and operations team only. Use{" "}
         <strong className="font-semibold">@yourpay.co.id</strong> email.
@@ -15,4 +15,3 @@ export const LoginFormFooterNotice: FC = () => {
     </div>
   );
 };
-

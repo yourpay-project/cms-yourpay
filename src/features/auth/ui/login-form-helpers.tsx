@@ -22,6 +22,12 @@ const PASSWORD_TOGGLE_CONFIG: Record<"hidden" | "visible", PasswordToggleConfig>
   },
 };
 
+/**
+ * Maps form error state into input status value.
+ *
+ * @param hasError - Whether field currently has a validation error.
+ * @returns Input status for shared input component.
+ */
 export function toFieldStatus(hasError: boolean): FieldStatus {
   if (hasError) {
     return "error";
@@ -29,14 +35,23 @@ export function toFieldStatus(hasError: boolean): FieldStatus {
   return undefined;
 }
 
+/**
+ * Resolves password input type and icon config.
+ *
+ * @param isPasswordVisible - Whether password is currently visible.
+ * @returns UI config for password visibility toggle.
+ */
 export function getPasswordToggleConfig(isPasswordVisible: boolean): PasswordToggleConfig {
-  let key: "hidden" | "visible" = "hidden";
-  if (isPasswordVisible) {
-    key = "visible";
-  }
+  const key: "hidden" | "visible" = isPasswordVisible ? "visible" : "hidden";
   return PASSWORD_TOGGLE_CONFIG[key];
 }
 
+/**
+ * Builds loading icon for submit button.
+ *
+ * @param isPending - Whether login submission is in progress.
+ * @returns Loader icon node or null.
+ */
 export function getSubmitLeadingNode(isPending: boolean): ReactNode {
   if (!isPending) {
     return null;
