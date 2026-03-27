@@ -10,6 +10,11 @@ export interface SelectDropdownOption {
 /**
  * Props for {@link SelectDropdown}.
  */
+export type SelectDropdownStatus = "error" | "warning" | "success";
+
+/**
+ * Props for {@link SelectDropdown}.
+ */
 export interface SelectDropdownProps {
   value: string;
   onChange: (value: string) => void;
@@ -22,5 +27,7 @@ export interface SelectDropdownProps {
   allowClear?: boolean;
   size?: "sm" | "md";
   id?: string;
+  "aria-describedby"?: string;
+  status?: SelectDropdownStatus;
 }
 

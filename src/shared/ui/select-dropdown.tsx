@@ -14,6 +14,12 @@ import {
   shouldShowClearAction,
 } from "./select-dropdown-view-model";
 
+const statusBorderClass = {
+  error: "border-destructive focus-within:border-destructive focus-within:ring-destructive",
+  warning: "border-warning focus-within:border-warning focus-within:ring-warning",
+  success: "border-success focus-within:border-success focus-within:ring-success",
+} satisfies Record<string, string>;
+
 /**
  * Generic dropdown selector with optional searchable mode.
  * Uses consistent hover/focus background for editable state and
@@ -30,6 +36,8 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
   searchPlaceholder = "Start typing to search...",
   allowClear = true,
   id,
+  "aria-describedby": ariaDescribedBy,
+  status,
   size = "md",
 }) => {
   const logic = useSelectDropdownLogic({
@@ -59,7 +67,8 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
   return (
     <div
       className={cn(
-        "flex w-full min-w-0 max-w-full overflow-hidden rounded-md border border-input bg-background",
+        "flex w-full min-w-0 max-w-full overflow-hidden rounded-md border bg-background",
+        status ? statusBorderClass[status] : "border-input",
         logic.isDisabled && "bg-muted/35",
       )}
     >
@@ -69,6 +78,7 @@ export const SelectDropdown: FC<SelectDropdownProps> = ({
             id={id}
             type="button"
             disabled={logic.isDisabled}
+            aria-describedby={ariaDescribedBy}
             aria-expanded={logic.open}
             aria-haspopup="listbox"
             className={cn(

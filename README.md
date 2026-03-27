@@ -513,6 +513,11 @@ The primary table for the app is the **shared DataTable** (`shared/ui/data-table
 - `SelectDropdown` internals are split into focused sections (`SelectDropdownMenuContent`, `SelectDropdownClearButton`, `select-dropdown-view-model`) to keep parent rendering orchestration-only.
 - **`shared/ui/labeled-select-field.tsx`** – Generic composition for `label + optional required star + SelectDropdown`, used to remove repeated field markup in KYC detail forms.
 - **`shared/ui/input`** – Floating-label input primitives with consistent state UX: editable inputs use subtle hover + focus cues, while read-only/disabled inputs use `not-allowed` cursor and avoid interactive background changes.
+- **`shared/lib/hooks/use-zod-form.ts`** – schema-first RHF initializer that auto-wires `zodResolver` and preserves inferred form types from a supplied Zod schema.
+- **`shared/ui/form/Form.tsx`** – generic form wrapper that encapsulates RHF provider setup, native `<form>` passthrough props, `noValidate`, and optional render-props access to form methods.
+- **`shared/ui/form/FormInput.tsx`** – smart wrapper for `Input` that maps RHF error state to `status="error"` and helper text automatically.
+- **`shared/ui/form/FormInputPassword.tsx`** – reusable password field built on `FormInput` with built-in visibility toggle.
+- **`shared/ui/form/FormSelect.tsx`** – smart wrapper for `SelectDropdown` with label/description composition, RHF controller binding, and a11y linkage (`aria-describedby`) for helper/error text.
 - **`shared/ui/file-dropzone.tsx`** – Generic drag-and-drop file area (native `<input type="file" />`, dashed border, design tokens). Used on `pages/kyc-submission-detail` for ID/selfie uploads until an API is wired.
 - **`shared/ui/image-viewer`** – `ImageViewerFrame` and `ImageViewerToolbar` provide a standardized image preview layout with built-in zoom, rotate, and reset actions. The floating toolbar is automatically centered, and supports an optional `onEdit` callback to seamlessly show/hide an update action inside the toolbar.
 **Calendar and date picker:**
