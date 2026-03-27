@@ -22,7 +22,7 @@ interface LoginCardProps extends ComponentProps<"div"> {
  * @returns Login card with sectioned auth layout.
  */
 export const LoginCard: FC<LoginCardProps> = ({ className, appVersion, ...cardProps }) => {
-  const { mutate, isPending } = useLoginMutation();
+  const { mutate, isPending: isLoading } = useLoginMutation();
   const onSubmitCredentials = (values: LoginFormValues) => mutate(values);
 
   const handleGoogleClick = () => {
@@ -33,9 +33,9 @@ export const LoginCard: FC<LoginCardProps> = ({ className, appVersion, ...cardPr
     <Card {...cardProps} className={cn("w-full max-w-md", className)}>
       <LoginHeader />
       <CardContent className="space-y">
-        <LoginForm isPending={isPending} onSubmitCredentials={onSubmitCredentials} />
+        <LoginForm isLoading={isLoading} onSubmitCredentials={onSubmitCredentials} />
         <ContentSeparator orientation="horizontal" label="or" className="py-4" />
-        <LoginWithGoogle isPending={isPending} onGoogleClick={handleGoogleClick} />
+        <LoginWithGoogle isLoading={isLoading} onGoogleClick={handleGoogleClick} />
         <LoginInfo />
         <LoginFooter appVersion={appVersion} />
       </CardContent>

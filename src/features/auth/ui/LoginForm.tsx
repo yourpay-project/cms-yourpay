@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import { Loader2 } from "lucide-react";
 
 import { Button } from "@/shared/ui";
 import { Form } from "@/shared/ui/form/Form";
@@ -12,12 +11,10 @@ import type { LoginFormProps } from "./LoginForm.type";
 /**
  * Email-password login form section.
  *
- * @param props - Form submit handlers and pending state.
+ * @param props - Form submit handlers and loading state.
  * @returns Login form with divider before Google section.
  */
-export const LoginForm: FC<LoginFormProps> = ({ isPending, onSubmitCredentials }) => {
-  const submitLeadingNode = isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null;
-
+export const LoginForm: FC<LoginFormProps> = ({ isLoading, onSubmitCredentials }) => {
   return (
     <Form
       schema={loginSchema}
@@ -43,8 +40,7 @@ export const LoginForm: FC<LoginFormProps> = ({ isPending, onSubmitCredentials }
         autoComplete="current-password"
         label="Password"
       />
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {submitLeadingNode}
+      <Button type="submit" className="w-full" disabled={isLoading}>
         Sign in
       </Button>
     </Form>
