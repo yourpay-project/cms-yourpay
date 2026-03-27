@@ -34,8 +34,6 @@ const FeeConfigCreateEditFormContent: FC<FeeConfigCreateEditFormContentProps> = 
 }) => {
   const {
     reset,
-    watch,
-    setValue,
     formState: { isSubmitting },
   } = useFormContext<FeeConfigFormValues>();
 
@@ -61,14 +59,9 @@ const FeeConfigCreateEditFormContent: FC<FeeConfigCreateEditFormContentProps> = 
     reset(DEFAULT_VALUES);
   }, [mode, open, reset, row]);
 
-  const activeStatus = watch("isActive");
-  const onActiveChange = (next: boolean): void => {
-    setValue("isActive", next, { shouldDirty: true, shouldValidate: true });
-  };
-
   return (
     <>
-      <FeeConfigCreateEditModalForm activeStatus={activeStatus} onActiveChange={onActiveChange} />
+      <FeeConfigCreateEditModalForm />
 
       <div className="flex items-center justify-end gap-2 pb-5 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>

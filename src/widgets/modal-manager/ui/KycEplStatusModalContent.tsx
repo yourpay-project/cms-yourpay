@@ -1,36 +1,42 @@
 import type { FC } from "react";
+import { useFormContext } from "react-hook-form";
 
-import { Input, LabeledSelectField, SelectDropdown, type SelectDropdownOption } from "@/shared/ui";
+import { Input, type SelectDropdownOption } from "@/shared/ui";
+import { FormSelect } from "@/shared/ui/form/FormSelect";
 
 import type { EplStatusValue } from "./KycEplStatus.type";
+import type { KycEplStatusFormValues } from "./KycEplStatus.type";
 
+/**
+ * Props for `KycEplStatusModalContent`.
+ */
 export interface KycEplStatusModalContentProps {
   currentStatus: EplStatusValue;
-  eplStatusDraft: EplStatusValue;
-  onChangeEplStatus: (next: EplStatusValue) => void;
-  isRejected: boolean;
-
-  selectedRejectReasonCode: string;
-  onChangeRejectReasonCode: (next: string) => void;
-
   statusOptions: SelectDropdownOption[];
   rejectReasonOptions: SelectDropdownOption[];
   isRejectReasonsLoading: boolean;
-  selectedRejectReasonDescription?: string;
 }
 
+/**
+ * Content section for EPL status update modal form.
+ *
+ * @param props - Current status and select option sources for status/reason fields.
+ * @returns Form-controlled status and rejection reason controls.
+ */
 export const KycEplStatusModalContent: FC<KycEplStatusModalContentProps> = ({
   currentStatus,
-  eplStatusDraft,
-  onChangeEplStatus,
-  isRejected,
-  selectedRejectReasonCode,
-  onChangeRejectReasonCode,
   statusOptions,
   rejectReasonOptions,
   isRejectReasonsLoading,
-  selectedRejectReasonDescription,
 }) => {
+  const { watch } = useFormContext<KycEplStatusFormValues>();
+  const statusValue = watch("status");
+  const rejectionCode = watch("rejectionCode");
+  const isRejected = statusValue === "rejected";
+  const selectedRejectReasonDescription = rejectReasonOptions.find(
+    (item) => item.value === rejectionCode,
+  )?.description;
+
   return (
     <div className="space-y-4 pb-2">
       <div className="grid gap-3 md:grid-cols-2">
@@ -42,28 +48,28 @@ export const KycEplStatusModalContent: FC<KycEplStatusModalContentProps> = ({
           disabled
           value={currentStatus.toUpperCase()}
         />
-        <SelectDropdown
+        <FormSelect
+          name="status"
           id="kyc-status-select"
-          value={eplStatusDraft}
-          onChange={(value) => onChangeEplStatus(value as EplStatusValue)}
+          label="Update Status"
           options={statusOptions}
           searchable={false}
           allowClear={false}
+          description="Select the new EPL verification status."
         />
       </div>
 
       {isRejected ? (
         <div className="space-y-1.5">
-          <LabeledSelectField
+          <FormSelect
+            name="rejectionCode"
             id="kyc-rejection-reason"
             label="Rejection Reason"
-            required
-            labelClassName="text-sm font-medium text-foreground"
-            value={selectedRejectReasonCode}
-            onChange={onChangeRejectReasonCode}
             options={rejectReasonOptions}
             isLoading={isRejectReasonsLoading}
             searchable
+            allowClear={false}
+            description="Choose one rejection reason to continue."
           />
           {selectedRejectReasonDescription ? (
             <p className="text-xs text-muted-foreground">{selectedRejectReasonDescription}</p>

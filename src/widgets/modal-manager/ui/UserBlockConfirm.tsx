@@ -46,6 +46,7 @@ export const UserBlockConfirm: FC<UserBlockConfirmProps> = ({
       toast.error(apiError?.message || fallbackMessage);
     },
   });
+  const isLoading = mutation.isPending;
 
   return (
     <div className="flex flex-col">
@@ -65,7 +66,7 @@ export const UserBlockConfirm: FC<UserBlockConfirmProps> = ({
           type="button"
           variant="destructive"
           onClick={() => mutation.mutate()}
-          disabled={mutation.isPending}
+          disabled={isLoading}
         >
           Confirm
         </Button>

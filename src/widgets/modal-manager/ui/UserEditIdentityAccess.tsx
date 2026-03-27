@@ -23,7 +23,6 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
     setSearch,
     filteredOptions,
     selectedCodeSet,
-    isDirty,
     selectedCodes,
     onToggleCode,
   } = useUserEditIdentityAccessLogic({
@@ -52,7 +51,7 @@ export const UserEditIdentityAccess: FC<UserEditIdentityAccessProps> = ({
         onToggleCode={onToggleCode}
       />
 
-      <UserEditIdentityAccessFooter isDirty={isDirty} onClose={onClose} onSubmit={onSubmit} />
+      <UserEditIdentityAccessFooter onClose={onClose} onSubmit={onSubmit} />
     </div>
   );
 };

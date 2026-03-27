@@ -3,7 +3,6 @@ import type { FC } from "react";
 import { Button } from "@/shared/ui";
 
 interface UserEditIdentityAccessFooterProps {
-  isDirty: boolean;
   onClose: () => void;
   onSubmit: () => void;
 }
@@ -15,7 +14,6 @@ interface UserEditIdentityAccessFooterProps {
  * @returns Cancel/submit action row.
  */
 export const UserEditIdentityAccessFooter: FC<UserEditIdentityAccessFooterProps> = ({
-  isDirty,
   onClose,
   onSubmit,
 }) => {
@@ -24,7 +22,7 @@ export const UserEditIdentityAccessFooter: FC<UserEditIdentityAccessFooterProps>
       <Button type="button" variant="outline" onClick={onClose}>
         Cancel
       </Button>
-      <Button type="button" variant="default" onClick={onSubmit} disabled={!isDirty}>
+      <Button type="button" variant="default" onClick={onSubmit}>
         Submit
       </Button>
     </div>

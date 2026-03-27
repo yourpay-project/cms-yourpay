@@ -16,6 +16,14 @@ export interface KycEplStatusData {
 }
 
 /**
+ * Form values for `KycEplStatus` modal form.
+ */
+export interface KycEplStatusFormValues {
+  status: string;
+  rejectionCode: string;
+}
+
+/**
  * Full props for `KycEplStatus`.
  */
 export type KycEplStatusProps = KycEplStatusData & BaseModalCallbacks;
