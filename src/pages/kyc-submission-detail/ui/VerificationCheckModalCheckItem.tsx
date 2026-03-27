@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import type { LucideIcon } from "lucide-react";
 import { AlertCircle, CheckCircle2, HelpCircle } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
@@ -13,25 +14,46 @@ function statusTone(status?: string): "ok" | "fail" | "neutral" {
   return "neutral";
 }
 
+const STATUS_TONE_UI: Record<
+  "ok" | "fail" | "neutral",
+  {
+    Icon: LucideIcon;
+    iconClassName: string;
+    containerClassName: string;
+  }
+> = {
+  ok: {
+    Icon: CheckCircle2,
+    iconClassName: "text-success",
+    containerClassName: "border-success/30 bg-success/5",
+  },
+  fail: {
+    Icon: AlertCircle,
+    iconClassName: "text-destructive",
+    containerClassName: "border-destructive/30 bg-destructive/5",
+  },
+  neutral: {
+    Icon: HelpCircle,
+    iconClassName: "text-muted-foreground",
+    containerClassName: "border-border bg-muted/20",
+  },
+};
+
 /**
  * Renders a single verification check row.
  */
 export const VerificationCheckModalCheckItem: FC<VerificationCheckModalCheckItemProps> = ({ label, status, score, failedReason }) => {
   const tone = statusTone(status);
-  const Icon = tone === "ok" ? CheckCircle2 : tone === "fail" ? AlertCircle : HelpCircle;
-  const iconClass =
-    tone === "ok" ? "text-success" : tone === "fail" ? "text-destructive" : "text-muted-foreground";
+  const { Icon, iconClassName, containerClassName } = STATUS_TONE_UI[tone];
 
   return (
     <div
       className={cn(
         "flex gap-3 rounded-lg border px-3 py-3",
-        tone === "ok" && "border-success/30 bg-success/5",
-        tone === "fail" && "border-destructive/30 bg-destructive/5",
-        tone === "neutral" && "border-border bg-muted/20",
+        containerClassName,
       )}
     >
-      <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", iconClass)} aria-hidden />
+      <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", iconClassName)} aria-hidden />
       <div className="min-w-0 flex-1 space-y-1">
         <div className="text-sm font-semibold leading-tight text-foreground">{label}</div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">

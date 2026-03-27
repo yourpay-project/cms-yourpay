@@ -20,6 +20,15 @@ export const KycDocumentInformationCard: FC<KycDocumentInformationCardProps> = (
   const { locked, isPassport, isIndonesia, documentTypeOptions, occupationOptions, occupationsLoading, onDocumentTypeChange, onOccupationChange } =
     useKycDocumentInformationCardLogic({ countryCode, draft, setDraft, isEditable });
 
+  const passportDatesNode = isPassport ? (
+    <KycPassportDatesSection
+      draft={draft}
+      setDraft={setDraft}
+      isEditable={isEditable}
+      locked={locked}
+    />
+  ) : null;
+
   return (
     <Card className="min-w-0 max-w-full">
       <CardHeader className="pb-3">
@@ -39,14 +48,7 @@ export const KycDocumentInformationCard: FC<KycDocumentInformationCardProps> = (
             />
           </div>
 
-          {isPassport ? (
-            <KycPassportDatesSection
-              draft={draft}
-              setDraft={setDraft}
-              isEditable={isEditable}
-              locked={locked}
-            />
-          ) : null}
+          {passportDatesNode}
 
           <div className="md:col-span-2">
             <KycOccupationAndArcSection

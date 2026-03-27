@@ -59,6 +59,13 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
     setOpen(false);
   };
 
+  const leadingIconNode = (
+    <Calendar
+      className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
+      aria-hidden
+    />
+  );
+
   return (
     <div className={cn("relative", className)}>
       <label className="mb-1 block text-xs text-muted-foreground">{label}</label>
@@ -66,12 +73,7 @@ export const DateRangePickerWithPresets: FC<DateRangePickerWithPresetsProps> = (
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <DropdownFieldTrigger
-              leading={
-                <Calendar
-                  className="h-4 w-4 shrink-0 text-muted-foreground dark:text-muted-foreground"
-                  aria-hidden
-                />
-              }
+              leading={leadingIconNode}
               label={displayText}
             />
           </DropdownMenuTrigger>

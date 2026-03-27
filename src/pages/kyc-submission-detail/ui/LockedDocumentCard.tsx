@@ -15,22 +15,23 @@ export interface LockedDocumentCardProps {
  */
 export const LockedDocumentCard: FC<LockedDocumentCardProps> = ({ document, onEdit }) => {
   const label = document.label ?? document.type ?? "Document";
+  const imageNode = document.imageUrl ? (
+    <ImageWithLoader
+      src={document.imageUrl}
+      alt={label}
+      className="h-full w-full object-cover"
+    />
+  ) : (
+    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+      No image
+    </div>
+  );
 
   return (
     <Card className="overflow-hidden p-3">
       <div className="relative w-full overflow-hidden rounded-md bg-muted/40">
         <div className="aspect-[4/3] w-full">
-          {document.imageUrl ? (
-            <ImageWithLoader
-              src={document.imageUrl}
-              alt={label}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-              No image
-            </div>
-          )}
+          {imageNode}
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center bg-black/55">

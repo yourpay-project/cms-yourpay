@@ -44,7 +44,10 @@ export const CountriesTable: FC<CountriesTableProps> = (props) => {
         meta: { align: "center" as const },
         cell: ({ getValue }) => {
           const v = String(getValue() ?? "").trim();
-          return v ? v.toUpperCase() : "-";
+          if (v) {
+            return v.toUpperCase();
+          }
+          return "-";
         },
       },
       {
@@ -53,15 +56,23 @@ export const CountriesTable: FC<CountriesTableProps> = (props) => {
         meta: { align: "center" as const },
         cell: ({ row }) => {
           const isActive = row.original.isActive;
-          const key = isActive ? "active" : "inactive";
+          let key = "inactive";
+          if (isActive) {
+            key = "active";
+          }
           const badgeClass =
             STATUS_BADGE_CLASS[key] ?? "bg-muted text-muted-foreground border-border";
+
+          let statusLabel = "Inactive";
+          if (isActive) {
+            statusLabel = "Active";
+          }
 
           return (
             <span
               className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${badgeClass}`}
             >
-              {isActive ? "Active" : "Inactive"}
+              {statusLabel}
             </span>
           );
         },
@@ -96,7 +107,10 @@ export const CountriesTable: FC<CountriesTableProps> = (props) => {
     [onDelete, onEdit],
   );
 
-  const pageCount = total === 0 ? 1 : Math.ceil(total / pageSize);
+  let pageCount = Math.ceil(total / pageSize);
+  if (total === 0) {
+    pageCount = 1;
+  }
 
   return (
     <ErrorBoundary>

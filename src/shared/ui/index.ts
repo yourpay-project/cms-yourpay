@@ -101,6 +101,12 @@ export {
 } from "./data-table";
 
 export { SearchInput, type SearchInputProps } from "./search-input";
+export { DetailPageHeader, type DetailPageHeaderProps } from "./detail-page-header";
+export {
+  DetailSectionsCard,
+  type DetailSectionItem,
+  type DetailFieldItem,
+} from "./detail-sections-card";
 export {
   FilterCard,
   type FilterCardBadge,

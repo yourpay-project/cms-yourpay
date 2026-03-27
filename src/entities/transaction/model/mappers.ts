@@ -1,7 +1,10 @@
 import { transactionsResponseSchema, transactionDetailSchema, type TransactionFilterOption } from "./types";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
-  return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+  if (value && typeof value === "object") {
+    return value as Record<string, unknown>;
+  }
+  return null;
 }
 
 function toDisplayValue(value: unknown): string {
@@ -21,13 +24,23 @@ function normalizeFilterOptions(raw: unknown): TransactionFilterOption[] {
       const record = asRecord(entry);
       if (!record) return null;
       const hasExplicitValue = Object.prototype.hasOwnProperty.call(record, "value");
-      const value = hasExplicitValue
-        ? record.value === null || record.value === undefined
-          ? ""
-          : String(record.value)
-        : toDisplayValue(record.key ?? record.id ?? record.code);
+      let value = "";
+      if (hasExplicitValue) {
+        if (record.value === null || record.value === undefined) {
+          value = "";
+        } else {
+          value = String(record.value);
+        }
+      } else {
+        value = toDisplayValue(record.key ?? record.id ?? record.code);
+      }
+
+      let fallbackLabel = value;
+      if (value === "") {
+        fallbackLabel = "All";
+      }
       const label = toDisplayValue(
-        record.label ?? record.text ?? record.name ?? (value === "" ? "All" : value)
+        record.label ?? record.text ?? record.name ?? fallbackLabel
       );
       if (!label && value === "") {
         return { label: "All", value: "" };
@@ -59,7 +72,10 @@ function collectRawFilters(payload: unknown): unknown[] {
 export function mapTransactionsResponse(payload: unknown) {
   const root = asRecord(payload) ?? {};
   const data = asRecord(root.data) ?? {};
-  const items = Array.isArray(data.items) ? data.items : [];
+  let items: unknown[] = [];
+  if (Array.isArray(data.items)) {
+    items = data.items;
+  }
   const mappedItems = items.map((entry) => {
     const row = asRecord(entry) ?? {};
     return {
@@ -92,33 +108,57 @@ export function mapTransactionsResponse(payload: unknown) {
     const filter = asRecord(entry);
     if (!filter || typeof filter.key !== "string" || !filter.key) continue;
     const key = filter.key;
-    const type =
-      filter.type === "control" || filter.type === "date_range" ? filter.type : "options";
+    let type: "control" | "options" | "date_range" = "options";
+    if (filter.type === "control" || filter.type === "date_range") {
+      type = filter.type;
+    }
     const options = normalizeFilterOptions(filter.options ?? filter.list);
     if (type !== "date_range" && options.length > 0) {
       filters[key] = options;
     }
+
+    let format: string | undefined = undefined;
+    if (typeof filter.format === "string") {
+      format = filter.format;
+    }
+
     filterDefinitions.push({
       key,
       name: toDisplayValue(filter.name) || key,
       type,
       options,
-      format: typeof filter.format === "string" ? filter.format : undefined,
+      format,
     });
+  }
+
+  const hasFilters = Object.keys(filters).length > 0;
+  const hasFilterDefinitions = filterDefinitions.length > 0;
+  let resolvedFilters: Record<string, TransactionFilterOption[]> | undefined = undefined;
+  if (hasFilters) {
+    resolvedFilters = filters;
+  }
+  let resolvedFilterDefinitions: typeof filterDefinitions | undefined = undefined;
+  if (hasFilterDefinitions) {
+    resolvedFilterDefinitions = filterDefinitions;
   }
 
   return transactionsResponseSchema.parse({
     data: mappedItems,
     total: Number(data.total_items ?? 0),
-    filters: Object.keys(filters).length > 0 ? filters : undefined,
-    filterDefinitions: filterDefinitions.length > 0 ? filterDefinitions : undefined,
+    filters: resolvedFilters,
+    filterDefinitions: resolvedFilterDefinitions,
   });
 }
 
 export function mapTransactionDetail(payload: unknown) {
   const root = asRecord(payload) ?? {};
   const data = root.data;
-  const target = Array.isArray(data) ? asRecord(data[0]) : asRecord(data);
+  let target: Record<string, unknown> | null = null;
+  if (Array.isArray(data)) {
+    target = asRecord(data[0]);
+  } else {
+    target = asRecord(data);
+  }
   const detail = target ?? {};
 
   const fxRate = asRecord(detail.fx_rate_object ?? detail.fx_rate);

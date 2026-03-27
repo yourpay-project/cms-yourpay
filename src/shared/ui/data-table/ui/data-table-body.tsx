@@ -1,9 +1,7 @@
 import * as React from "react";
-import { flexRender } from "@tanstack/react-table";
-import { TableCell, TableRow } from "@/shared/ui/table";
-import { getPinningStyles } from "../lib/table-utils";
-import { cn } from "@/shared/lib/utils";
 import type { DataTableBodyProps } from "./data-table-body.type";
+import { DataTableBodyRow } from "./DataTableBodyRow";
+import { getFirstRightPinnedColumnId } from "./data-table-body-view-model";
 
 /**
  * Renders table body (tbody) with optional colSpan/rowSpan, expandable rows,
@@ -32,10 +30,7 @@ export function DataTableBody<TData>({
   const showLeft = scrollShadow?.showLeft ?? false;
   const showRight = scrollShadow?.showRight ?? false;
   const rows = table.getRowModel().rows;
-  const firstRightPinnedId =
-    rows.length > 0
-      ? rows[0].getVisibleCells().find((c) => c.column.getIsPinned() === "right")?.column.id ?? null
-      : null;
+  const firstRightPinnedId = getFirstRightPinnedColumnId(rows);
 
   if (isLoading) {
     return (
@@ -59,87 +54,22 @@ export function DataTableBody<TData>({
 
   return (
     <tbody>
-      {rows.map((row) => {
-        const rowProps = onRow?.(row) ?? {};
-        const isExpanded = row.getCanExpand() && row.getIsExpanded();
-        return (
-          <React.Fragment key={row.id}>
-            <TableRow
-              className={cn(
-                "group border-none transition-colors",
-                rowHoverable && "hover:bg-muted/50",
-                rowClassName?.(row),
-                rowProps.className
-              )}
-              style={rowProps.style}
-              onClick={rowProps.onClick}
-              aria-expanded={row.getCanExpand() ? isExpanded : undefined}
-              aria-selected={row.getIsSelected?.()}
-              data-state={row.getIsSelected?.() ? "selected" : undefined}
-            >
-              {row.getVisibleCells().map((cell) => {
-                const cellMeta = onCell?.(row, cell.column.id);
-                const isPinned = cell.column.getIsPinned();
-                const hide = cellMeta?.rowSpan === 0;
-                if (hide) return null;
-                const isFirstRightPinned = isPinned === "right" && cell.column.id === firstRightPinnedId;
-                const align = cell.column.columnDef.meta?.align ?? "left";
-                const alignClass =
-                  align === "center"
-                    ? "text-center"
-                    : align === "right"
-                      ? "text-right"
-                      : "text-left";
-                const ellipsisOpt = cell.column.columnDef.meta?.ellipsis;
-                const ellipsis = ellipsisOpt === true || (typeof ellipsisOpt === "object" && ellipsisOpt != null);
-                const showTitle = ellipsis && (ellipsisOpt === true || ellipsisOpt?.showTitle !== false);
-                const cellContent = flexRender(
-                  cell.column.columnDef.cell,
-                  cell.getContext()
-                );
-                const titleAttr = showTitle && typeof cell.getValue() === "string" ? cell.getValue() as string : undefined;
-                return (
-                  <TableCell
-                    key={cell.id}
-                    colSpan={cellMeta?.colSpan}
-                    rowSpan={cellMeta?.rowSpan}
-                    title={titleAttr}
-                    style={{
-                      ...getPinningStyles(cell.column, false),
-                      ...cellMeta?.style,
-                    }}
-                    className={cn(
-                      "border-b border-border/60 bg-background text-foreground transition-colors group-hover:bg-muted",
-                      isPinned ? "bg-background" : "bg-background",
-                      sizeCellClass ?? "px-4 py-3 text-sm",
-                      alignClass,
-                      ellipsis && "truncate",
-                      isPinned === "left" && "border-r border-border",
-                      isPinned === "left" && showLeft && "data-table-shadow-left",
-                      isPinned === "right" && "border-l border-border",
-                      isFirstRightPinned && showRight && "data-table-shadow-right",
-                      cellMeta?.className
-                    )}
-                    aria-hidden={cellMeta?.["aria-hidden"]}
-                  >
-                    {cellContent}
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-            {isExpanded && expandedRowRender && (
-              <TableRow className="bg-muted/20 hover:bg-muted/20">
-                <TableCell
-                  colSpan={colSpan}
-                  className="border-b border-border/60 px-4 py-2 text-sm text-foreground"
-                >
-                  {expandedRowRender(row)}
-                </TableCell>
-              </TableRow>
-            )}
-          </React.Fragment>
-        );
-      })}
+      {rows.map((row) => (
+        <DataTableBodyRow
+          key={row.id}
+          row={row}
+          colSpan={colSpan}
+          firstRightPinnedId={firstRightPinnedId}
+          showLeft={showLeft}
+          showRight={showRight}
+          onCell={onCell}
+          onRow={onRow}
+          expandedRowRender={expandedRowRender}
+          rowClassName={rowClassName}
+          rowHoverable={rowHoverable}
+          sizeCellClass={sizeCellClass}
+        />
+      ))}
     </tbody>
   );
 }

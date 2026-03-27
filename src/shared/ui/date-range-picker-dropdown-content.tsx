@@ -40,14 +40,21 @@ export const DateRangePickerDropdownContent: FC<DateRangePickerDropdownContentPr
     onPresetApply,
     onPresetCancel,
   } = props;
+  const presetItems = presets ?? [];
+  const hasPresets = presetItems.length > 0;
+
+  const customHeaderClassName = cn(
+    "pt-1 text-xs font-medium text-muted-foreground",
+    !presets?.length && "pt-0"
+  );
 
   return (
     <div className="space-y-3 pr-1">
-      {presets && presets.length > 0 ? (
+      {hasPresets ? (
         <>
           <p className="text-xs font-medium text-muted-foreground">Presets</p>
           <div className="grid grid-cols-2 gap-1">
-            {presets.map((p) => (
+            {presetItems.map((p) => (
               <button
                 key={p.label}
                 type="button"
@@ -65,7 +72,7 @@ export const DateRangePickerDropdownContent: FC<DateRangePickerDropdownContentPr
         </>
       ) : null}
 
-      <p className={cn("pt-1 text-xs font-medium text-muted-foreground", !presets?.length && "pt-0")}>
+      <p className={customHeaderClassName}>
         Custom
       </p>
 

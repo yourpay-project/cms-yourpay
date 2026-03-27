@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { useModalStore } from "@/shared/lib/modal";
+import { cn } from "@/shared/lib";
 import { Modal } from "@/shared/ui/modal";
 import { MODAL_COMPONENT_REGISTRY, MODAL_SHELL_CONFIG } from "../model/modal-registry";
 import { ModalGlobalLoadingOverlay } from "./ModalGlobalLoadingOverlay";
@@ -24,6 +25,12 @@ export const ModalContainer: FC = () => {
   }
 
   const shellConfig = MODAL_SHELL_CONFIG[modalType as ModalKey];
+  const dynamicMaxWidth =
+    shellConfig.width == null
+      ? undefined
+      : typeof shellConfig.width === "number"
+        ? `${shellConfig.width}px`
+        : shellConfig.width;
 
   const ResolvedModal = MODAL_COMPONENT_REGISTRY[modalType as ModalKey] as FC<
     Record<string, unknown> & { open: boolean; onClose: () => void; onCloseAll: () => void }
@@ -32,22 +39,22 @@ export const ModalContainer: FC = () => {
 
   return (
     <>
-      <Suspense
-        fallback={
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
-        }
+      <Modal
+        open={isOpen}
+        onCancel={close}
+        footer={null}
+        title={shellConfig.title ?? null}
+        description={shellConfig.description}
+        centered={shellConfig.centered}
+        className={cn(!dynamicMaxWidth && "max-w-[520px]", shellConfig.className)}
+        style={dynamicMaxWidth ? { width: "100%", maxWidth: dynamicMaxWidth } : undefined}
       >
-        <Modal
-          open={isOpen}
-          onCancel={close}
-          footer={null}
-          title={shellConfig.title ?? null}
-          description={shellConfig.description}
-          centered={shellConfig.centered}
-          width={shellConfig.width}
-          className={shellConfig.className}
+        <Suspense
+          fallback={
+            <div className="flex min-h-[200px] w-full items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          }
         >
           <ResolvedModal
             {...(resolvedProps as Record<string, unknown>)}
@@ -55,8 +62,8 @@ export const ModalContainer: FC = () => {
             onClose={close}
             onCloseAll={closeAll}
           />
-        </Modal>
-      </Suspense>
+        </Suspense>
+      </Modal>
       <ModalGlobalLoadingOverlay enabled={isOpen} />
     </>
   );

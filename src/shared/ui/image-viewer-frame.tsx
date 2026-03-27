@@ -47,6 +47,10 @@ export const ImageViewerFrame: FC<ImageViewerFrameProps> = ({
   imageStyle,
 }) => {
   const hasPreview = Boolean(onPreview);
+  const toolbarPositionClassName =
+    toolbarPlacement === "bottom-center"
+      ? "left-1/2 -translate-x-1/2"
+      : "left-3";
 
   return (
     <div
@@ -79,9 +83,7 @@ export const ImageViewerFrame: FC<ImageViewerFrameProps> = ({
         <div
           className={cn(
             "absolute bottom-3 z-20",
-            toolbarPlacement === "bottom-center"
-              ? "left-1/2 -translate-x-1/2"
-              : "left-3",
+            toolbarPositionClassName,
           )}
         >
           {toolbar}

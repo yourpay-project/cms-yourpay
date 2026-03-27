@@ -43,12 +43,38 @@ export const UserDetailCollapsibleCard: FC<UserDetailCollapsibleCardProps> = ({
     }
   };
 
+  let headerRoundedClassName = "rounded-lg";
+  if (open) {
+    headerRoundedClassName = "rounded-t-lg";
+  }
+
+  let ariaLabelBase = "section";
+  if (ariaTitle != null) {
+    ariaLabelBase = ariaTitle;
+  }
+
+  let ariaLabelPrefix = "Expand";
+  if (open) {
+    ariaLabelPrefix = "Collapse";
+  }
+  const ariaLabel = `${ariaLabelPrefix} ${ariaLabelBase}`;
+
+  let chevronRotationClassName = "rotate-0";
+  if (open) {
+    chevronRotationClassName = "rotate-180";
+  }
+
+  let contentNode: ReactNode = null;
+  if (open) {
+    contentNode = <CardContent className={contentClassName}>{children}</CardContent>;
+  }
+
   return (
     <Card className={className} style={style}>
       <CardHeader
         className={cn(
           "flex cursor-pointer select-none flex-row items-center justify-between space-y-0 py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          open ? "rounded-t-lg" : "rounded-lg",
+          headerRoundedClassName,
           headerClassName
         )}
         style={headerStyle}
@@ -57,12 +83,12 @@ export const UserDetailCollapsibleCard: FC<UserDetailCollapsibleCardProps> = ({
         onClick={toggleOpen}
         onKeyDown={onHeaderKeyDown}
         aria-expanded={open}
-        aria-label={open ? `Collapse ${ariaTitle ?? "section"}` : `Expand ${ariaTitle ?? "section"}`}
+        aria-label={ariaLabel}
       >
         <CardTitle className="text-base">{title}</CardTitle>
-        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : "rotate-0"}`} />
+        <ChevronDown className={`h-4 w-4 transition-transform ${chevronRotationClassName}`} />
       </CardHeader>
-      {open ? <CardContent className={contentClassName}>{children}</CardContent> : null}
+      {contentNode}
     </Card>
   );
 };

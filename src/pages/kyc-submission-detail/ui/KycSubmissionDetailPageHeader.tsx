@@ -7,6 +7,15 @@ import { Badge, Button } from "@/shared/ui";
 
 import type { KycSubmissionDetailPageHeaderProps } from "./KycSubmissionDetailPageHeader.type";
 
+const STATUS_VARIANT_BY_STATUS: Record<string, "success" | "warning" | "destructive" | "default"> = {
+  APPROVED: "success",
+  VERIFIED: "success",
+  PENDING: "warning",
+  REVIEW: "warning",
+  REJECTED: "destructive",
+  FAILED: "destructive",
+};
+
 /**
  * Header for `/kyc-submission/$id`.
  */
@@ -19,14 +28,10 @@ export const KycSubmissionDetailPageHeader: FC<KycSubmissionDetailPageHeaderProp
   onOpenStatusModal,
 }) => {
   const normalizedStatus = String(currentStatus ?? "").trim().toUpperCase();
-  const statusVariant =
-    normalizedStatus === "APPROVED" || normalizedStatus === "VERIFIED"
-      ? "success"
-      : normalizedStatus === "PENDING" || normalizedStatus === "REVIEW"
-        ? "warning"
-        : normalizedStatus === "REJECTED" || normalizedStatus === "FAILED"
-          ? "destructive"
-          : "default";
+  const statusVariant = STATUS_VARIANT_BY_STATUS[normalizedStatus] ?? "default";
+  const isPendingStatus = currentStatus === "pending";
+  const canOpenStatusModal = isPendingStatus && isStatusEditable;
+  const statusButtonCursorClassName = isPendingStatus ? "cursor-pointer" : "cursor-default";
 
   const copySubmissionId = () => {
     void navigator.clipboard.writeText(id).then(() => {
@@ -54,9 +59,9 @@ export const KycSubmissionDetailPageHeader: FC<KycSubmissionDetailPageHeaderProp
 
           <button
             type="button"
-            className={`inline-flex items-center gap-1 ${currentStatus === "pending" ? "cursor-pointer" : "cursor-default"}`}
+            className={`inline-flex items-center gap-1 ${statusButtonCursorClassName}`}
             onClick={() => {
-              if (currentStatus === "pending" && isStatusEditable) {
+              if (canOpenStatusModal) {
                 onOpenStatusModal();
               }
             }}
@@ -65,7 +70,7 @@ export const KycSubmissionDetailPageHeader: FC<KycSubmissionDetailPageHeaderProp
             <Badge variant={statusVariant} className={`${eplStatusClass} uppercase`}>
               {normalizedStatus || "-"}
             </Badge>
-            {currentStatus === "pending" ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : null}
+            {isPendingStatus ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : null}
           </button>
         </div>
 

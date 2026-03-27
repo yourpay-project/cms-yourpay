@@ -17,22 +17,9 @@ export function DataTableBody<TData>({
 }: DataTableBodyProps<TData>): React.JSX.Element {
   const rows = table.getRowModel().rows;
 
-  return (
-    <TableBody>
-      {rows.length > 0 ? (
-        rows.map((row) => (
-          <TableRow
-            key={row.id}
-            data-state={row.getIsSelected() ? 'selected' : undefined}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))
-      ) : (
+  if (rows.length === 0) {
+    return (
+      <TableBody>
         <TableRow>
           <TableCell
             colSpan={columnCount}
@@ -41,7 +28,31 @@ export function DataTableBody<TData>({
             No data to display
           </TableCell>
         </TableRow>
-      )}
+      </TableBody>
+    );
+  }
+
+  return (
+    <TableBody>
+      {rows.map((row) => {
+        let dataState: string | undefined = undefined;
+        if (row.getIsSelected()) {
+          dataState = 'selected';
+        }
+
+        return (
+          <TableRow
+            key={row.id}
+            data-state={dataState}
+          >
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        );
+      })}
     </TableBody>
   );
 }

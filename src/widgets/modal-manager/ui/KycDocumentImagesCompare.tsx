@@ -1,25 +1,13 @@
 import type { FC } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/shared/ui";
-import { ImageViewerToolbar } from "@/shared/ui";
-
 import type { KycDocumentImagesCompareProps, KycDocumentImagesCompareItem } from "./KycDocumentImagesCompare.type";
-import { KycDocumentImagesDraggableScrollViewport } from "./KycDocumentImagesDraggableScrollViewport";
+import { KycDocumentImagesCompareCard } from "./KycDocumentImagesCompareCard";
 import type { DocumentImagesDocKey } from "./KycDocumentImagesSinglePreview.type";
+import { applyDocumentImageScaleDelta } from "./document-images-transform-utils";
 
-const DOCUMENT_IMAGE_SCALE_MIN = 0.5;
-const DOCUMENT_IMAGE_SCALE_MAX = 3;
-
-function clampScale(value: number, min: number = DOCUMENT_IMAGE_SCALE_MIN, max: number = DOCUMENT_IMAGE_SCALE_MAX): number {
-  return Math.max(min, Math.min(max, value));
-}
-
-function applyScaleDelta(prev: number, delta: number): number {
-  const next = Number((prev + delta).toFixed(2));
-  return clampScale(next);
-}
-
+/** Compare view for transformed KYC document images. */
 export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
   onClose,
   open,
@@ -32,6 +20,13 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
   const wasOpenRef = useRef(open);
   const [localItems, setLocalItems] = useState<KycDocumentImagesCompareItem[]>(items);
 
+  const updateLocalItem = (
+    docKey: DocumentImagesDocKey,
+    updater: (item: KycDocumentImagesCompareItem) => KycDocumentImagesCompareItem,
+  ): void => {
+    setLocalItems((prev) => prev.map((item) => (item.docKey === docKey ? updater(item) : item)));
+  };
+
   useEffect(() => {
     if (open && !wasOpenRef.current) {
       setLocalItems(items);
@@ -40,39 +35,35 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
   }, [items, open]);
 
   const onZoomIn = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) => (it.docKey === docKey ? { ...it, scale: applyScaleDelta(it.scale, 0.15) } : it)),
-    );
+    updateLocalItem(docKey, (item) => ({
+      ...item,
+      scale: applyDocumentImageScaleDelta(item.scale, 0.15),
+    }));
     onChangeScale(docKey, 0.15);
   };
 
   const onZoomOut = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) => (it.docKey === docKey ? { ...it, scale: applyScaleDelta(it.scale, -0.15) } : it)),
-    );
+    updateLocalItem(docKey, (item) => ({
+      ...item,
+      scale: applyDocumentImageScaleDelta(item.scale, -0.15),
+    }));
     onChangeScale(docKey, -0.15);
   };
 
   const onRotateLocal = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) => (it.docKey === docKey ? { ...it, rotation: it.rotation + 90 } : it)),
-    );
+    updateLocalItem(docKey, (item) => ({ ...item, rotation: item.rotation + 90 }));
     onRotate(docKey);
   };
 
   const onRotateLeftLocal = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) =>
-      prev.map((it) => (it.docKey === docKey ? { ...it, rotation: it.rotation - 90 } : it)),
-    );
+    updateLocalItem(docKey, (item) => ({ ...item, rotation: item.rotation - 90 }));
     onRotateLeft(docKey);
   };
 
   const onResetLocal = (docKey: DocumentImagesDocKey): void => {
-    setLocalItems((prev) => prev.map((it) => (it.docKey === docKey ? { ...it, scale: 1, rotation: 0 } : it)));
+    updateLocalItem(docKey, (item) => ({ ...item, scale: 1, rotation: 0 }));
     onReset(docKey);
   };
-
-  const renderedItems = useMemo(() => localItems, [localItems]);
 
   return (
     <div className="-mx-6 -my-2 flex max-h-[85vh] flex-col">
@@ -84,42 +75,16 @@ export const KycDocumentImagesCompare: FC<KycDocumentImagesCompareProps> = ({
 
       <div className="flex-1 overflow-x-hidden overflow-y-auto px-6">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {renderedItems.map((item) => (
-            <div key={item.docKey} className="space-y-2">
-              <div className="text-sm font-medium text-foreground">{item.title}</div>
-
-              <div className="relative h-[40vh] min-h-[18rem] overflow-hidden rounded-md border border-border bg-muted/20 p-2">
-                <KycDocumentImagesDraggableScrollViewport scale={item.scale} className="h-full overflow-auto">
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
-                      style={{
-                        height: `${Math.max(25, Math.round(item.scale * 100))}%`,
-                        width: "auto",
-                        transform: `rotate(${item.rotation}deg)`,
-                        transformOrigin: "center center",
-                      }}
-                      draggable={false}
-                    />
-                  ) : (
-                    <div className="flex h-[18rem] items-center justify-center text-sm text-muted-foreground">
-                      Image unavailable
-                    </div>
-                  )}
-                </KycDocumentImagesDraggableScrollViewport>
-
-                <ImageViewerToolbar
-                  title={item.title}
-                  onZoomIn={() => onZoomIn(item.docKey)}
-                  onZoomOut={() => onZoomOut(item.docKey)}
-                  onRotateRight={() => onRotateLocal(item.docKey)}
-                  onRotateLeft={() => onRotateLeftLocal(item.docKey)}
-                  onReset={() => onResetLocal(item.docKey)}
-                />
-              </div>
-            </div>
+          {localItems.map((item) => (
+            <KycDocumentImagesCompareCard
+              key={item.docKey}
+              item={item}
+              onZoomIn={onZoomIn}
+              onZoomOut={onZoomOut}
+              onRotateRight={onRotateLocal}
+              onRotateLeft={onRotateLeftLocal}
+              onReset={onResetLocal}
+            />
           ))}
         </div>
       </div>

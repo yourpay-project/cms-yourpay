@@ -23,5 +23,8 @@ export function toFilterCardBadges<T>(
  * @returns Formatted badge label.
  */
 export function toFilterCardBadgeLabel(name: string, valueLabel?: string): string {
-  return valueLabel ? `${name}: ${valueLabel}` : name;
+  if (valueLabel != null && valueLabel !== "") {
+    return `${name}: ${valueLabel}`;
+  }
+  return name;
 }

@@ -25,19 +25,22 @@ export function DataTablePagination({
   onNextPage,
   onLastPage,
 }: DataTablePaginationProps): React.JSX.Element {
+  let pageInfoNode: React.ReactNode = (
+    <span>
+      Page {currentPage} of {totalPages || 1}
+    </span>
+  );
+  if (rowCount != null) {
+    pageInfoNode = (
+      <span>
+        Page {currentPage} of {totalPages || 1} · {rowCount} rows
+      </span>
+    );
+  }
+
   return (
     <div className="flex items-center justify-between gap-4">
-      <div className="text-sm text-muted-foreground">
-        {rowCount != null ? (
-          <span>
-            Page {currentPage} of {totalPages || 1} · {rowCount} rows
-          </span>
-        ) : (
-          <span>
-            Page {currentPage} of {totalPages || 1}
-          </span>
-        )}
-      </div>
+      <div className="text-sm text-muted-foreground">{pageInfoNode}</div>
 
       <div className="flex items-center gap-2">
         <Button

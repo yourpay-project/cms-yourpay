@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { cn } from "@/shared/lib/utils";
-import { ModalFooter } from "./ModalFooter";
 import { useModalAnimation } from "./useModalAnimation";
 import type { ModalProps } from "./Modal.type";
+import { ModalCloseButton } from "./ModalCloseButton";
+import { ModalHeaderSection } from "./ModalHeaderSection";
+import { ModalFooterSection } from "./ModalFooterSection";
 
 /** Framer Motion variants shared between overlay and content for consistency. */
 const overlayVariants = {
@@ -48,14 +49,11 @@ export const Modal: React.FC<ModalProps> = ({
   okText,
   cancelText,
   children,
-  width = "520px",
   centered,
   className,
+  style,
 }) => {
   const { visible, handleVisibilityChange } = useModalAnimation({ open });
-
-  const contentWidth =
-    typeof width === "number" ? `${width}px` : width || "520px";
 
   if (!visible) {
     return null;
@@ -87,7 +85,8 @@ export const Modal: React.FC<ModalProps> = ({
               <div
                 className={cn(
                   "fixed inset-0 z-50 flex justify-center px-4 py-6",
-                  centered ? "items-center" : "items-start"
+                  centered && "items-center",
+                  !centered && "items-start",
                 )}
               >
                 <Dialog.Content asChild>
@@ -98,12 +97,12 @@ export const Modal: React.FC<ModalProps> = ({
                     animate="visible"
                     exit="hidden"
                     transition={springTransition}
-                    style={{ width: contentWidth }}
                     className={cn(
-                      "relative max-h-[80vh] rounded-xl bg-card text-foreground shadow-xl shadow-black/15",
+                      "relative w-full max-w-[520px] max-h-[80vh] rounded-xl bg-card text-foreground shadow-xl shadow-black/15",
                       "flex flex-col overflow-hidden",
                       className
                     )}
+                    style={style}
                   >
                     {/*
                      * Keep Radix DialogTitle/DialogDescription as direct children for reliable
@@ -114,41 +113,20 @@ export const Modal: React.FC<ModalProps> = ({
                       {description ?? "Dialog description"}
                     </Dialog.Description>
 
-                    {title != null || description != null ? (
-                      <div className="pt-5 px-6 pb-4">
-                        {title != null ? <h2 className="text-base font-semibold">{title}</h2> : null}
-                        {description != null ? (
-                          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-                        ) : null}
-                      </div>
-                    ) : null}
+                    <ModalHeaderSection title={title} description={description} />
 
                     <div className="px-6 py-2">{children}</div>
 
-                    {footer === null
-                      ? null
-                      : footer !== undefined
-                        ? (
-                          <div className="px-6 pb-5 pt-4">{footer}</div>
-                        )
-                        : (
-                          <ModalFooter
-                            okText={okText}
-                            cancelText={cancelText}
-                            confirmLoading={confirmLoading}
-                            onCancel={onCancel}
-                            onOk={onOk}
-                          />
-                        )}
+                    <ModalFooterSection
+                      footer={footer}
+                      okText={okText}
+                      cancelText={cancelText}
+                      confirmLoading={confirmLoading}
+                      onCancel={onCancel}
+                      onOk={onOk}
+                    />
 
-                    <button
-                      type="button"
-                      onClick={onCancel}
-                      className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      aria-label="Close"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+                    <ModalCloseButton onCancel={onCancel} />
                   </motion.div>
                 </Dialog.Content>
               </div>

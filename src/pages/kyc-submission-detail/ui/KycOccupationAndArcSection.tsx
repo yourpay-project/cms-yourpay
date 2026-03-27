@@ -18,6 +18,10 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
   occupationsLoading,
   onOccupationChange,
 }) => {
+  if (isIndonesia) return null;
+  const arcExpiryInputType: "date" | "text" = isEditable ? "date" : "text";
+  const arcExpiryValue = isEditable ? toDateInputValue(draft.arcExpiryDate) : (draft.arcExpiryDate ?? "");
+
   return (
     <>
       <LabeledSelectField
@@ -35,30 +39,26 @@ export const KycOccupationAndArcSection: FC<KycOccupationAndArcSectionProps> = (
         allowClear={isEditable}
       />
 
-      {!isIndonesia ? (
-        <>
-          <Input
-            id="kyc-submission-arc-number"
-            size="sm"
-            type="text"
-            label="ARC Number"
-            allowClear={isEditable}
-            readOnly={locked}
-            value={draft.arcNumber ?? ""}
-            onChange={(e) => setDraft((prev) => ({ ...prev, arcNumber: e.target.value }))}
-          />
-          <Input
-            id="kyc-submission-arc-expiry-date"
-            size="sm"
-            type={isEditable ? "date" : "text"}
-            label="ARC Expiry Date"
-            allowClear={isEditable}
-            readOnly={locked}
-            value={isEditable ? toDateInputValue(draft.arcExpiryDate) : (draft.arcExpiryDate ?? "")}
-            onChange={(e) => setDraft((prev) => ({ ...prev, arcExpiryDate: e.target.value }))}
-          />
-        </>
-      ) : null}
+      <Input
+        id="kyc-submission-arc-number"
+        size="sm"
+        type="text"
+        label="ARC Number"
+        allowClear={isEditable}
+        readOnly={locked}
+        value={draft.arcNumber ?? ""}
+        onChange={(e) => setDraft((prev) => ({ ...prev, arcNumber: e.target.value }))}
+      />
+      <Input
+        id="kyc-submission-arc-expiry-date"
+        size="sm"
+        type={arcExpiryInputType}
+        label="ARC Expiry Date"
+        allowClear={isEditable}
+        readOnly={locked}
+        value={arcExpiryValue}
+        onChange={(e) => setDraft((prev) => ({ ...prev, arcExpiryDate: e.target.value }))}
+      />
     </>
   );
 };

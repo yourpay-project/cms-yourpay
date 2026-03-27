@@ -44,7 +44,13 @@ export function useInputValue(options: UseInputValueOptions): UseInputValueResul
     (defaultValue as string | number | undefined) ?? "",
   );
 
-  const currentValue = (isControlled ? value : uncontrolledValue) ?? "";
+  let currentValue: string | number = uncontrolledValue;
+  if (isControlled) {
+    currentValue = value as string | number;
+    if (currentValue === null || currentValue === undefined) {
+      currentValue = "";
+    }
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (readOnly) return;

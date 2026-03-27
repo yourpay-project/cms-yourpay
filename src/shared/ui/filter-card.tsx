@@ -42,6 +42,13 @@ export const FilterCard: FC<FilterCardProps> = ({
   children,
   badgesClassName,
 }) => {
+  const toggleIconNode = filtersOpen ? (
+    <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+  ) : (
+    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+  );
+  const bodyNode: ReactNode = filtersOpen ? children : null;
+
   return (
     <Card className="border-border bg-card">
       <CardContent className="p-4">
@@ -51,13 +58,7 @@ export const FilterCard: FC<FilterCardProps> = ({
             className="h-auto w-auto shrink-0 rounded-none px-0 py-0 text-sm font-medium hover:bg-transparent hover:opacity-80 focus:bg-transparent focus-visible:bg-transparent aria-[expanded=true]:bg-transparent focus:ring-0 focus:ring-offset-0"
             onClick={() => setFiltersOpen((v) => !v)}
             aria-expanded={filtersOpen}
-            trailing={
-              filtersOpen ? (
-                <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-              ) : (
-                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-              )
-            }
+            trailing={toggleIconNode}
           />
           <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
             <div
@@ -94,7 +95,7 @@ export const FilterCard: FC<FilterCardProps> = ({
             </Button>
           </div>
         </div>
-        {filtersOpen ? children : null}
+        {bodyNode}
       </CardContent>
     </Card>
   );

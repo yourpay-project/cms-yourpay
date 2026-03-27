@@ -17,6 +17,19 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
   whatsappHref,
 }) => {
   const locked = !isEditable;
+  const whatsappButtonNode = whatsappHref ? (
+    <Button
+      asChild
+      type="button"
+      variant="outline"
+      className="h-12 shrink-0 gap-2 sm:w-auto sm:min-w-[8.5rem]"
+    >
+      <a href={whatsappHref} target="_blank" rel="noreferrer">
+        <MessageCircle className="h-4 w-4 text-success" aria-hidden />
+        WhatsApp
+      </a>
+    </Button>
+  ) : null;
 
   return (
     <div className="flex w-full min-w-0 max-w-full flex-col gap-4 pt-1">
@@ -51,14 +64,7 @@ export const KycSubmissionIdentityFields: FC<KycSubmissionIdentityFieldsProps> =
             onChange={(e) => setDraft((prev) => ({ ...prev, mobile: e.target.value }))}
           />
         </div>
-        {whatsappHref ? (
-          <Button asChild type="button" variant="outline" className="h-12 shrink-0 gap-2 sm:w-auto sm:min-w-[8.5rem]">
-            <a href={whatsappHref} target="_blank" rel="noreferrer">
-              <MessageCircle className="h-4 w-4 text-success" aria-hidden />
-              WhatsApp
-            </a>
-          </Button>
-        ) : null}
+        {whatsappButtonNode}
       </div>
 
       <LabeledSelectField

@@ -1,6 +1,7 @@
 import type { FC } from "react";
 
 import { Button, Input } from "@/shared/ui";
+import { cn } from "@/shared/lib";
 
 export interface CountriesModalFormProps {
   editing: boolean;
@@ -14,6 +15,13 @@ export interface CountriesModalFormProps {
   setCode: (next: string) => void;
   setName: (next: string) => void;
   setIsActive: (next: boolean) => void;
+}
+
+function getStatusButtonClassName(isSelected: boolean, selectedClassName: string): string {
+  return cn(
+    "h-7 rounded px-3 text-xs",
+    isSelected ? selectedClassName : "bg-transparent",
+  );
 }
 
 /**
@@ -58,7 +66,7 @@ export const CountriesModalForm: FC<CountriesModalFormProps> = ({
             variant="ghost"
             size="sm"
             aria-pressed={isActive}
-            className={`h-7 px-3 text-xs rounded ${isActive ? "bg-success text-success-foreground" : "bg-transparent"}`}
+            className={getStatusButtonClassName(isActive, "bg-success text-success-foreground")}
             onClick={() => setIsActive(true)}
           >
             Active
@@ -68,9 +76,7 @@ export const CountriesModalForm: FC<CountriesModalFormProps> = ({
             variant="ghost"
             size="sm"
             aria-pressed={!isActive}
-            className={`h-7 px-3 text-xs rounded ${
-              !isActive ? "bg-destructive text-destructive-foreground" : "bg-transparent"
-            }`}
+            className={getStatusButtonClassName(!isActive, "bg-destructive text-destructive-foreground")}
             onClick={() => setIsActive(false)}
           >
             Inactive

@@ -11,6 +11,13 @@ import { toDateInputValue } from "../lib/kyc-verification-form-options";
 export const KycPassportDatesSection: FC<KycPassportDatesSectionProps> = ({ draft, setDraft, isEditable, locked }) => {
   if (draft.identityDocumentType !== "PASSPORT") return null;
 
+  const issueDateValue = isEditable
+    ? toDateInputValue(draft.identityDocumentIssueDate)
+    : (draft.identityDocumentIssueDate ?? "");
+  const expiryDateValue = isEditable
+    ? toDateInputValue(draft.identityDocumentExpireDate)
+    : (draft.identityDocumentExpireDate ?? "");
+
   return (
     <>
       <Input
@@ -20,7 +27,7 @@ export const KycPassportDatesSection: FC<KycPassportDatesSectionProps> = ({ draf
         label="Issue Date"
         allowClear={isEditable}
         readOnly={locked}
-        value={isEditable ? toDateInputValue(draft.identityDocumentIssueDate) : (draft.identityDocumentIssueDate ?? "")}
+        value={issueDateValue}
         onChange={(e) => setDraft((prev) => ({ ...prev, identityDocumentIssueDate: e.target.value }))}
       />
       <Input
@@ -30,7 +37,7 @@ export const KycPassportDatesSection: FC<KycPassportDatesSectionProps> = ({ draf
         label="Expiry Date"
         allowClear={isEditable}
         readOnly={locked}
-        value={isEditable ? toDateInputValue(draft.identityDocumentExpireDate) : (draft.identityDocumentExpireDate ?? "")}
+        value={expiryDateValue}
         onChange={(e) => setDraft((prev) => ({ ...prev, identityDocumentExpireDate: e.target.value }))}
       />
     </>

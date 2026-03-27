@@ -15,6 +15,47 @@ interface IdentityAccessBadgesProps {
   items: IdentityAccessBadgeItem[];
 }
 
+interface IdentityAccessBadgeRowProps {
+  item: IdentityAccessBadgeItem;
+  badgeClassName: string;
+}
+
+const IdentityAccessBadgeRow: FC<IdentityAccessBadgeRowProps> = ({
+  item,
+  badgeClassName,
+}) => {
+  const defaultIconNode = item.isDefault ? <Settings2 className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null;
+  const contentNode = (
+    <>
+      <span className="truncate">{item.code}</span>
+      {defaultIconNode}
+    </>
+  );
+
+  if (!item.isDefault) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${badgeClassName}`}
+      >
+        {contentNode}
+      </span>
+    );
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${badgeClassName}`}
+        >
+          {contentNode}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top">DEFAULT</TooltipContent>
+    </Tooltip>
+  );
+};
+
 /**
  * Renders identity access values as color-varied badges.
  *
@@ -32,35 +73,12 @@ export const IdentityAccessBadges: FC<IdentityAccessBadgesProps> = ({ items }) =
     <div className="flex flex-wrap justify-end gap-2">
       {items.map((item, index) => {
         const badgeClassName = getIdentityAccessBadgeClass(badgeClassMap, item.code);
-        const badgeNode = (
-          <span className="truncate">{item.code}</span>
-        );
-
-        const contentNode = (
-          <>
-            {badgeNode}
-            {item.isDefault ? <Settings2 className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
-          </>
-        );
-
-        return item.isDefault ? (
-          <Tooltip key={`${item.code}-${index}`}>
-            <TooltipTrigger asChild>
-              <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${badgeClassName}`}
-              >
-                {contentNode}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top">DEFAULT</TooltipContent>
-          </Tooltip>
-        ) : (
-          <span
+        return (
+          <IdentityAccessBadgeRow
             key={`${item.code}-${index}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${badgeClassName}`}
-          >
-            {contentNode}
-          </span>
+            item={item}
+            badgeClassName={badgeClassName}
+          />
         );
       })}
     </div>

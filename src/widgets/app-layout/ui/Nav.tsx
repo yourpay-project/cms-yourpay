@@ -36,6 +36,35 @@ export const Nav: FC<NavProps> = ({ className }) => {
   const toggleSidebar = useSidebarStore((s) => s.toggle);
   const toggleMobileSidebar = useSidebarStore((s) => s.toggleMobile);
 
+  let sidebarAriaLabel = "Collapse sidebar";
+  let sidebarIconNode = <PanelLeftClose className="h-5 w-5" />;
+  if (collapsed) {
+    sidebarAriaLabel = "Expand sidebar";
+    sidebarIconNode = <PanelLeft className="h-5 w-5" />;
+  }
+
+  const globalLoadingNode = globalLoading ? (
+    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden />
+  ) : null;
+
+  const userMenuNode = user ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="User menu">
+          <User className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => logout()}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : null;
+
   return (
     <header
       className={cn(
@@ -57,21 +86,12 @@ export const Nav: FC<NavProps> = ({ className }) => {
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={sidebarAriaLabel}
           className="hidden md:inline-flex"
         >
-          {collapsed ? (
-            <PanelLeft className="h-5 w-5" />
-          ) : (
-            <PanelLeftClose className="h-5 w-5" />
-          )}
+          {sidebarIconNode}
         </Button>
-        {globalLoading && (
-          <Loader2
-            className="h-5 w-5 animate-spin text-muted-foreground"
-            aria-hidden
-          />
-        )}
+        {globalLoadingNode}
         <div className="flex flex-col">
           <img
             src={BRAND_LOGO_URL}
@@ -94,23 +114,7 @@ export const Nav: FC<NavProps> = ({ className }) => {
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        {user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="User menu">
-                <User className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => logout()}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+        {userMenuNode}
       </div>
     </header>
   );

@@ -1,25 +1,21 @@
 import type { FC } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Button } from "@/shared/ui";
-import { ImageViewerToolbar } from "@/shared/ui";
-
 import type { KycDocumentImagesSinglePreviewProps } from "./KycDocumentImagesSinglePreview.type";
-import { KycDocumentImagesDraggableScrollViewport } from "./KycDocumentImagesDraggableScrollViewport";
 import type { DocumentImagesDocKey } from "./KycDocumentImagesSinglePreview.type";
+import {
+  applyDocumentImageScaleDelta,
+  toDocumentImageHeightPercent,
+} from "./document-images-transform-utils";
+import { SinglePreviewViewport } from "./SinglePreviewViewport";
+import { SinglePreviewFooter } from "./SinglePreviewFooter";
 
-const DOCUMENT_IMAGE_SCALE_MIN = 0.5;
-const DOCUMENT_IMAGE_SCALE_MAX = 3;
-
-function clampScale(value: number, min: number = DOCUMENT_IMAGE_SCALE_MIN, max: number = DOCUMENT_IMAGE_SCALE_MAX): number {
-  return Math.max(min, Math.min(max, value));
-}
-
-function applyScaleDelta(prev: number, delta: number): number {
-  const next = Number((prev + delta).toFixed(2));
-  return clampScale(next);
-}
-
+/**
+ * Single-document enlarged preview with local zoom/rotate controls.
+ *
+ * @param props Active document state and transform handlers.
+ * @returns Single preview modal content.
+ */
 export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewProps> = ({
   onClose,
   open,
@@ -47,12 +43,12 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
   }, [activeRotation, activeScale, open]);
 
   const zoomIn = (docKey: DocumentImagesDocKey): void => {
-    setScale((prev) => applyScaleDelta(prev, 0.15));
+    setScale((prev) => applyDocumentImageScaleDelta(prev, 0.15));
     onChangeScale(docKey, 0.15);
   };
 
   const zoomOut = (docKey: DocumentImagesDocKey): void => {
-    setScale((prev) => applyScaleDelta(prev, -0.15));
+    setScale((prev) => applyDocumentImageScaleDelta(prev, -0.15));
     onChangeScale(docKey, -0.15);
   };
 
@@ -73,7 +69,8 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
   };
 
   // Normal view should stretch by height; zoom expands layout inside the scroll viewport.
-  const heightPercent = useMemo(() => Math.max(25, Math.round(scale * 100)), [scale]);
+  const heightPercent = useMemo(() => toDocumentImageHeightPercent(scale), [scale]);
+  const imageUrl = activeDocument?.imageUrl;
 
   return (
     <div className="-mx-6 -my-2 flex max-h-[85vh] flex-col overflow-y-auto overflow-x-hidden">
@@ -84,45 +81,21 @@ export const KycDocumentImagesSinglePreview: FC<KycDocumentImagesSinglePreviewPr
           </div>
         </div>
 
-        <div className="px-6">
-          <div className="relative h-[60vh] min-h-[40vh] overflow-hidden rounded-md border border-border bg-muted/20 p-3">
-            <KycDocumentImagesDraggableScrollViewport scale={scale} className="h-full overflow-auto">
-              {activeDocument?.imageUrl ? (
-                <img
-                  src={activeDocument.imageUrl}
-                  alt={activeTitle}
-                  className="mx-auto block h-auto max-w-none object-contain transition-transform duration-200"
-                  style={{
-                    height: `${heightPercent}%`,
-                    width: "auto",
-                    transform: `rotate(${rotation}deg)`,
-                    transformOrigin: "center center",
-                  }}
-                  draggable={false}
-                />
-              ) : (
-                <div className="flex h-[40vh] items-center justify-center text-sm text-muted-foreground">
-                  Image unavailable
-                </div>
-              )}
-            </KycDocumentImagesDraggableScrollViewport>
+        <SinglePreviewViewport
+          title={activeTitle}
+          imageUrl={imageUrl}
+          scale={scale}
+          rotation={rotation}
+          heightPercent={heightPercent}
+          docKey={activeDocKey}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onRotateRight={rotate}
+          onRotateLeft={rotateLeft}
+          onReset={reset}
+        />
 
-            <ImageViewerToolbar
-              title={activeTitle}
-              onZoomIn={() => zoomIn(activeDocKey)}
-              onZoomOut={() => zoomOut(activeDocKey)}
-              onRotateRight={() => rotate(activeDocKey)}
-              onRotateLeft={() => rotateLeft(activeDocKey)}
-              onReset={() => reset(activeDocKey)}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end px-6 pb-5 pt-0">
-          <Button type="button" variant="outline" onClick={onClose}>
-            Close
-          </Button>
-        </div>
+        <SinglePreviewFooter onClose={onClose} />
       </div>
     </div>
   );

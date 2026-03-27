@@ -25,13 +25,20 @@ export const Can: FC<CanProps> = ({
     (permissions != null && permissions.length > 0) ||
     role != null ||
     (roles != null && roles.length > 0);
-  const allowed =
-    hasCheck &&
-    ((permission != null && can(permission)) ||
-      (permissions != null && permissions.length > 0 && canAny(permissions)) ||
-      (role != null && hasRole(role)) ||
-      (roles != null && roles.length > 0 && hasAnyRole(roles)));
+  if (!hasCheck) {
+    return <>{fallback}</>;
+  }
 
-  return <>{allowed ? children : fallback}</>;
+  const allowed =
+    (permission != null && can(permission)) ||
+    (permissions != null && permissions.length > 0 && canAny(permissions)) ||
+    (role != null && hasRole(role)) ||
+    (roles != null && roles.length > 0 && hasAnyRole(roles));
+
+  if (allowed) {
+    return <>{children}</>;
+  }
+
+  return <>{fallback}</>;
 };
 

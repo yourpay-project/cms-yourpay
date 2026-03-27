@@ -57,15 +57,17 @@ export function DataTable<TData, TValue = unknown>(
   } = useDataTable(props);
 
   const LoadingComponent = React.useCallback(
-    (loadProps: { colSpan: number }) =>
-      loadingVariant === "spinner" ? (
-        <DataTableLoadingSpinner colSpan={loadProps.colSpan} />
-      ) : (
+    (loadProps: { colSpan: number }) => {
+      if (loadingVariant === "spinner") {
+        return <DataTableLoadingSpinner colSpan={loadProps.colSpan} />;
+      }
+      return (
         <DataTableLoadingOverlay
           colSpan={loadProps.colSpan}
           rowCount={skeletonRows}
         />
-      ),
+      );
+    },
     [loadingVariant, skeletonRows]
   );
 

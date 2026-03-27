@@ -27,21 +27,22 @@ async function requestWithRefresh<T>(
   options: RequestOptions,
   retried = false
 ): Promise<ApiResponse<T>> {
-  const resolvedPath =
-    options.pathParams != null
-      ? Object.entries(options.pathParams).reduce((acc, [key, value]) => {
-          return acc.replace(`{${key}}`, encodeURIComponent(String(value)));
-        }, path)
-      : path;
+  let resolvedPath = path;
+  if (options.pathParams != null) {
+    resolvedPath = Object.entries(options.pathParams).reduce((acc, [key, value]) => {
+      return acc.replace(`{${key}}`, encodeURIComponent(String(value)));
+    }, path);
+  }
 
   const requestOptions = { ...options };
   delete requestOptions.pathParams;
   const query = requestOptions.query;
   delete requestOptions.query;
 
-  const baseUrl = resolvedPath.startsWith("http")
-    ? path
-    : `${config.baseUrl.replace(/\/$/, "")}/${resolvedPath.replace(/^\/+/, "")}`;
+  let baseUrl = `${config.baseUrl.replace(/\/$/, "")}/${resolvedPath.replace(/^\/+/, "")}`;
+  if (resolvedPath.startsWith("http")) {
+    baseUrl = path;
+  }
   const searchParams = new URLSearchParams();
   if (query) {
     for (const [key, value] of Object.entries(query)) {
@@ -49,7 +50,11 @@ async function requestWithRefresh<T>(
       searchParams.set(key, String(value));
     }
   }
-  const url = searchParams.toString() ? `${baseUrl}?${searchParams.toString()}` : baseUrl;
+  let url = baseUrl;
+  const queryString = searchParams.toString();
+  if (queryString) {
+    url = `${baseUrl}?${queryString}`;
+  }
   const access = config.getAccessToken();
   const headers: Record<string, string> = {
     ...(requestOptions.headers as Record<string, string>),
@@ -63,12 +68,15 @@ async function requestWithRefresh<T>(
   const res = await fetch(url, {
     ...requestOptions,
     headers,
-    body:
-      requestOptions.body instanceof FormData
-        ? requestOptions.body
-        : requestOptions.body
-          ? JSON.stringify(requestOptions.body)
-          : undefined,
+    body: (() => {
+      if (requestOptions.body instanceof FormData) {
+        return requestOptions.body;
+      }
+      if (requestOptions.body) {
+        return JSON.stringify(requestOptions.body);
+      }
+      return undefined;
+    })(),
   });
 
   if (res.status === 401 && !options.skipAuth && !options.skipRefresh && !retried) {
@@ -92,17 +100,20 @@ async function requestWithRefresh<T>(
   }
 
   if (!res.ok) {
-    const message =
-      typeof data === "object" && data !== null && "message" in data
-        ? String((data as { message?: string }).message)
-        : res.statusText;
+    let message = res.statusText;
+    if (typeof data === "object" && data !== null && "message" in data) {
+      message = String((data as { message?: string }).message);
+    }
+
+    let code: string | undefined = undefined;
+    if (typeof data === "object" && data !== null && "code" in data) {
+      code = String((data as { code?: string }).code);
+    }
 
     const error = new ApiClientError(
       message,
       res.status,
-      typeof data === "object" && data !== null && "code" in data
-        ? String((data as { code?: string }).code)
-        : undefined
+      code
     );
 
     // Capture HTTP errors in Sentry when enabled, without breaking existing behavior.
