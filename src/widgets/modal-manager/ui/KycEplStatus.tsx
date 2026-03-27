@@ -14,8 +14,8 @@ import type { KycEplStatusProps, EplStatusValue } from "./KycEplStatus.type";
 import { KycEplStatusModalContent } from "./KycEplStatusModalContent";
 
 const EPL_STATUS_EDIT_OPTIONS: Array<{ value: "approved" | "rejected"; label: string }> = [
-  { value: "approved", label: "approved" },
-  { value: "rejected", label: "rejected" },
+  { value: "approved", label: "APPROVED" },
+  { value: "rejected", label: "REJECTED" },
 ];
 
 export const KycEplStatus: FC<KycEplStatusProps> = ({
@@ -118,7 +118,6 @@ export const KycEplStatus: FC<KycEplStatusProps> = ({
         currentStatus={currentStatus}
         eplStatusDraft={eplStatusDraft}
         onChangeEplStatus={setEplStatusDraft}
-        hasEplStatusChanged={hasEplStatusChanged}
         isRejected={isRejected}
         selectedRejectReasonCode={selectedRejectReasonCode}
         onChangeRejectReasonCode={setSelectedRejectReasonCode}
@@ -132,7 +131,11 @@ export const KycEplStatus: FC<KycEplStatusProps> = ({
         <Button type="button" variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        <Button type="button" onClick={onSubmit} disabled={updateMutation.isPending}>
+        <Button
+          type="button"
+          onClick={onSubmit}
+          disabled={updateMutation.isPending || !hasEplStatusChanged}
+        >
           {submitLeadingNode}
           {submitLabel}
         </Button>

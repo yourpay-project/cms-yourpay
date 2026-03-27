@@ -34,14 +34,16 @@ const TransactionDetailPage: FC = () => {
   const sections = buildTransactionDetailSections(detail);
 
   return (
-    <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4">
+    <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4 md:flex-1 md:overflow-hidden">
       <TransactionDetailHeader
         transactionType={detail.transactionType}
         transactionId={detail.id}
         normalizedStatus={normalizedStatus}
         statusVariant={statusVariant}
       />
-      <TransactionDetailSectionsCard sections={sections} />
+      <div className="md:min-h-0 md:flex-1 md:overflow-y-auto">
+        <TransactionDetailSectionsCard sections={sections} />
+      </div>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import { useMemo } from "react";
 
 import { Input, LabeledSelectField, SelectDropdown, type SelectDropdownOption } from "@/shared/ui";
 
@@ -9,7 +8,6 @@ export interface KycEplStatusModalContentProps {
   currentStatus: EplStatusValue;
   eplStatusDraft: EplStatusValue;
   onChangeEplStatus: (next: EplStatusValue) => void;
-  hasEplStatusChanged: boolean;
   isRejected: boolean;
 
   selectedRejectReasonCode: string;
@@ -25,7 +23,6 @@ export const KycEplStatusModalContent: FC<KycEplStatusModalContentProps> = ({
   currentStatus,
   eplStatusDraft,
   onChangeEplStatus,
-  hasEplStatusChanged,
   isRejected,
   selectedRejectReasonCode,
   onChangeRejectReasonCode,
@@ -34,11 +31,6 @@ export const KycEplStatusModalContent: FC<KycEplStatusModalContentProps> = ({
   isRejectReasonsLoading,
   selectedRejectReasonDescription,
 }) => {
-  const noStatusChangesMessage = useMemo(
-    () => (!hasEplStatusChanged ? <p className="text-xs text-muted-foreground">No status changes yet.</p> : null),
-    [hasEplStatusChanged],
-  );
-
   return (
     <div className="space-y-4 pb-2">
       <div className="grid gap-3 md:grid-cols-2">
@@ -78,8 +70,6 @@ export const KycEplStatusModalContent: FC<KycEplStatusModalContentProps> = ({
           ) : null}
         </div>
       ) : null}
-
-      {noStatusChangesMessage}
     </div>
   );
 };

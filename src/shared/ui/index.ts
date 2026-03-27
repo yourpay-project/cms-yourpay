@@ -101,6 +101,7 @@ export {
 } from "./data-table";
 
 export { SearchInput, type SearchInputProps } from "./search-input";
+export { ContentHeader, type ContentHeaderProps } from "./content-header";
 export { DetailPageHeader, type DetailPageHeaderProps } from "./detail-page-header";
 export {
   DetailSectionsCard,

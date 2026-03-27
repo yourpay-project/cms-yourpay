@@ -67,10 +67,13 @@ export const KycSubmissionDetailPageHeader: FC<KycSubmissionDetailPageHeaderProp
             }}
             aria-label="Change KYC status"
           >
-            <Badge variant={statusVariant} className={`${eplStatusClass} uppercase`}>
-              {normalizedStatus || "-"}
+            <Badge
+              variant={statusVariant}
+              className={`${eplStatusClass} inline-flex items-center gap-1.5 uppercase`}
+            >
+              <span>{normalizedStatus || "-"}</span>
+              {isPendingStatus ? <ChevronDown className="h-3 w-3" /> : null}
             </Badge>
-            {isPendingStatus ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : null}
           </button>
         </div>
 

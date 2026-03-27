@@ -46,42 +46,46 @@ const UserDetailPage: FC = () => {
   const cardSections = buildUserDetailCardSections(fieldItems);
 
   return (
-    <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4 pt-8 md:pt-10">
-      <UserDetailPageHeader
-        fullName={fieldItems.fullName}
-        normalizedStatus={normalizedStatus}
-        statusVariant={statusVariant}
-      />
+    <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-4 pt-8 md:flex-1 md:overflow-hidden md:pt-0">
+      <div className="flex flex-col gap-4">
+        <UserDetailPageHeader
+          fullName={fieldItems.fullName}
+          normalizedStatus={normalizedStatus}
+          statusVariant={statusVariant}
+        />
 
-      <UserDetailActionButtons
-        isBlocked={fieldItems.isBlocked}
-        onEditIdentityAccess={() => {
-          open("USER_EDIT_IDENTITY_ACCESS_MODAL", {
-            customerId,
-            currentIdentityAccesses: detail.identityAccess,
-          });
-        }}
-        onViewDevices={() => {
-          open("USER_VIEW_DEVICES_MODAL", { customerId });
-        }}
-        onViewWallets={() => {
-          open("USER_VIEW_WALLETS_MODAL", { customerId });
-        }}
-        onOpenBlockUser={() => {
-          open("USER_BLOCK_CONFIRM_MODAL", {
-            customerId,
-            isBlocked: fieldItems.isBlocked,
-            onStatusUpdated: () => {
-              void query.refetch();
-            },
-          });
-        }}
-        onOpenCloseUser={() => {
-          open("USER_CLOSE_CONFIRM_MODAL", { customerId });
-        }}
-      />
+        <UserDetailActionButtons
+          isBlocked={fieldItems.isBlocked}
+          onEditIdentityAccess={() => {
+            open("USER_EDIT_IDENTITY_ACCESS_MODAL", {
+              customerId,
+              currentIdentityAccesses: detail.identityAccess,
+            });
+          }}
+          onViewDevices={() => {
+            open("USER_VIEW_DEVICES_MODAL", { customerId });
+          }}
+          onViewWallets={() => {
+            open("USER_VIEW_WALLETS_MODAL", { customerId });
+          }}
+          onOpenBlockUser={() => {
+            open("USER_BLOCK_CONFIRM_MODAL", {
+              customerId,
+              isBlocked: fieldItems.isBlocked,
+              onStatusUpdated: () => {
+                void query.refetch();
+              },
+            });
+          }}
+          onOpenCloseUser={() => {
+            open("USER_CLOSE_CONFIRM_MODAL", { customerId });
+          }}
+        />
+      </div>
 
-      <UserDetailCardsSection sections={cardSections} />
+      <div className="md:min-h-0 md:flex-1 md:overflow-y-auto">
+        <UserDetailCardsSection sections={cardSections} />
+      </div>
     </div>
   );
 };
