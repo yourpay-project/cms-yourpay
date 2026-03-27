@@ -409,7 +409,7 @@ For navigation inside components, use **TanStack Router hooks**:
 
 **Auth UI (features/auth/ui):**
 
-- `LoginForm` – email/password form with Google button. The UI is intentionally composed from small sections (`LoginFormHeader`, `LoginFormContent`, `LoginFormCredentialsSection`, `LoginFormFooter`) to keep each component focused and within repo size guidelines while preserving behavior.
+- `LoginCard` – card-based login composition with explicit responsibility split: `LoginHeader` (logo + sign in title), `LoginForm` (email/password + sign-in button + `or` divider), `LoginWithGoogle`, `LoginInfo` (operator-only notice), and `LoginFooter` (centered theme switch + company/version info).
 - `ProtectedRoute` – renders children only when authenticated; otherwise navigates to `/login`.
 - `LoginRedirect` – for `/login`; if already authenticated, redirects to `/`.
 - `Can` – conditional renderer based on permissions/roles (wrapping `useCan`).
